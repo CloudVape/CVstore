@@ -1,9 +1,9 @@
 // Lightweight client for `/api/admin/*` endpoints. These routes are not in the
-// OpenAPI spec, so we don't go through orval — we just call fetch directly and
-// attach an `Authorization: Bearer <sessionToken>` header derived from the
-// currently signed-in user. The token is issued by the server at login/signup
-// and rotated on every login, so a stolen user id alone is not enough to
-// impersonate an admin.
+// OpenAPI spec, so we don't go through orval — we call fetch directly and
+// attach an `Authorization: Bearer <clerkJwt>` header. The JWT is a short-lived
+// Clerk session token obtained via `getToken()` from the Clerk auth context;
+// the server verifies it with `getAuth(req)` and checks the `isAdmin` flag
+// on the resolved DB user.
 
 export type Supplier = {
   id: number;

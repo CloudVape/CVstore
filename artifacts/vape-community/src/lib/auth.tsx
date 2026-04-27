@@ -6,11 +6,11 @@ import {
   ReactNode,
 } from "react";
 import {
-  useUser,
   useAuth as useClerkAuth,
   useClerk,
 } from "@clerk/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { setAuthTokenGetter } from "@workspace/api-client-react";
 
 const BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
 
@@ -39,11 +39,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function CurrentUserLoader({ children }: { children: ReactNode }) {
-  const { isSignedIn, userId } = useClerkAuth();
-  const { getToken } = useClerkAuth();
+  const { isSignedIn, userId, getToken } = useClerkAuth();
   const { signOut } = useClerk();
   const queryClient = useQueryClient();
   const prevUserIdRef = useRef<string | null | undefined>(undefined);
+
+  // Register Clerk token getter globally so ALL API client calls (including
+  // useCreateOrder, useCreatePost, etc.) automatically include the bearer token.
+  useEffect(() => {
+    setAuthTokenGetter(isSignedIn ? getToken : null);
+    return () => { setAuthTokenGetter(null); };
+  }, [isSignedIn, getToken]);
 
   useEffect(() => {
     const uid = isSignedIn ? (userId ?? null) : null;
