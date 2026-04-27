@@ -1,10 +1,13 @@
 import { db, postsTable, usersTable, categoriesTable } from "@workspace/db";
-import { and, eq, gte, lt, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { logger } from "../lib/logger";
 
 const HARDWARE_CATEGORY_SLUG = "hardware-reviews";
 const SOURCE_PREFIX = "ai-review:";
-const BACKFILL_DAYS = 14;
+const MIN_GAP_DAYS = 2;
+const MAX_GAP_DAYS = 3;
+const BACKFILL_DAYS = 30;
+const DAY_MS = 24 * 60 * 60 * 1000;
 const CHECK_INTERVAL_MS = 60 * 60 * 1000;
 
 type ReviewSeed = {
@@ -269,21 +272,15 @@ const REVIEW_POOL: ReviewSeed[] = [
   },
 ];
 
-function dayBoundsUTC(daysAgo: number): { start: Date; end: Date } {
-  const now = new Date();
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - daysAgo, 0, 0, 0));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - daysAgo, 23, 59, 59));
-  return { start, end };
+function gapDaysAt(index: number): number {
+  const range = MAX_GAP_DAYS - MIN_GAP_DAYS + 1;
+  return MIN_GAP_DAYS + (index % range);
 }
 
-function noonUTC(daysAgo: number): Date {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - daysAgo, 12, 0, 0));
-}
-
-function pickJitter(base: Date, persona: number): Date {
-  const offset = ((persona * 37) % 480) - 240;
-  return new Date(base.getTime() + offset * 60 * 1000);
+function withNoonAndJitter(d: Date, salt: number): Date {
+  const base = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12, 0, 0));
+  const offsetMin = ((salt * 37) % 480) - 240;
+  return new Date(base.getTime() + offsetMin * 60 * 1000);
 }
 
 async function getHardwareCategoryId(): Promise<number | null> {
@@ -312,20 +309,19 @@ async function getUsedReviewSlugs(): Promise<Set<string>> {
   return new Set(rows.map((r) => r.sourceUrl?.slice(SOURCE_PREFIX.length) ?? ""));
 }
 
-async function dayHasHardwareReview(categoryId: number, daysAgo: number): Promise<boolean> {
-  const { start, end } = dayBoundsUTC(daysAgo);
+async function getLastReviewDate(categoryId: number): Promise<Date | null> {
   const rows = await db
-    .select({ id: postsTable.id })
+    .select({ createdAt: postsTable.createdAt })
     .from(postsTable)
     .where(
       and(
         eq(postsTable.categoryId, categoryId),
-        gte(postsTable.createdAt, start),
-        lt(postsTable.createdAt, end),
+        sql`${postsTable.sourceUrl} LIKE ${SOURCE_PREFIX + "%"}`,
       ),
     )
+    .orderBy(desc(postsTable.createdAt))
     .limit(1);
-  return rows.length > 0;
+  return rows[0]?.createdAt ?? null;
 }
 
 function nextReview(used: Set<string>): ReviewSeed | null {
@@ -345,7 +341,7 @@ async function insertReview(
   authorId: number,
   createdAt: Date,
 ): Promise<void> {
-  const at = pickJitter(createdAt, authorId);
+  const at = withNoonAndJitter(createdAt, authorId);
   await db.insert(postsTable).values({
     title: review.title,
     content: review.content,
@@ -368,33 +364,58 @@ async function insertReview(
     .where(eq(categoriesTable.id, categoryId));
 }
 
-async function ensureDailyReviews(opts: { backfillDays: number }): Promise<void> {
+async function ensureHardwareReviews(): Promise<void> {
   const categoryId = await getHardwareCategoryId();
   if (!categoryId) {
-    logger.warn("Hardware reviews category not found; daily-review job idle.");
+    logger.warn("Hardware reviews category not found; review job idle.");
     return;
   }
   const personas = await getReviewPersonaIds();
   if (personas.length === 0) {
-    logger.warn("No AI personas; daily-review job idle.");
+    logger.warn("No AI personas; review job idle.");
     return;
   }
 
   const used = await getUsedReviewSlugs();
-  let personaCursor = (used.size + 1) % personas.length;
+  const last = await getLastReviewDate(categoryId);
+  const now = new Date();
+  let personaCursor = used.size % personas.length;
   let inserted = 0;
+  let exhausted = false;
 
-  for (let daysAgo = opts.backfillDays; daysAgo >= 0; daysAgo--) {
-    const has = await dayHasHardwareReview(categoryId, daysAgo);
-    if (has) continue;
+  // Compute the schedule: list of timestamps where a review should exist.
+  // Gaps alternate between MIN_GAP_DAYS and MAX_GAP_DAYS as the index advances.
+  const schedule: Date[] = [];
+  if (!last) {
+    // Fresh install: lay down a sparse history at 2-3 day intervals.
+    let when = new Date(now.getTime() - BACKFILL_DAYS * DAY_MS);
+    let i = 0;
+    while (when.getTime() <= now.getTime()) {
+      schedule.push(when);
+      when = new Date(when.getTime() + gapDaysAt(i) * DAY_MS);
+      i++;
+    }
+  } else {
+    // Catch up from the last existing review onward.
+    let cursor = new Date(last);
+    let i = used.size;
+    while (true) {
+      const next = new Date(cursor.getTime() + gapDaysAt(i) * DAY_MS);
+      if (next.getTime() > now.getTime()) break;
+      schedule.push(next);
+      cursor = next;
+      i++;
+    }
+  }
+
+  for (const when of schedule) {
     const review = nextReview(used);
     if (!review) {
-      logger.warn("Hardware review pool exhausted; consider expanding REVIEW_POOL.");
+      exhausted = true;
       break;
     }
     const author = personas[personaCursor % personas.length]!;
     personaCursor++;
-    const when = noonUTC(daysAgo);
     try {
       await insertReview(review, categoryId, author, when);
       used.add(review.slug);
@@ -405,7 +426,10 @@ async function ensureDailyReviews(opts: { backfillDays: number }): Promise<void>
   }
 
   if (inserted > 0) {
-    logger.info({ inserted }, "Hardware review job inserted posts");
+    logger.info({ inserted, gapDays: `${MIN_GAP_DAYS}-${MAX_GAP_DAYS}` }, "Hardware review job inserted posts");
+  }
+  if (exhausted) {
+    logger.warn("Hardware review pool exhausted; consider expanding REVIEW_POOL.");
   }
 
   await backfillReviewImages();
@@ -432,13 +456,13 @@ async function backfillReviewImages(): Promise<void> {
   }
 }
 
-export function startDailyHardwareReviewJob(): void {
-  ensureDailyReviews({ backfillDays: BACKFILL_DAYS }).catch((err) => {
-    logger.error({ err }, "Initial hardware-review backfill failed");
+export function startHardwareReviewJob(): void {
+  ensureHardwareReviews().catch((err) => {
+    logger.error({ err }, "Initial hardware-review check failed");
   });
 
   setInterval(() => {
-    ensureDailyReviews({ backfillDays: 0 }).catch((err) => {
+    ensureHardwareReviews().catch((err) => {
       logger.error({ err }, "Hourly hardware-review check failed");
     });
   }, CHECK_INTERVAL_MS).unref();
