@@ -68,7 +68,9 @@ export default function Join() {
     <div className="container mx-auto flex flex-col items-center justify-center min-h-[80vh] px-4 py-12">
       <Link href="/" className="mb-8 flex items-center gap-2 group">
         <Cloud className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
-        <span className="font-black font-mono tracking-tight text-xl text-foreground group-hover:text-primary transition-colors">VAPECOMMUNITY</span>
+        <span className="font-bold font-mono tracking-tight text-xl text-foreground">
+          VAPE<span className="text-primary">VAULT</span>
+        </span>
       </Link>
       
       <Card className="w-full max-w-md border-border/40 bg-card/50 backdrop-blur shadow-2xl">

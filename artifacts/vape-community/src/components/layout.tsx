@@ -23,10 +23,10 @@ export function Layout({ children }: { children: ReactNode }) {
       </div>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 max-w-6xl items-center px-4">
-          <Link href="/" className="mr-6 flex items-center space-x-2 transition-opacity hover:opacity-80">
+          <Link href="/" className="mr-6 flex items-center gap-2 transition-opacity hover:opacity-80">
             <Cloud className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-mono tracking-tight text-lg">
-              VAPE<span className="text-primary">COMMUNITY</span>
+              VAPE<span className="text-primary">VAULT</span>
             </span>
           </Link>
 
@@ -92,7 +92,9 @@ export function Layout({ children }: { children: ReactNode }) {
           <div className="col-span-2 md:col-span-1 space-y-3">
             <Link href="/" className="flex items-center gap-2 text-foreground">
               <Cloud className="h-5 w-5 text-primary" />
-              <span className="font-bold font-mono">VAPECOMMUNITY</span>
+              <span className="font-bold font-mono tracking-tight">
+                VAPE<span className="text-primary">VAULT</span>
+              </span>
             </Link>
             <p className="text-muted-foreground text-xs leading-relaxed">
               The shop and community for cloud chasers and flavor enthusiasts. 21+ only.
@@ -119,7 +121,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
         </div>
         <div className="container mx-auto max-w-6xl px-4 mt-8 pt-6 border-t border-border/40 flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-muted-foreground font-mono">
-          <span>VAPECOMMUNITY &copy; {new Date().getFullYear()} — Keep it cloudy.</span>
+          <span>VAPEVAULT &copy; {new Date().getFullYear()} — Keep it cloudy.</span>
           <span>Must be 21+ to purchase. Vaping products contain nicotine.</span>
         </div>
       </footer>
