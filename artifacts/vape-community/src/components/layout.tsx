@@ -148,16 +148,16 @@ export function Layout({ children }: { children: ReactNode }) {
                     <span className="font-mono text-xs">{user.username}</span>
                   </Button>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={logout} className="gap-2 font-mono text-xs uppercase tracking-wider px-2 sm:px-3" aria-label="Logout">
+                <Button variant="ghost" size="sm" onClick={() => void logout()} className="gap-2 font-mono text-xs uppercase tracking-wider px-2 sm:px-3" aria-label="Logout">
                   <LogOut className="h-4 w-4" />
                 </Button>
               </>
             ) : (
               <div className="flex items-center space-x-1 sm:space-x-2">
-                <Link href="/login">
+                <Link href="/sign-in">
                   <Button variant="ghost" size="sm" className="font-mono text-xs uppercase tracking-wider hidden sm:flex">Log in</Button>
                 </Link>
-                <Link href="/join">
+                <Link href="/sign-up">
                   <Button size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-wider shadow-[0_0_15px_hsl(var(--primary)/0.3)] px-3 sm:px-4">Sign up</Button>
                 </Link>
               </div>
@@ -190,7 +190,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Community</p>
             <Link href="/forum" className="block text-foreground/80 hover:text-primary transition-colors">Forum</Link>
             <Link href="/categories" className="block text-foreground/80 hover:text-primary transition-colors">Topics</Link>
-            <Link href="/join" className="block text-foreground/80 hover:text-primary transition-colors">Join</Link>
+            <Link href="/sign-up" className="block text-foreground/80 hover:text-primary transition-colors">Join</Link>
           </div>
           <div className="space-y-2">
             <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Help</p>

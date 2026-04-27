@@ -19,13 +19,12 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function AdminSubscribers() {
-  const { user } = useAuth();
-  const token = user?.sessionToken ?? null;
+  const { user, getToken } = useAuth();
 
   const { data: subs = [], isLoading, refetch } = useQuery({
     queryKey: ["admin-subscribers"],
-    queryFn: () => adminApi.listSubscribers(token!),
-    enabled: !!token,
+    queryFn: async () => { const token = await getToken(); return adminApi.listSubscribers(token!); },
+    enabled: !!user,
   });
 
   const confirmed = subs.filter((s: NewsletterSubscriber) => s.status === "confirmed").length;

@@ -6,7 +6,7 @@ const BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
 
 export function ThemeSyncer() {
   const { theme, setTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, getToken } = useAuth();
   const prevUserIdRef = useRef<number | null>(null);
   const isSyncingLoginRef = useRef(false);
 
@@ -29,17 +29,20 @@ export function ThemeSyncer() {
       isSyncingLoginRef.current = false;
       return;
     }
-    if (!user?.sessionToken || (theme !== "light" && theme !== "dark")) return;
+    if (!user || (theme !== "light" && theme !== "dark")) return;
 
-    fetch(`${BASE}/users/me/theme`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.sessionToken}`,
-      },
-      body: JSON.stringify({ theme }),
-    }).catch(() => {});
-  }, [theme, user]);
+    getToken().then((token) => {
+      if (!token) return;
+      fetch(`${BASE}/users/me/theme`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ theme }),
+      }).catch(() => {});
+    });
+  }, [theme, user, getToken]);
 
   return null;
 }

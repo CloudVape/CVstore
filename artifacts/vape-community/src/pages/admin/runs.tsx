@@ -31,19 +31,18 @@ function StatusBadge({
 }
 
 export default function AdminRunsPage() {
-  const { user } = useAuth();
-  const token = user?.sessionToken ?? null;
-  const isAdmin = !!user?.isAdmin;
+  const { user, getToken } = useAuth();
   const { toast } = useToast();
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   const { data: runs = [], isLoading } = useQuery({
     queryKey: ["admin", "import-runs"],
-    enabled: isAdmin && !!token,
-    queryFn: () => adminApi.listRuns(token!),
+    enabled: !!user,
+    queryFn: async () => { const token = await getToken(); return adminApi.listRuns(token!); },
   });
 
   const handleDownloadErrors = async (runId: number) => {
+    const token = await getToken();
     if (!token) return;
     setDownloadingId(runId);
     try {

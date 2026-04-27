@@ -15,20 +15,18 @@ const tabs = [
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, isLoaded } = useAuth();
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Non-admins are bounced away from /admin/* — anonymous visitors go to the
-  // login page, signed-in non-admins go back to the storefront. We don't
-  // render an in-place denial panel because the design calls for redirects.
   useEffect(() => {
+    if (!isLoaded) return;
     if (!user) {
       toast({
         title: "Sign in required",
         description: "Sign in with an admin account to access this area.",
       });
-      setLocation("/login");
+      setLocation("/sign-in");
       return;
     }
     if (!user.isAdmin) {
@@ -39,11 +37,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
       });
       setLocation("/");
     }
-  }, [user, setLocation, toast]);
+  }, [user, isLoaded, setLocation, toast]);
 
-  if (!user || !user.isAdmin) {
-    // Render nothing while the redirect is in flight so the admin UI never
-    // briefly flashes for unauthorized visitors.
+  if (!isLoaded || !user || !user.isAdmin) {
     return null;
   }
 

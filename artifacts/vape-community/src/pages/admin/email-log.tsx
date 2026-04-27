@@ -37,19 +37,20 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function AdminEmailLog() {
-  const { user } = useAuth();
-  const token = user?.sessionToken ?? null;
+  const { user, getToken } = useAuth();
   const [templateFilter, setTemplateFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
   const { data: entries = [], isLoading, refetch } = useQuery({
     queryKey: ["admin-email-log", templateFilter, statusFilter],
-    queryFn: () =>
-      adminApi.listEmailLog(token!, {
+    queryFn: async () => {
+      const token = await getToken();
+      return adminApi.listEmailLog(token!, {
         template: templateFilter === "all" ? undefined : templateFilter,
         status: statusFilter === "all" ? undefined : statusFilter,
-      }),
-    enabled: !!token,
+      });
+    },
+    enabled: !!user,
   });
 
   return (

@@ -11,8 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Send, Eye } from "lucide-react";
 
 export default function AdminBroadcast() {
-  const { user } = useAuth();
-  const token = user?.sessionToken ?? null;
+  const { user, getToken } = useAuth();
   const { toast } = useToast();
   const qc = useQueryClient();
 
@@ -22,19 +21,21 @@ export default function AdminBroadcast() {
 
   const { data: subs = [] } = useQuery({
     queryKey: ["admin-subscribers"],
-    queryFn: () => adminApi.listSubscribers(token!),
-    enabled: !!token,
+    queryFn: async () => { const token = await getToken(); return adminApi.listSubscribers(token!); },
+    enabled: !!user,
   });
 
   const confirmedCount = (subs as NewsletterSubscriber[]).filter((s) => s.status === "confirmed").length;
 
   const sendMutation = useMutation({
-    mutationFn: () =>
-      adminApi.sendBroadcast(token!, {
+    mutationFn: async () => {
+      const token = await getToken();
+      return adminApi.sendBroadcast(token!, {
         subject,
         bodyHtml: body.replace(/\n/g, "<br/>"),
         bodyText: body,
-      }),
+      });
+    },
     onSuccess: (data) => {
       toast({ title: "Broadcast sent!", description: data.message });
       setSubject("");

@@ -69,8 +69,7 @@ function autoMap(
 }
 
 export default function AdminImporterPage() {
-  const { user } = useAuth();
-  const token = user?.sessionToken ?? null;
+  const { user, getToken } = useAuth();
   const isAdmin = !!user?.isAdmin;
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -84,8 +83,8 @@ export default function AdminImporterPage() {
 
   const { data: suppliers = [] } = useQuery({
     queryKey: ["admin", "suppliers"],
-    enabled: isAdmin && !!token,
-    queryFn: () => adminApi.listSuppliers(token!),
+    enabled: isAdmin,
+    queryFn: async () => { const token = await getToken(); return adminApi.listSuppliers(token!); },
   });
 
   const [supplierId, setSupplierId] = useState<number | null>(initialSupplierId);
@@ -132,6 +131,7 @@ export default function AdminImporterPage() {
   }
 
   async function handlePreview() {
+    const token = await getToken();
     if (!token) return;
     setPreviewing(true);
     setPreview(null);
@@ -158,7 +158,9 @@ export default function AdminImporterPage() {
   }
 
   async function handleRun() {
-    if (!token || !supplierId || !preview) return;
+    if (!supplierId || !preview) return;
+    const token = await getToken();
+    if (!token) return;
 
     const required = preview.importableFields.filter((f) => f.required);
     const missing = required.filter((f) => !mapping[f.key] || mapping[f.key] === UNMAPPED);
@@ -451,9 +453,9 @@ export default function AdminImporterPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (!token) return;
-                    adminApi
-                      .downloadErrorsCsv(token, lastResult.runId)
+                    void getToken().then((token) => {
+                      if (!token) return;
+                      adminApi.downloadErrorsCsv(token, lastResult.runId)
                       .catch((err: unknown) =>
                         toast({
                           title: "Download failed",
@@ -461,6 +463,7 @@ export default function AdminImporterPage() {
                           variant: "destructive",
                         }),
                       );
+                    });
                   }}
                   className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                 >

@@ -1,25 +1,90 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-import type { User } from "@workspace/api-client-react/src/generated/api.schemas";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  ReactNode,
+} from "react";
+import {
+  useUser,
+  useAuth as useClerkAuth,
+  useClerk,
+} from "@clerk/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+const BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
+
+export type AppUser = {
+  id: number;
+  clerkId: string | null;
+  username: string;
+  email: string;
+  avatarUrl: string | null;
+  bio: string | null;
+  isAdmin: boolean;
+  isAiPersona: boolean;
+  postCount: number;
+  joinedAt: string;
+  emailVerified: boolean;
+  themePreference: string | null;
+};
 
 interface AuthContextType {
-  user: User | null;
-  login: (user: User) => void;
-  logout: () => void;
+  user: AppUser | null;
+  isLoaded: boolean;
+  logout: () => Promise<void>;
+  getToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+function CurrentUserLoader({ children }: { children: ReactNode }) {
+  const { isSignedIn, userId } = useClerkAuth();
+  const { getToken } = useClerkAuth();
+  const { signOut } = useClerk();
+  const queryClient = useQueryClient();
+  const prevUserIdRef = useRef<string | null | undefined>(undefined);
 
-  const login = (user: User) => setUser(user);
-  const logout = () => setUser(null);
+  useEffect(() => {
+    const uid = isSignedIn ? (userId ?? null) : null;
+    if (prevUserIdRef.current !== undefined && prevUserIdRef.current !== uid) {
+      queryClient.removeQueries({ queryKey: ["current-user"] });
+    }
+    prevUserIdRef.current = uid;
+  }, [isSignedIn, userId, queryClient]);
+
+  const { data: dbUser, isLoading } = useQuery<AppUser | null>({
+    queryKey: ["current-user", userId],
+    queryFn: async () => {
+      const token = await getToken();
+      if (!token) return null;
+      const r = await fetch(`${BASE}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!r.ok) return null;
+      return r.json() as Promise<AppUser>;
+    },
+    enabled: !!isSignedIn,
+    staleTime: 60_000,
+  });
+
+  const user: AppUser | null = isSignedIn && dbUser ? dbUser : null;
+  const isLoaded = !isLoading || !isSignedIn;
+
+  const logout = async () => {
+    await signOut();
+    queryClient.removeQueries({ queryKey: ["current-user"] });
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoaded, logout, getToken }}>
       {children}
     </AuthContext.Provider>
   );
+}
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  return <CurrentUserLoader>{children}</CurrentUserLoader>;
 }
 
 export function useAuth() {

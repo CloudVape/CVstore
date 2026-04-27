@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <g transform="translate(10, 8)">
+    <path d="M16 20C16 15.582 19.582 12 24 12C24.9 12 25.76 12.14 26.57 12.4C27.87 9.76 30.72 8 34 8C38.968 8 43 12.032 43 17C43 17.34 42.978 17.676 42.936 18.006C44.124 18.64 45 19.876 45 21.333C45 23.354 43.354 25 41.333 25H18.667C17.746 25 17 24.254 17 23.333L16 20Z" fill="#0abdd5"/>
+    <text x="0" y="38" font-family="'Inter', -apple-system, sans-serif" font-size="11" font-weight="800" letter-spacing="2" fill="#181820">CLOUD<tspan fill="#0abdd5">VAPE</tspan></text>
+  </g>
+</svg>

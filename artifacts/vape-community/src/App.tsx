@@ -1,8 +1,10 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import { ClerkProvider, SignIn, SignUp, useClerk, useAuth as useClerkAuth } from "@clerk/react";
+import { shadcn } from "@clerk/themes";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
 import { Layout } from "@/components/layout";
@@ -21,8 +23,6 @@ import Forum from "@/pages/forum";
 import PostDetail from "@/pages/post-detail";
 import Categories from "@/pages/categories";
 import Profile from "@/pages/profile";
-import Login from "@/pages/login";
-import Join from "@/pages/join";
 import CreatePost from "@/pages/create-post";
 import AdminSuppliers from "@/pages/admin/suppliers";
 import AdminImporter from "@/pages/admin/importer";
@@ -34,7 +34,113 @@ import AdminBroadcast from "@/pages/admin/broadcast";
 import NewsletterConfirm from "@/pages/newsletter-confirm";
 import NewsletterUnsubscribe from "@/pages/newsletter-unsubscribe";
 import VerifyEmail from "@/pages/verify-email";
-import ResetPassword from "@/pages/reset-password";
+import NotFound from "@/pages/not-found";
+
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
+const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL as string | undefined;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+function stripBase(path: string): string {
+  return basePath && path.startsWith(basePath)
+    ? path.slice(basePath.length) || "/"
+    : path;
+}
+
+const clerkAppearance = {
+  baseTheme: [shadcn],
+  cssLayerName: "clerk",
+  options: {
+    logoPlacement: "inside" as const,
+    logoLinkUrl: basePath || "/",
+    logoImageUrl: `${typeof window !== "undefined" ? window.location.origin : ""}${basePath}/logo.svg`,
+    socialButtonsPlacement: "top" as const,
+    socialButtonsVariant: "blockButton" as const,
+  },
+  variables: {
+    colorPrimary: "hsl(190 90% 36%)",
+    colorForeground: "hsl(240 12% 10%)",
+    colorMutedForeground: "hsl(240 6% 38%)",
+    colorDanger: "hsl(0 78% 48%)",
+    colorBackground: "hsl(220 25% 98%)",
+    colorInput: "hsl(240 10% 88%)",
+    colorInputForeground: "hsl(240 12% 10%)",
+    colorNeutral: "hsl(240 10% 88%)",
+    fontFamily: "'Inter', sans-serif",
+    borderRadius: "0.5rem",
+  },
+  elements: {
+    rootBox: "w-full flex justify-center",
+    cardBox: "bg-white rounded-2xl w-[440px] max-w-full overflow-hidden shadow-xl",
+    card: "!shadow-none !border-0 !bg-transparent !rounded-none",
+    footer: "!shadow-none !border-0 !bg-transparent !rounded-none",
+    headerTitle: "text-[hsl(240_12%_10%)] font-black font-mono tracking-tight",
+    headerSubtitle: "text-[hsl(240_6%_38%)]",
+    socialButtonsBlockButtonText: "text-[hsl(240_12%_10%)] font-medium",
+    formFieldLabel: "text-[hsl(240_12%_10%)] text-xs font-mono uppercase tracking-wider",
+    footerActionLink: "text-[hsl(190_90%_36%)] hover:text-[hsl(190_90%_28%)]",
+    footerActionText: "text-[hsl(240_6%_38%)]",
+    dividerText: "text-[hsl(240_6%_38%)] text-xs",
+    identityPreviewEditButton: "text-[hsl(190_90%_36%)]",
+    formFieldSuccessText: "text-[hsl(140_60%_38%)]",
+    alertText: "text-[hsl(240_12%_10%)]",
+    logoBox: "flex justify-center mb-2",
+    logoImage: "h-10",
+    socialButtonsBlockButton: "border border-[hsl(240_10%_88%)] hover:bg-[hsl(220_25%_95%)]",
+    formButtonPrimary: "bg-[hsl(190_90%_36%)] hover:bg-[hsl(190_90%_30%)] text-white font-mono uppercase tracking-wider rounded-full shadow-[0_0_20px_hsl(190_90%_36%/0.4)]",
+    formFieldInput: "border-[hsl(240_10%_88%)] bg-white text-[hsl(240_12%_10%)]",
+    footerAction: "bg-transparent",
+    dividerLine: "bg-[hsl(240_10%_88%)]",
+    alert: "bg-[hsl(0_78%_48%/0.1)] border-[hsl(0_78%_48%/0.2)]",
+    otpCodeFieldInput: "border-[hsl(240_10%_88%)]",
+    formFieldRow: "gap-3",
+    main: "gap-5",
+  },
+};
+
+function SignInPage() {
+  return (
+    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4">
+      <SignIn
+        routing="path"
+        path={`${basePath}/sign-in`}
+        signUpUrl={`${basePath}/sign-up`}
+        appearance={clerkAppearance}
+      />
+    </div>
+  );
+}
+
+function SignUpPage() {
+  return (
+    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4">
+      <SignUp
+        routing="path"
+        path={`${basePath}/sign-up`}
+        signInUrl={`${basePath}/sign-in`}
+        appearance={clerkAppearance}
+      />
+    </div>
+  );
+}
+
+function ClerkQueryCacheInvalidator() {
+  const { addListener } = useClerk();
+  const queryClient = useQueryClient();
+  const prevUserIdRef = useRef<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    const unsubscribe = addListener(({ user }) => {
+      const uid = user?.id ?? null;
+      if (prevUserIdRef.current !== undefined && prevUserIdRef.current !== uid) {
+        queryClient.clear();
+      }
+      prevUserIdRef.current = uid;
+    });
+    return unsubscribe;
+  }, [addListener, queryClient]);
+
+  return null;
+}
 
 const queryClient = new QueryClient();
 
@@ -55,8 +161,10 @@ function Router() {
         <Route path="/forum/:id" component={PostDetail} />
         <Route path="/categories" component={Categories} />
         <Route path="/profile/:id" component={Profile} />
-        <Route path="/login" component={Login} />
-        <Route path="/join" component={Join} />
+        <Route path="/sign-in/*?" component={SignInPage} />
+        <Route path="/sign-up/*?" component={SignUpPage} />
+        <Route path="/login" component={() => { window.location.replace(`${basePath}/sign-in`); return null; }} />
+        <Route path="/join" component={() => { window.location.replace(`${basePath}/sign-up`); return null; }} />
         <Route path="/admin" component={AdminSuppliers} />
         <Route path="/admin/suppliers" component={AdminSuppliers} />
         <Route path="/admin/import" component={AdminImporter} />
@@ -68,29 +176,50 @@ function Router() {
         <Route path="/newsletter/confirm" component={NewsletterConfirm} />
         <Route path="/newsletter/unsubscribe" component={NewsletterUnsubscribe} />
         <Route path="/verify-email" component={VerifyEmail} />
-        <Route path="/reset-password" component={ResetPassword} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
   );
 }
 
-function App() {
+function ClerkProviderWithRoutes() {
+  const [, setLocation] = useLocation();
+
   return (
-    <ThemeProvider>
+    <ClerkProvider
+      publishableKey={clerkPubKey}
+      proxyUrl={clerkProxyUrl || undefined}
+      signInUrl={`${basePath}/sign-in`}
+      signUpUrl={`${basePath}/sign-up`}
+      afterSignOutUrl={`${basePath}/`}
+      routerPush={(to) => setLocation(stripBase(to))}
+      routerReplace={(to) => setLocation(stripBase(to), { replace: true })}
+    >
       <QueryClientProvider client={queryClient}>
+        <ClerkQueryCacheInvalidator />
         <AuthProvider>
           <ThemeSyncer />
           <CartProvider>
             <TooltipProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <Router />
-              </WouterRouter>
+              <Router />
               <Toaster />
             </TooltipProvider>
           </CartProvider>
         </AuthProvider>
       </QueryClientProvider>
+    </ClerkProvider>
+  );
+}
+
+function App() {
+  if (!clerkPubKey) {
+    return <div className="p-8 text-center">Clerk publishable key not configured.</div>;
+  }
+  return (
+    <ThemeProvider>
+      <WouterRouter base={basePath}>
+        <ClerkProviderWithRoutes />
+      </WouterRouter>
     </ThemeProvider>
   );
 }

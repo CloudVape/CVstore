@@ -210,9 +210,7 @@ function SupplierForm({
 }
 
 export default function AdminSuppliersPage() {
-  const { user } = useAuth();
-  const token = user?.sessionToken ?? null;
-  const isAdmin = !!user?.isAdmin;
+  const { user, getToken } = useAuth();
   const qc = useQueryClient();
   const { toast } = useToast();
   const [createOpen, setCreateOpen] = useState(false);
@@ -221,13 +219,15 @@ export default function AdminSuppliersPage() {
 
   const { data: suppliers = [], isLoading } = useQuery({
     queryKey: ["admin", "suppliers"],
-    enabled: isAdmin && !!token,
-    queryFn: () => adminApi.listSuppliers(token!),
+    enabled: !!user,
+    queryFn: async () => { const token = await getToken(); return adminApi.listSuppliers(token!); },
   });
 
   const createMut = useMutation({
-    mutationFn: (body: Pick<Supplier, "name" | "sourceType" | "sourceUrl">) =>
-      adminApi.createSupplier(token!, body),
+    mutationFn: async (body: Pick<Supplier, "name" | "sourceType" | "sourceUrl">) => {
+      const token = await getToken();
+      return adminApi.createSupplier(token!, body);
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "suppliers"] });
       setCreateOpen(false);
@@ -238,13 +238,16 @@ export default function AdminSuppliersPage() {
   });
 
   const updateMut = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       id,
       body,
     }: {
       id: number;
       body: Partial<Supplier>;
-    }) => adminApi.updateSupplier(token!, id, body),
+    }) => {
+      const token = await getToken();
+      return adminApi.updateSupplier(token!, id, body);
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "suppliers"] });
       setEditing(null);
@@ -255,7 +258,10 @@ export default function AdminSuppliersPage() {
   });
 
   const deleteMut = useMutation({
-    mutationFn: (id: number) => adminApi.deleteSupplier(token!, id),
+    mutationFn: async (id: number) => {
+      const token = await getToken();
+      return adminApi.deleteSupplier(token!, id);
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "suppliers"] });
       toast({ title: "Supplier deleted" });

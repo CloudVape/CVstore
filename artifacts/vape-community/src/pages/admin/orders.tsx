@@ -29,8 +29,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function AdminOrders() {
-  const { user } = useAuth();
-  const token = user?.sessionToken ?? null;
+  const { user, getToken } = useAuth();
   const { toast } = useToast();
   const qc = useQueryClient();
 
@@ -40,16 +39,18 @@ export default function AdminOrders() {
 
   const { data: orders = [], isLoading, refetch } = useQuery({
     queryKey: ["admin-orders"],
-    queryFn: () => adminApi.listOrders(token!),
-    enabled: !!token,
+    queryFn: async () => { const token = await getToken(); return adminApi.listOrders(token!); },
+    enabled: !!user,
   });
 
   const updateMutation = useMutation({
-    mutationFn: () =>
-      adminApi.updateOrderStatus(token!, updating!.orderNumber, {
+    mutationFn: async () => {
+      const token = await getToken();
+      return adminApi.updateOrderStatus(token!, updating!.orderNumber, {
         status: newStatus,
         trackingNumber: tracking || undefined,
-      }),
+      });
+    },
     onSuccess: () => {
       toast({ title: "Order updated", description: `Order status changed to ${newStatus}. Email sent automatically.` });
       setUpdating(null);
