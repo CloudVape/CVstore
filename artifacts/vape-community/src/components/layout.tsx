@@ -13,7 +13,6 @@ export function Layout({ children }: { children: ReactNode }) {
   const navItems = [
     { href: "/", label: "Shop", icon: Store },
     { href: "/shop/categories", label: "Categories", icon: Grid },
-    { href: "/forum", label: "Community", icon: MessageSquare },
   ];
 
   return (
