@@ -294,6 +294,301 @@ export const CreateCommentBody = zod.object({
 });
 
 /**
+ * @summary List all product categories
+ */
+export const ListProductCategoriesResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  slug: zod.string(),
+  description: zod.string(),
+  iconEmoji: zod.string().nullish(),
+  productCount: zod.number(),
+  sortOrder: zod.number(),
+});
+export const ListProductCategoriesResponse = zod.array(
+  ListProductCategoriesResponseItem,
+);
+
+/**
+ * @summary List products (optionally filtered)
+ */
+export const ListProductsQueryParams = zod.object({
+  categoryId: zod.coerce.number().optional(),
+  categorySlug: zod.coerce.string().optional(),
+  featured: zod.coerce.boolean().optional(),
+  search: zod.coerce.string().optional(),
+  limit: zod.coerce.number().optional(),
+  offset: zod.coerce.number().optional(),
+});
+
+export const ListProductsResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  slug: zod.string(),
+  brand: zod.string(),
+  shortDescription: zod.string(),
+  description: zod.string(),
+  priceCents: zod.number(),
+  comparePriceCents: zod.number().nullish(),
+  categoryId: zod.number(),
+  categoryName: zod.string().nullish(),
+  categorySlug: zod.string().nullish(),
+  imageUrl: zod.string(),
+  imageGallery: zod.array(zod.string()),
+  rating: zod.string(),
+  reviewCount: zod.number(),
+  stockCount: zod.number(),
+  inStock: zod.boolean(),
+  isFeatured: zod.boolean(),
+  isNew: zod.boolean(),
+  isBestseller: zod.boolean(),
+  flavor: zod.string().nullish(),
+  nicotineStrength: zod.string().nullish(),
+  vgPgRatio: zod.string().nullish(),
+  bottleSize: zod.string().nullish(),
+  tags: zod.array(zod.string()),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const ListProductsResponse = zod.array(ListProductsResponseItem);
+
+/**
+ * @summary Get featured products
+ */
+export const GetFeaturedProductsResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  slug: zod.string(),
+  brand: zod.string(),
+  shortDescription: zod.string(),
+  description: zod.string(),
+  priceCents: zod.number(),
+  comparePriceCents: zod.number().nullish(),
+  categoryId: zod.number(),
+  categoryName: zod.string().nullish(),
+  categorySlug: zod.string().nullish(),
+  imageUrl: zod.string(),
+  imageGallery: zod.array(zod.string()),
+  rating: zod.string(),
+  reviewCount: zod.number(),
+  stockCount: zod.number(),
+  inStock: zod.boolean(),
+  isFeatured: zod.boolean(),
+  isNew: zod.boolean(),
+  isBestseller: zod.boolean(),
+  flavor: zod.string().nullish(),
+  nicotineStrength: zod.string().nullish(),
+  vgPgRatio: zod.string().nullish(),
+  bottleSize: zod.string().nullish(),
+  tags: zod.array(zod.string()),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const GetFeaturedProductsResponse = zod.array(
+  GetFeaturedProductsResponseItem,
+);
+
+/**
+ * @summary Get bestseller products
+ */
+export const GetBestsellerProductsResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  slug: zod.string(),
+  brand: zod.string(),
+  shortDescription: zod.string(),
+  description: zod.string(),
+  priceCents: zod.number(),
+  comparePriceCents: zod.number().nullish(),
+  categoryId: zod.number(),
+  categoryName: zod.string().nullish(),
+  categorySlug: zod.string().nullish(),
+  imageUrl: zod.string(),
+  imageGallery: zod.array(zod.string()),
+  rating: zod.string(),
+  reviewCount: zod.number(),
+  stockCount: zod.number(),
+  inStock: zod.boolean(),
+  isFeatured: zod.boolean(),
+  isNew: zod.boolean(),
+  isBestseller: zod.boolean(),
+  flavor: zod.string().nullish(),
+  nicotineStrength: zod.string().nullish(),
+  vgPgRatio: zod.string().nullish(),
+  bottleSize: zod.string().nullish(),
+  tags: zod.array(zod.string()),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const GetBestsellerProductsResponse = zod.array(
+  GetBestsellerProductsResponseItem,
+);
+
+/**
+ * @summary Get new arrival products
+ */
+export const GetNewProductsResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  slug: zod.string(),
+  brand: zod.string(),
+  shortDescription: zod.string(),
+  description: zod.string(),
+  priceCents: zod.number(),
+  comparePriceCents: zod.number().nullish(),
+  categoryId: zod.number(),
+  categoryName: zod.string().nullish(),
+  categorySlug: zod.string().nullish(),
+  imageUrl: zod.string(),
+  imageGallery: zod.array(zod.string()),
+  rating: zod.string(),
+  reviewCount: zod.number(),
+  stockCount: zod.number(),
+  inStock: zod.boolean(),
+  isFeatured: zod.boolean(),
+  isNew: zod.boolean(),
+  isBestseller: zod.boolean(),
+  flavor: zod.string().nullish(),
+  nicotineStrength: zod.string().nullish(),
+  vgPgRatio: zod.string().nullish(),
+  bottleSize: zod.string().nullish(),
+  tags: zod.array(zod.string()),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const GetNewProductsResponse = zod.array(GetNewProductsResponseItem);
+
+/**
+ * @summary Get a product by slug
+ */
+export const GetProductBySlugParams = zod.object({
+  slug: zod.coerce.string(),
+});
+
+export const GetProductBySlugResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  slug: zod.string(),
+  brand: zod.string(),
+  shortDescription: zod.string(),
+  description: zod.string(),
+  priceCents: zod.number(),
+  comparePriceCents: zod.number().nullish(),
+  categoryId: zod.number(),
+  categoryName: zod.string().nullish(),
+  categorySlug: zod.string().nullish(),
+  imageUrl: zod.string(),
+  imageGallery: zod.array(zod.string()),
+  rating: zod.string(),
+  reviewCount: zod.number(),
+  stockCount: zod.number(),
+  inStock: zod.boolean(),
+  isFeatured: zod.boolean(),
+  isNew: zod.boolean(),
+  isBestseller: zod.boolean(),
+  flavor: zod.string().nullish(),
+  nicotineStrength: zod.string().nullish(),
+  vgPgRatio: zod.string().nullish(),
+  bottleSize: zod.string().nullish(),
+  tags: zod.array(zod.string()),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Create a new order
+ */
+export const createOrderBodyEmailMin = 3;
+export const createOrderBodyEmailMax = 200;
+
+export const createOrderBodyCustomerNameMax = 200;
+
+export const createOrderBodyShippingAddressMax = 500;
+
+export const createOrderBodyShippingCityMax = 100;
+
+export const createOrderBodyShippingStateMax = 100;
+
+export const createOrderBodyShippingZipMax = 20;
+
+export const createOrderBodyShippingCountryDefault = `US`;
+export const createOrderBodyShippingCountryMin = 2;
+export const createOrderBodyShippingCountryMax = 2;
+
+export const createOrderBodyItemsItemQuantityMax = 99;
+
+export const createOrderBodyItemsMax = 50;
+
+export const CreateOrderBody = zod.object({
+  email: zod
+    .string()
+    .email()
+    .min(createOrderBodyEmailMin)
+    .max(createOrderBodyEmailMax),
+  customerName: zod.string().min(1).max(createOrderBodyCustomerNameMax),
+  shippingAddress: zod.string().min(1).max(createOrderBodyShippingAddressMax),
+  shippingCity: zod.string().min(1).max(createOrderBodyShippingCityMax),
+  shippingState: zod.string().min(1).max(createOrderBodyShippingStateMax),
+  shippingZip: zod.string().min(1).max(createOrderBodyShippingZipMax),
+  shippingCountry: zod
+    .string()
+    .min(createOrderBodyShippingCountryMin)
+    .max(createOrderBodyShippingCountryMax)
+    .default(createOrderBodyShippingCountryDefault),
+  items: zod
+    .array(
+      zod
+        .object({
+          productId: zod.number().min(1),
+          quantity: zod
+            .number()
+            .min(1)
+            .max(createOrderBodyItemsItemQuantityMax),
+        })
+        .describe(
+          "Client-supplied order line — server resolves product details and price from DB.",
+        ),
+    )
+    .min(1)
+    .max(createOrderBodyItemsMax),
+});
+
+/**
+ * @summary Get an order by order number
+ */
+export const GetOrderByNumberParams = zod.object({
+  orderNumber: zod.coerce.string(),
+});
+
+export const GetOrderByNumberResponse = zod.object({
+  id: zod.number(),
+  orderNumber: zod.string(),
+  email: zod.string(),
+  customerName: zod.string(),
+  shippingAddress: zod.string(),
+  shippingCity: zod.string(),
+  shippingState: zod.string(),
+  shippingZip: zod.string(),
+  shippingCountry: zod.string(),
+  items: zod.array(
+    zod.object({
+      productId: zod.number(),
+      name: zod.string(),
+      brand: zod.string(),
+      imageUrl: zod.string(),
+      priceCents: zod.number(),
+      quantity: zod.number(),
+    }),
+  ),
+  subtotalCents: zod.number(),
+  shippingCents: zod.number(),
+  taxCents: zod.number(),
+  totalCents: zod.number(),
+  status: zod.string(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
  * @summary Get overall community stats
  */
 export const GetCommunityStatsResponse = zod.object({

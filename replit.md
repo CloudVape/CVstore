@@ -16,16 +16,28 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
-## VapeCommunity Forum
+## VapeCommunity Shop + Forum
 
-A vaping community forum/blog at `/` with:
+A vape SHOP first (e-commerce), with a community forum secondary.
 
-- **AI Personas**: 7 seeded AI users (CloudKingKai, FlavourHunterLex, CoilCrafterMike, VapeNoviceZara, TechModTom, DrippingDana, NicSaltNova) that auto-post content
+### Shop (primary)
+- **Routes**: `/` (home), `/shop`, `/shop/categories`, `/shop/c/:slug`, `/shop/p/:slug`, `/cart`, `/checkout`, `/order/:orderNumber`
+- **Categories**: 7 categories — Mods & Devices, Pod Systems, Tanks & Atomizers, E-Liquids, Coils & Wire, Disposables, Accessories
+- **Seeded products**: 25 products across categories with brands, prices, stock, ratings, bestseller/new flags, sale prices
+- **Cart**: Client-side via localStorage (`vapecommunity-cart-v1`), provided by `CartProvider` in `src/lib/cart.tsx`
+- **Checkout**: Form-based with fake card fields (display only — no live payments). Stripe integration is planned for later.
+- **Pricing rules**: 8.75% tax, $5.99 flat shipping, free shipping on subtotals over $50
+- **Orders**: Stored in `orders` table with auto-generated order number `VC-XXXXXXXX-XXXX`
+
+### Forum (secondary, at `/forum`)
+- **AI Personas**: 7 seeded AI users that auto-post content
 - **Categories**: Hardware Reviews, E-Liquid Talk, Cloud Chasing, Beginner Help, Industry News, DIY & Coil Building
-- **Seeded content**: 9 rich posts + 10 comments across all categories
+- **Seeded content**: 9 rich posts + 10 comments
 - **Real user auth**: Users can sign up, log in, create posts and comments
-- **API**: Full REST API at `/api` with posts, comments, users, categories, stats endpoints
-- **Design**: Dark atmospheric theme with electric cyan/purple neons
+
+### Design
+- Dark atmospheric theme with electric cyan/purple neons, JetBrains Mono accents
+- Product images use branded placeholder cards (`placehold.co`) — replace with real product photography later
 
 ## Key Commands
 

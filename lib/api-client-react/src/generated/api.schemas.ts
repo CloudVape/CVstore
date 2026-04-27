@@ -100,6 +100,138 @@ export interface CreateCommentBody {
   content: string;
 }
 
+export interface ProductCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  /** @nullable */
+  iconEmoji?: string | null;
+  productCount: number;
+  sortOrder: number;
+}
+
+export interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  brand: string;
+  shortDescription: string;
+  description: string;
+  priceCents: number;
+  /** @nullable */
+  comparePriceCents?: number | null;
+  categoryId: number;
+  /** @nullable */
+  categoryName?: string | null;
+  /** @nullable */
+  categorySlug?: string | null;
+  imageUrl: string;
+  imageGallery: string[];
+  rating: string;
+  reviewCount: number;
+  stockCount: number;
+  inStock: boolean;
+  isFeatured: boolean;
+  isNew: boolean;
+  isBestseller: boolean;
+  /** @nullable */
+  flavor?: string | null;
+  /** @nullable */
+  nicotineStrength?: string | null;
+  /** @nullable */
+  vgPgRatio?: string | null;
+  /** @nullable */
+  bottleSize?: string | null;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderItem {
+  productId: number;
+  name: string;
+  brand: string;
+  imageUrl: string;
+  priceCents: number;
+  quantity: number;
+}
+
+/**
+ * Client-supplied order line — server resolves product details and price from DB.
+ */
+export interface CreateOrderItem {
+  /** @minimum 1 */
+  productId: number;
+  /**
+   * @minimum 1
+   * @maximum 99
+   */
+  quantity: number;
+}
+
+export interface CreateOrderBody {
+  /**
+   * @minLength 3
+   * @maxLength 200
+   */
+  email: string;
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  customerName: string;
+  /**
+   * @minLength 1
+   * @maxLength 500
+   */
+  shippingAddress: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  shippingCity: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  shippingState: string;
+  /**
+   * @minLength 1
+   * @maxLength 20
+   */
+  shippingZip: string;
+  /**
+   * @minLength 2
+   * @maxLength 2
+   */
+  shippingCountry?: string;
+  /**
+   * @minItems 1
+   * @maxItems 50
+   */
+  items: CreateOrderItem[];
+}
+
+export interface Order {
+  id: number;
+  orderNumber: string;
+  email: string;
+  customerName: string;
+  shippingAddress: string;
+  shippingCity: string;
+  shippingState: string;
+  shippingZip: string;
+  shippingCountry: string;
+  items: OrderItem[];
+  subtotalCents: number;
+  shippingCents: number;
+  taxCents: number;
+  totalCents: number;
+  status: string;
+  createdAt: string;
+}
+
 export interface CommunityStats {
   totalUsers: number;
   totalPosts: number;
@@ -111,6 +243,15 @@ export interface CommunityStats {
 
 export type ListPostsParams = {
   categoryId?: number;
+  limit?: number;
+  offset?: number;
+};
+
+export type ListProductsParams = {
+  categoryId?: number;
+  categorySlug?: string;
+  featured?: boolean;
+  search?: string;
   limit?: number;
   offset?: number;
 };

@@ -1,25 +1,26 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
+import { useCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
-import { Cloud, LogOut, User, Menu, MessageSquare, Home, Grid } from "lucide-react";
+import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid } from "lucide-react";
 import { ReactNode } from "react";
 
 export function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
+  const { itemCount } = useCart();
   const [location] = useLocation();
 
-  const handleLogout = () => {
-    logout();
-  };
-
   const navItems = [
-    { href: "/", label: "Home", icon: Home },
-    { href: "/forum", label: "Forum", icon: MessageSquare },
-    { href: "/categories", label: "Categories", icon: Grid },
+    { href: "/", label: "Shop", icon: Store },
+    { href: "/shop/categories", label: "Categories", icon: Grid },
+    { href: "/forum", label: "Community", icon: MessageSquare },
   ];
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
+      <div className="w-full bg-primary/10 border-b border-primary/20 text-center py-1.5 text-[11px] font-mono uppercase tracking-wider text-primary">
+        Free shipping on orders over $50 — Same-day dispatch before 3pm EST
+      </div>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 max-w-6xl items-center px-4">
           <Link href="/" className="mr-6 flex items-center space-x-2 transition-opacity hover:opacity-80">
@@ -28,40 +29,54 @@ export function Layout({ children }: { children: ReactNode }) {
               VAPE<span className="text-primary">COMMUNITY</span>
             </span>
           </Link>
-          
+
           <nav className="flex items-center space-x-1 sm:space-x-4 md:space-x-6 text-sm font-medium">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`transition-colors hover:text-foreground/80 flex items-center gap-2 ${
-                  location === item.href ? "text-foreground" : "text-foreground/60"
-                }`}
-              >
-                <item.icon className="h-4 w-4 hidden sm:block" />
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = item.href === "/"
+                ? location === "/" || location.startsWith("/shop")
+                : location === item.href || location.startsWith(item.href + "/");
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`transition-colors hover:text-foreground/90 flex items-center gap-2 ${
+                    isActive ? "text-foreground" : "text-foreground/60"
+                  }`}
+                >
+                  <item.icon className="h-4 w-4 hidden sm:block" />
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
-          <div className="flex flex-1 items-center justify-end space-x-4">
+          <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-3">
+            <Link href="/cart">
+              <Button variant="ghost" size="sm" className="relative gap-2" aria-label="Cart">
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-mono font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center shadow-[0_0_10px_rgba(var(--primary),0.5)]">
+                    {itemCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
             {user ? (
-              <div className="flex items-center space-x-4">
+              <>
                 <Link href={`/profile/${user.id}`}>
                   <Button variant="ghost" size="sm" className="hidden sm:flex gap-2">
                     <User className="h-4 w-4" />
                     <span className="font-mono text-xs">{user.username}</span>
                   </Button>
                 </Link>
-                <Button variant="destructive" size="sm" onClick={handleLogout} className="gap-2 rounded-full font-mono uppercase text-xs tracking-wider">
+                <Button variant="ghost" size="sm" onClick={logout} className="gap-2 font-mono text-xs uppercase tracking-wider" aria-label="Logout">
                   <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">Logout</span>
                 </Button>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 <Link href="/login">
-                  <Button variant="ghost" size="sm" className="font-mono text-xs uppercase tracking-wider">Log in</Button>
+                  <Button variant="ghost" size="sm" className="font-mono text-xs uppercase tracking-wider hidden sm:flex">Log in</Button>
                 </Link>
                 <Link href="/join">
                   <Button size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(var(--primary),0.3)]">Sign up</Button>
@@ -72,15 +87,40 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="flex-1 flex flex-col">{children}</main>
-      <footer className="border-t border-border/40 py-8 bg-card mt-auto">
-        <div className="container mx-auto max-w-6xl px-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Cloud className="h-5 w-5" />
-            <span className="font-mono text-sm">VAPECOMMUNITY &copy; {new Date().getFullYear()}</span>
+      <footer className="border-t border-border/40 py-10 bg-card/50 mt-auto">
+        <div className="container mx-auto max-w-6xl px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+          <div className="col-span-2 md:col-span-1 space-y-3">
+            <Link href="/" className="flex items-center gap-2 text-foreground">
+              <Cloud className="h-5 w-5 text-primary" />
+              <span className="font-bold font-mono">VAPECOMMUNITY</span>
+            </Link>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              The shop and community for cloud chasers and flavor enthusiasts. 21+ only.
+            </p>
           </div>
-          <div className="flex gap-4 text-sm text-muted-foreground font-mono">
-            <span>Keep it cloudy.</span>
+          <div className="space-y-2">
+            <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Shop</p>
+            <Link href="/" className="block text-foreground/80 hover:text-primary transition-colors">All Products</Link>
+            <Link href="/shop/categories" className="block text-foreground/80 hover:text-primary transition-colors">Categories</Link>
+            <Link href="/shop?filter=new" className="block text-foreground/80 hover:text-primary transition-colors">New Arrivals</Link>
+            <Link href="/shop?filter=bestsellers" className="block text-foreground/80 hover:text-primary transition-colors">Bestsellers</Link>
           </div>
+          <div className="space-y-2">
+            <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Community</p>
+            <Link href="/forum" className="block text-foreground/80 hover:text-primary transition-colors">Forum</Link>
+            <Link href="/categories" className="block text-foreground/80 hover:text-primary transition-colors">Topics</Link>
+            <Link href="/join" className="block text-foreground/80 hover:text-primary transition-colors">Join</Link>
+          </div>
+          <div className="space-y-2">
+            <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Help</p>
+            <span className="block text-foreground/80">Shipping & Returns</span>
+            <span className="block text-foreground/80">FAQ</span>
+            <span className="block text-foreground/80">Contact</span>
+          </div>
+        </div>
+        <div className="container mx-auto max-w-6xl px-4 mt-8 pt-6 border-t border-border/40 flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-muted-foreground font-mono">
+          <span>VAPECOMMUNITY &copy; {new Date().getFullYear()} — Keep it cloudy.</span>
+          <span>Must be 21+ to purchase. Vaping products contain nicotine.</span>
         </div>
       </footer>
     </div>
