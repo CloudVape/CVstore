@@ -2,12 +2,16 @@ import { ReactNode, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
-import { Boxes, History, Upload } from "lucide-react";
+import { Boxes, History, Upload, Mail, Users, Send, Package } from "lucide-react";
 
 const tabs = [
   { href: "/admin/suppliers", label: "Suppliers", icon: Boxes },
   { href: "/admin/import", label: "Import Feed", icon: Upload },
   { href: "/admin/runs", label: "Import History", icon: History },
+  { href: "/admin/orders", label: "Orders", icon: Package },
+  { href: "/admin/email-log", label: "Email Log", icon: Mail },
+  { href: "/admin/subscribers", label: "Subscribers", icon: Users },
+  { href: "/admin/broadcast", label: "Broadcast", icon: Send },
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -50,9 +54,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <p className="font-mono text-xs uppercase tracking-wider text-primary">
             Admin
           </p>
-          <h1 className="text-2xl font-bold font-mono">Dropshipper imports</h1>
+          <h1 className="text-2xl font-bold font-mono">Admin</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage supplier feeds, import product catalogs, and review past runs.
+            Manage suppliers, orders, email and newsletter.
           </p>
         </div>
       </div>

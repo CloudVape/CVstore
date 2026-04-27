@@ -61,6 +61,9 @@ A vape SHOP first (e-commerce), with a community forum secondary.
 - `products` — store products (now also `supplierId`, `externalSku`, `lastSyncedAt`; unique `(supplierId, externalSku)`)
 - `suppliers` — dropshipper sources with column mapping + (placeholder) schedule
 - `import_runs` — history of feed imports with per-row error log
+- `orders` — e-commerce orders; now includes `shippedAt`, `deliveredAt`, `refundedAt`, `trackingNumber`, `reviewEmailSent`
+- `email_log` — every outbound email logged with template, status, provider message ID, and error
+- `newsletter_subscribers` — email opt-in with double-opt-in confirmation and signed unsubscribe tokens
 
 ## Admin / Dropshipper Imports
 
@@ -79,5 +82,22 @@ A vape SHOP first (e-commerce), with a community forum secondary.
 - To grant admin: update `users.is_admin = true` in SQL, or run
   `tsx artifacts/api-server/src/promote-admin.ts <username>`.
 - Sample feed: `artifacts/api-server/src/sample-feeds/example-supplier.csv`.
+
+## Email System (Resend)
+
+- **Provider**: Resend (`resend` npm package). Set `RESEND_API_KEY` secret to activate. Without it, emails are logged as "skipped".
+- **Required secrets**: `RESEND_API_KEY`, optionally `FROM_EMAIL_TRANSACTIONAL`, `FROM_EMAIL_MARKETING`, `SITE_URL`, `RESEND_WEBHOOK_SECRET`
+- **Default from-addresses**: `support@vapevault.com` (transactional), `hello@vapevault.com` (marketing)
+- **Core service**: `artifacts/api-server/src/lib/email.ts` — wraps Resend, logs every send to `email_log` table, graceful skip when no key
+- **Templates**: `artifacts/api-server/src/lib/email-templates.ts` — neon-on-dark branded HTML + plain-text for all 9 template types
+- **Templates in use**: welcome, order-confirmation, shipping-update, delivery-confirmation, refund-confirmation, review-request, newsletter-confirm, marketing-broadcast
+- **Automatic triggers**:
+  - Signup → welcome email (fire-and-forget)
+  - Order created → order-confirmation email (fire-and-forget)
+  - Admin sets order status to shipped/delivered/refunded → corresponding email
+- **Review scheduler**: `artifacts/api-server/src/jobs/review-emails.ts` — runs daily, sends review-request 4 days after delivery, marks `orders.reviewEmailSent = true`
+- **Newsletter**: Double opt-in — subscribe form in footer → confirmation email → confirm link → confirmed. One-click signed unsubscribe in every marketing email.
+- **Admin pages**: `/admin/email-log` (log viewer with filters), `/admin/orders` (status updates), `/admin/subscribers` (subscriber list), `/admin/broadcast` (compose & send marketing emails)
+- **Resend webhooks**: `POST /api/webhooks/resend` — updates log status on bounce/complaint/delivered events. Set `RESEND_WEBHOOK_SECRET` for signature verification.
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.

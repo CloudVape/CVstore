@@ -81,6 +81,42 @@ async function asJson<T>(resp: Response): Promise<T> {
   return (await resp.json()) as T;
 }
 
+export type EmailLogEntry = {
+  id: number;
+  recipient: string;
+  template: string;
+  subject: string;
+  status: string;
+  providerMessageId: string | null;
+  error: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type NewsletterSubscriber = {
+  id: number;
+  email: string;
+  status: string;
+  token: string;
+  subscribedAt: string | null;
+  unsubscribedAt: string | null;
+  createdAt: string;
+};
+
+export type AdminOrder = {
+  id: number;
+  orderNumber: string;
+  email: string;
+  customerName: string;
+  status: string;
+  totalCents: number;
+  trackingNumber: string | null;
+  createdAt: string;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  refundedAt: string | null;
+};
+
 export const adminApi = {
   async listSuppliers(token: string): Promise<Supplier[]> {
     const r = await fetch(`${BASE}/admin/suppliers`, {
@@ -253,5 +289,58 @@ export const adminApi = {
       // Allow the browser a tick to start the download before we revoke it.
       setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
     }
+  },
+
+  async listEmailLog(
+    token: string,
+    filters?: { template?: string; status?: string },
+  ): Promise<EmailLogEntry[]> {
+    const params = new URLSearchParams();
+    if (filters?.template) params.set("template", filters.template);
+    if (filters?.status) params.set("status", filters.status);
+    const qs = params.toString() ? `?${params}` : "";
+    const r = await fetch(`${BASE}/admin/email-log${qs}`, {
+      headers: authHeaders(token),
+    });
+    return asJson<EmailLogEntry[]>(r);
+  },
+
+  async listSubscribers(token: string): Promise<NewsletterSubscriber[]> {
+    const r = await fetch(`${BASE}/admin/newsletter/subscribers`, {
+      headers: authHeaders(token),
+    });
+    return asJson<NewsletterSubscriber[]>(r);
+  },
+
+  async sendBroadcast(
+    token: string,
+    body: { subject: string; bodyHtml: string; bodyText: string },
+  ): Promise<{ sent: number; message: string }> {
+    const r = await fetch(`${BASE}/admin/newsletter/broadcast`, {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return asJson<{ sent: number; message: string }>(r);
+  },
+
+  async listOrders(token: string): Promise<AdminOrder[]> {
+    const r = await fetch(`${BASE}/admin/orders`, {
+      headers: authHeaders(token),
+    });
+    return asJson<AdminOrder[]>(r);
+  },
+
+  async updateOrderStatus(
+    token: string,
+    orderNumber: string,
+    body: { status: string; trackingNumber?: string },
+  ): Promise<AdminOrder> {
+    const r = await fetch(`${BASE}/admin/orders/${orderNumber}/status`, {
+      method: "PATCH",
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return asJson<AdminOrder>(r);
   },
 };

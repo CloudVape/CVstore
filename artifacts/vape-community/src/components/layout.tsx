@@ -2,10 +2,71 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
-import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid, Shield } from "lucide-react";
-import { ReactNode } from "react";
+import { Input } from "@/components/ui/input";
+import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid, Shield, Send } from "lucide-react";
+import { ReactNode, useState } from "react";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { ThemeToggle } from "@/components/theme-toggle";
+
+const BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
+
+function NewsletterSignup() {
+  const [email, setEmail] = useState("");
+  const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [msg, setMsg] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setState("loading");
+    try {
+      const r = await fetch(`${BASE}/newsletter/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await r.json();
+      if (r.ok) {
+        setState("done");
+        setMsg(data.message ?? "Check your email to confirm!");
+        setEmail("");
+      } else {
+        setState("error");
+        setMsg(data.error ?? "Something went wrong.");
+      }
+    } catch {
+      setState("error");
+      setMsg("Network error. Please try again.");
+    }
+  }
+
+  if (state === "done") {
+    return <p className="text-xs text-primary font-mono">{msg}</p>;
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex gap-2 mt-2">
+      <Input
+        type="email"
+        placeholder="your@email.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        disabled={state === "loading"}
+        className="h-8 text-xs bg-background/30 border-border/40 font-mono flex-1 min-w-0"
+      />
+      <Button
+        type="submit"
+        size="sm"
+        disabled={state === "loading" || !email.trim()}
+        className="h-8 w-8 p-0 rounded-full bg-primary hover:bg-primary/90 shadow-[0_0_10px_hsl(var(--primary)/0.3)] flex-shrink-0"
+        aria-label="Subscribe"
+      >
+        <Send className="h-3.5 w-3.5" />
+      </Button>
+      {state === "error" && <p className="text-[10px] text-red-400 font-mono">{msg}</p>}
+    </form>
+  );
+}
 
 export function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
@@ -136,6 +197,11 @@ export function Layout({ children }: { children: ReactNode }) {
             <span className="block text-foreground/80">Shipping & Returns</span>
             <span className="block text-foreground/80">FAQ</span>
             <span className="block text-foreground/80">Contact</span>
+          </div>
+          <div className="col-span-2 md:col-span-4 mt-2 pt-4 border-t border-border/30 space-y-2">
+            <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Drops & Deals Newsletter</p>
+            <p className="text-xs text-muted-foreground">New arrivals, exclusive discounts, and community picks — straight to your inbox.</p>
+            <NewsletterSignup />
           </div>
         </div>
         <div className="container mx-auto max-w-6xl px-4 mt-8 pt-6 border-t border-border/40 flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-muted-foreground font-mono">

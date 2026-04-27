@@ -26,6 +26,14 @@ import CreatePost from "@/pages/create-post";
 import AdminSuppliers from "@/pages/admin/suppliers";
 import AdminImporter from "@/pages/admin/importer";
 import AdminRuns from "@/pages/admin/runs";
+import AdminOrders from "@/pages/admin/orders";
+import AdminEmailLog from "@/pages/admin/email-log";
+import AdminSubscribers from "@/pages/admin/subscribers";
+import AdminBroadcast from "@/pages/admin/broadcast";
+import NewsletterConfirm from "@/pages/newsletter-confirm";
+import NewsletterUnsubscribe from "@/pages/newsletter-unsubscribe";
+import VerifyEmail from "@/pages/verify-email";
+import ResetPassword from "@/pages/reset-password";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +60,14 @@ function Router() {
         <Route path="/admin/suppliers" component={AdminSuppliers} />
         <Route path="/admin/import" component={AdminImporter} />
         <Route path="/admin/runs" component={AdminRuns} />
+        <Route path="/admin/orders" component={AdminOrders} />
+        <Route path="/admin/email-log" component={AdminEmailLog} />
+        <Route path="/admin/subscribers" component={AdminSubscribers} />
+        <Route path="/admin/broadcast" component={AdminBroadcast} />
+        <Route path="/newsletter/confirm" component={NewsletterConfirm} />
+        <Route path="/newsletter/unsubscribe" component={NewsletterUnsubscribe} />
+        <Route path="/verify-email" component={VerifyEmail} />
+        <Route path="/reset-password" component={ResetPassword} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

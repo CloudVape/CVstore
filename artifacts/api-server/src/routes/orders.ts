@@ -3,6 +3,8 @@ import { eq, inArray, sql } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { db, ordersTable, productsTable, type OrderItem } from "@workspace/db";
 import { CreateOrderBody } from "@workspace/api-zod";
+import { sendEmail, fireAndForget } from "../lib/email";
+import { orderConfirmationTemplate } from "../lib/email-templates";
 
 const router: IRouter = Router();
 
@@ -102,6 +104,21 @@ router.post("/orders", async (req, res): Promise<void> => {
         .returning();
       return created;
     });
+
+    const tpl = orderConfirmationTemplate({
+      customerName: order.customerName,
+      orderNumber: order.orderNumber,
+      items: order.items as OrderItem[],
+      subtotalCents: order.subtotalCents,
+      shippingCents: order.shippingCents,
+      taxCents: order.taxCents,
+      totalCents: order.totalCents,
+      shippingAddress: order.shippingAddress,
+      shippingCity: order.shippingCity,
+      shippingState: order.shippingState,
+      shippingZip: order.shippingZip,
+    });
+    fireAndForget(sendEmail({ ...tpl, to: order.email, template: "order-confirmation" }));
 
     res.status(201).json(order);
   } catch (err) {

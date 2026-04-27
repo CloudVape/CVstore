@@ -7,3 +7,5 @@ export * from "./products";
 export * from "./orders";
 export * from "./suppliers";
 export * from "./import-runs";
+export * from "./email-log";
+export * from "./newsletter";
