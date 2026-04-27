@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 
-export const SITE_NAME = "VapeVault";
+export const SITE_NAME = "CloudVape";
 export const SITE_TAGLINE = "Premium Vape Shop & Community";
 export const SITE_DESCRIPTION =
-  "Shop authentic vape kits, pod systems, e-liquids, coils, and accessories at VapeVault. Free shipping over $50, same-day dispatch, and a thriving community of cloud chasers.";
+  "Shop authentic vape kits, pod systems, e-liquids, coils, and accessories at CloudVape. Free shipping over $50, same-day dispatch, and a thriving community of cloud chasers.";
 export const DEFAULT_OG_IMAGE = "/opengraph.jpg";
-export const TWITTER_HANDLE = "@vapevault";
+export const TWITTER_HANDLE = "@cloudvape";
 
 export function getSiteUrl(): string {
   if (typeof window !== "undefined") return window.location.origin;

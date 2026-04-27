@@ -63,7 +63,7 @@ async function fetchFeedFromUrl(rawUrl: string): Promise<Buffer> {
       resp = await fetch(safe.toString(), {
         redirect: "manual",
         signal: ctrl.signal,
-        headers: { "user-agent": "VapeVault-Importer/1.0" },
+        headers: { "user-agent": "CloudVape-Importer/1.0" },
       });
     } catch (err) {
       clearTimeout(timer);

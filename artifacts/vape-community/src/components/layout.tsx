@@ -90,7 +90,7 @@ export function Layout({ children }: { children: ReactNode }) {
           <Link href="/" className="mr-2 sm:mr-6 flex items-center gap-2 transition-opacity hover:opacity-80 shrink-0">
             <Cloud className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-mono tracking-tight text-lg">
-              VAPE<span className="text-primary">VAULT</span>
+              CLOUD<span className="text-primary">VAPE</span>
             </span>
           </Link>
 
@@ -172,7 +172,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <Link href="/" className="flex items-center gap-2 text-foreground">
               <Cloud className="h-5 w-5 text-primary" />
               <span className="font-bold font-mono tracking-tight">
-                VAPE<span className="text-primary">VAULT</span>
+                CLOUD<span className="text-primary">VAPE</span>
               </span>
             </Link>
             <p className="text-muted-foreground text-xs leading-relaxed">
@@ -205,7 +205,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
         </div>
         <div className="container mx-auto max-w-6xl px-4 mt-8 pt-6 border-t border-border/40 flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-muted-foreground font-mono">
-          <span>VAPEVAULT &copy; {new Date().getFullYear()} — Keep it cloudy.</span>
+          <span>CLOUDVAPE &copy; {new Date().getFullYear()} — Keep it cloudy.</span>
           <span>Must be 21+ to purchase. Vaping products contain nicotine.</span>
         </div>
       </footer>

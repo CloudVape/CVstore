@@ -16,7 +16,7 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
-## VapeCommunity Shop + Forum
+## CloudVape Shop + Forum
 
 A vape SHOP first (e-commerce), with a community forum secondary.
 
@@ -87,7 +87,7 @@ A vape SHOP first (e-commerce), with a community forum secondary.
 
 - **Provider**: Resend (`resend` npm package). Set `RESEND_API_KEY` secret to activate. Without it, emails are logged as "skipped".
 - **Required secrets**: `RESEND_API_KEY`, optionally `FROM_EMAIL_TRANSACTIONAL`, `FROM_EMAIL_MARKETING`, `SITE_URL`, `RESEND_WEBHOOK_SECRET`
-- **Default from-addresses**: `support@vapevault.com` (transactional), `hello@vapevault.com` (marketing)
+- **Default from-addresses**: `support@cloudvape.store` (transactional), `hello@cloudvape.store` (marketing)
 - **Core service**: `artifacts/api-server/src/lib/email.ts` — wraps Resend, logs every send to `email_log` table, graceful skip when no key
 - **Templates**: `artifacts/api-server/src/lib/email-templates.ts` — neon-on-dark branded HTML + plain-text for all 9 template types
 - **Templates in use**: welcome, order-confirmation, shipping-update, delivery-confirmation, refund-confirmation, review-request, newsletter-confirm, marketing-broadcast

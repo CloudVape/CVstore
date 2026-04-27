@@ -13,7 +13,7 @@ export default function Forum() {
   useSeo({
     title: "Community Forum",
     description:
-      "Join the VapeVault community forum — reviews, recommendations, hardware tips, juice talk, and discussions from fellow vapers.",
+      "Join the CloudVape community forum — reviews, recommendations, hardware tips, juice talk, and discussions from fellow vapers.",
     canonical: "/forum",
     keywords: ["vape forum", "vape community", "vape discussion", "vape reviews", "e-liquid recommendations"],
   });

@@ -21,7 +21,7 @@ const formSchema = z.object({
 });
 
 export default function Join() {
-  useSeo({ title: "Sign up", description: "Create your VapeVault account.", canonical: "/join", robots: "noindex, follow" });
+  useSeo({ title: "Sign up", description: "Create your CloudVape account.", canonical: "/join", robots: "noindex, follow" });
   const [, setLocation] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();

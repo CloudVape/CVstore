@@ -20,8 +20,8 @@ export default function CategoryDetail() {
   useSeo({
     title: categoryName,
     description: category?.description
-      ? `${category.description} Shop ${categoryName.toLowerCase()} at VapeVault.`
-      : `Shop ${categoryName.toLowerCase()} at VapeVault — authentic products, fast shipping.`,
+      ? `${category.description} Shop ${categoryName.toLowerCase()} at CloudVape.`
+      : `Shop ${categoryName.toLowerCase()} at CloudVape — authentic products, fast shipping.`,
     canonical: `/shop/c/${slug}`,
     keywords: ["vape shop", categoryName.toLowerCase(), "vape products"],
   });

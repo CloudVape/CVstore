@@ -17,7 +17,7 @@ import { z } from "zod";
 
 const router: IRouter = Router();
 
-const SITE_URL = process.env.SITE_URL ?? "https://vapevault.com";
+const SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 
 router.get("/admin/email-log", async (req, res): Promise<void> => {
   const template = typeof req.query.template === "string" ? req.query.template : undefined;

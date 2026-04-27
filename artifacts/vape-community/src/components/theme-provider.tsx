@@ -8,7 +8,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       defaultTheme="light"
       enableSystem={false}
       disableTransitionOnChange
-      storageKey="vapevault-theme"
+      storageKey="cloudvape-theme"
     >
       {children}
     </NextThemesProvider>

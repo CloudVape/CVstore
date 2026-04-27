@@ -28,7 +28,7 @@ export default function ProductDetail() {
   const seoTitle = product ? `${product.name} — ${product.brand}` : "Product";
   const seoDescription = product
     ? (product.shortDescription || product.description || "").slice(0, 200)
-    : "VapeVault product";
+    : "CloudVape product";
   useSeo({
     title: seoTitle,
     description: seoDescription,

@@ -13,7 +13,7 @@ import { z } from "zod/v4";
 
 const router: IRouter = Router();
 
-const SITE_URL = process.env.SITE_URL ?? "https://vapevault.com";
+const SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const ONE_DAY_MS = 24 * ONE_HOUR_MS;
 

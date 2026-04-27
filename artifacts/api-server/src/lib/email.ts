@@ -4,8 +4,8 @@ import { and, desc, eq, inArray } from "drizzle-orm";
 import { logger } from "./logger";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_TRANSACTIONAL = process.env.FROM_EMAIL_TRANSACTIONAL ?? "VapeVault <support@vapevault.com>";
-const FROM_MARKETING = process.env.FROM_EMAIL_MARKETING ?? "VapeVault <hello@vapevault.com>";
+const FROM_TRANSACTIONAL = process.env.FROM_EMAIL_TRANSACTIONAL ?? "CloudVape <support@cloudvape.store>";
+const FROM_MARKETING = process.env.FROM_EMAIL_MARKETING ?? "CloudVape <hello@cloudvape.store>";
 
 const MAX_RETRIES = 3;
 const RETRY_BASE_MS = 1000;

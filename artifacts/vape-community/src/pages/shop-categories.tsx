@@ -18,7 +18,7 @@ export default function ShopCategories() {
   useSeo({
     title: "Shop by Category",
     description:
-      "Browse VapeVault categories: vape kits, pod systems, e-liquids, coils, disposables, and accessories. Find exactly what you're looking for.",
+      "Browse CloudVape categories: vape kits, pod systems, e-liquids, coils, disposables, and accessories. Find exactly what you're looking for.",
     canonical: "/shop/categories",
     keywords: ["vape categories", "vape kits", "pods", "e-liquid categories", "coils", "disposables"],
   });

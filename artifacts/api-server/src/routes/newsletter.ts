@@ -8,7 +8,7 @@ import { z } from "zod";
 
 const router: IRouter = Router();
 
-const SITE_URL = process.env.SITE_URL ?? "https://vapevault.com";
+const SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 
 function generateToken(): string {
   return randomBytes(32).toString("base64url");
@@ -77,7 +77,7 @@ router.get("/newsletter/confirm", async (req, res): Promise<void> => {
     .set({ status: "confirmed", subscribedAt: new Date() })
     .where(eq(newsletterSubscribersTable.id, sub.id));
 
-  res.json({ message: "Subscription confirmed! Welcome to VapeVault drops & deals." });
+  res.json({ message: "Subscription confirmed! Welcome to CloudVape drops & deals." });
 });
 
 router.get("/newsletter/unsubscribe", async (req, res): Promise<void> => {
@@ -99,7 +99,7 @@ router.get("/newsletter/unsubscribe", async (req, res): Promise<void> => {
     .set({ status: "unsubscribed", unsubscribedAt: new Date() })
     .where(eq(newsletterSubscribersTable.id, sub.id));
 
-  res.json({ message: "You have been unsubscribed from VapeVault marketing emails." });
+  res.json({ message: "You have been unsubscribed from CloudVape marketing emails." });
 });
 
 export default router;

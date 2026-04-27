@@ -5,8 +5,8 @@ const DARK_BG = "#0f0f11";
 const CARD_BG = "#18181b";
 const MUTED = "#71717a";
 const TEXT = "#f4f4f5";
-const LOGO_URL = "https://vapevault.com/logo.png";
-const SITE_URL = process.env.SITE_URL ?? "https://vapevault.com";
+const LOGO_URL = "https://cloudvape.store/logo.png";
+const SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 
 function baseTemplate(opts: {
   preheader: string;
@@ -25,7 +25,7 @@ function baseTemplate(opts: {
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="x-apple-disable-message-reformatting"/>
-<title>VapeVault</title>
+<title>CloudVape</title>
 <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
 </head>
 <body style="margin:0;padding:0;background:${DARK_BG};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
@@ -53,7 +53,7 @@ function baseTemplate(opts: {
         <!-- Footer -->
         <tr>
           <td style="padding:24px 32px 0;text-align:center;color:${MUTED};font-size:12px;font-family:monospace;line-height:1.6;">
-            VapeVault &mdash; Keep it cloudy.<br/>
+            CloudVape &mdash; Keep it cloudy.<br/>
             Must be 21+ to purchase. Vaping products contain nicotine.<br/>
             <a href="${SITE_URL}" style="color:${MUTED};text-decoration:underline;">${SITE_URL}</a>
           </td>
@@ -124,9 +124,9 @@ export function verifyEmailTemplate(opts: {
   username: string;
   verifyUrl: string;
 }): { subject: string; html: string; text: string } {
-  const subject = "Verify your VapeVault email address";
+  const subject = "Verify your CloudVape email address";
   const html = baseTemplate({
-    preheader: `Hi ${opts.username}, confirm your email to activate your VapeVault account.`,
+    preheader: `Hi ${opts.username}, confirm your email to activate your CloudVape account.`,
     content: `
       ${h1("Verify Your Email")}
       ${p(`Hi ${opts.username}, thanks for signing up! Please confirm your email address to activate your account.`)}
@@ -135,7 +135,7 @@ export function verifyEmailTemplate(opts: {
       ${p(`This link expires in 24 hours. If you didn't create an account, you can safely ignore this email.`, `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Verify your VapeVault email\n\nHi ${opts.username}, click the link below to verify your email and activate your account.\n\n${opts.verifyUrl}\n\nLink expires in 24 hours. If you didn't sign up, ignore this.\n\nVapeVault`;
+  const text = `Verify your CloudVape email\n\nHi ${opts.username}, click the link below to verify your email and activate your account.\n\n${opts.verifyUrl}\n\nLink expires in 24 hours. If you didn't sign up, ignore this.\n\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -143,9 +143,9 @@ export function passwordResetTemplate(opts: {
   username: string;
   resetUrl: string;
 }): { subject: string; html: string; text: string } {
-  const subject = "Reset your VapeVault password";
+  const subject = "Reset your CloudVape password";
   const html = baseTemplate({
-    preheader: `Hi ${opts.username}, click below to reset your VapeVault password. Link expires in 1 hour.`,
+    preheader: `Hi ${opts.username}, click below to reset your CloudVape password. Link expires in 1 hour.`,
     content: `
       ${h1("Reset Your Password")}
       ${p(`Hi ${opts.username}, we received a request to reset your password.`)}
@@ -154,24 +154,24 @@ export function passwordResetTemplate(opts: {
       ${p(`This link expires in 1 hour. If you didn't request a password reset, you can safely ignore this email — your account is still secure.`, `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Reset your VapeVault password\n\nHi ${opts.username}, click the link below to reset your password.\n\n${opts.resetUrl}\n\nLink expires in 1 hour. If you didn't request this, ignore this email.\n\nVapeVault`;
+  const text = `Reset your CloudVape password\n\nHi ${opts.username}, click the link below to reset your password.\n\n${opts.resetUrl}\n\nLink expires in 1 hour. If you didn't request this, ignore this email.\n\nCloudVape`;
   return { subject, html, text };
 }
 
 export function welcomeTemplate(username: string): { subject: string; html: string; text: string } {
-  const subject = `Welcome to VapeVault, ${username}!`;
+  const subject = `Welcome to CloudVape, ${username}!`;
   const html = baseTemplate({
-    preheader: `Thanks for joining VapeVault, ${username}. Your account is ready.`,
+    preheader: `Thanks for joining CloudVape, ${username}. Your account is ready.`,
     content: `
       ${h1(`Welcome, ${username}!`)}
-      ${p("You've just joined the VapeVault community — the home for cloud chasers and flavour enthusiasts.")}
+      ${p("You've just joined the CloudVape community — the home for cloud chasers and flavour enthusiasts.")}
       ${p("Browse the shop, join the forum, and share your builds.")}
       ${button(`${SITE_URL}/shop`, "Start Shopping")}
       ${divider()}
       ${p(`Keep it cloudy.`, `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Welcome to VapeVault, ${username}!\n\nYour account is ready. Browse the shop at ${SITE_URL}/shop\n\nKeep it cloudy.\nVapeVault`;
+  const text = `Welcome to CloudVape, ${username}!\n\nYour account is ready. Browse the shop at ${SITE_URL}/shop\n\nKeep it cloudy.\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -191,7 +191,7 @@ export function orderConfirmationTemplate(opts: {
   const subject = `Order confirmed — ${opts.orderNumber}`;
   const orderUrl = `${SITE_URL}/order/${opts.orderNumber}`;
   const html = baseTemplate({
-    preheader: `Your VapeVault order ${opts.orderNumber} is confirmed and being prepared.`,
+    preheader: `Your CloudVape order ${opts.orderNumber} is confirmed and being prepared.`,
     content: `
       ${h1("Order Confirmed")}
       ${p(`Hi ${opts.customerName}, thanks for your order! We'll have it packed and dispatched shortly.`)}
@@ -204,7 +204,7 @@ export function orderConfirmationTemplate(opts: {
       ${button(orderUrl, "View Order")}
     `,
   });
-  const text = `Order Confirmed — ${opts.orderNumber}\n\nHi ${opts.customerName}, your order is confirmed.\n\nItems:\n${opts.items.map((i) => `  ${i.name} x${i.quantity} — $${(i.priceCents * i.quantity / 100).toFixed(2)}`).join("\n")}\n\nTotal: $${(opts.totalCents / 100).toFixed(2)}\n\nTrack your order: ${orderUrl}\n\nVapeVault`;
+  const text = `Order Confirmed — ${opts.orderNumber}\n\nHi ${opts.customerName}, your order is confirmed.\n\nItems:\n${opts.items.map((i) => `  ${i.name} x${i.quantity} — $${(i.priceCents * i.quantity / 100).toFixed(2)}`).join("\n")}\n\nTotal: $${(opts.totalCents / 100).toFixed(2)}\n\nTrack your order: ${orderUrl}\n\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -220,17 +220,17 @@ export function shippingUpdateTemplate(opts: {
        <p style="margin:0 0 24px;color:${BRAND_COLOR};font-size:18px;font-weight:700;font-family:monospace;">${opts.trackingNumber}</p>`
     : "";
   const html = baseTemplate({
-    preheader: `Great news — your VapeVault order ${opts.orderNumber} is on its way!`,
+    preheader: `Great news — your CloudVape order ${opts.orderNumber} is on its way!`,
     content: `
       ${h1("Your Order Has Shipped")}
-      ${p(`Hi ${opts.customerName}, your VapeVault order is on its way!`)}
+      ${p(`Hi ${opts.customerName}, your CloudVape order is on its way!`)}
       ${trackingBlock}
       ${button(orderUrl, "Track My Order")}
       ${divider()}
       ${p("Typically delivers within 3–5 business days.", `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Your order ${opts.orderNumber} has shipped!\n\nHi ${opts.customerName}, your order is on its way.${opts.trackingNumber ? `\n\nTracking: ${opts.trackingNumber}` : ""}\n\nView order: ${orderUrl}\n\nVapeVault`;
+  const text = `Your order ${opts.orderNumber} has shipped!\n\nHi ${opts.customerName}, your order is on its way.${opts.trackingNumber ? `\n\nTracking: ${opts.trackingNumber}` : ""}\n\nView order: ${orderUrl}\n\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -241,16 +241,16 @@ export function deliveryConfirmationTemplate(opts: {
   const subject = `Your order ${opts.orderNumber} has been delivered`;
   const orderUrl = `${SITE_URL}/order/${opts.orderNumber}`;
   const html = baseTemplate({
-    preheader: `Your VapeVault order ${opts.orderNumber} has been delivered. Enjoy!`,
+    preheader: `Your CloudVape order ${opts.orderNumber} has been delivered. Enjoy!`,
     content: `
       ${h1("Delivered!")}
-      ${p(`Hi ${opts.customerName}, your VapeVault order has arrived. Enjoy your new gear!`)}
+      ${p(`Hi ${opts.customerName}, your CloudVape order has arrived. Enjoy your new gear!`)}
       ${button(orderUrl, "View Order")}
       ${divider()}
       ${p(`Something not right? Reply to this email and we'll sort it out.`, `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Your order ${opts.orderNumber} has been delivered!\n\nHi ${opts.customerName}, your order has arrived. Enjoy!\n\nView order: ${orderUrl}\n\nVapeVault`;
+  const text = `Your order ${opts.orderNumber} has been delivered!\n\nHi ${opts.customerName}, your order has arrived. Enjoy!\n\nView order: ${orderUrl}\n\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -272,7 +272,7 @@ export function refundConfirmationTemplate(opts: {
       ${p(`Questions? Reply to this email and we'll help.`, `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Refund processed for order ${opts.orderNumber}\n\nHi ${opts.customerName}, a refund of $${(opts.totalCents / 100).toFixed(2)} has been processed. Allow 5–10 business days.\n\nVapeVault`;
+  const text = `Refund processed for order ${opts.orderNumber}\n\nHi ${opts.customerName}, a refund of $${(opts.totalCents / 100).toFixed(2)} has been processed. Allow 5–10 business days.\n\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -281,7 +281,7 @@ export function reviewRequestTemplate(opts: {
   orderNumber: string;
   items: OrderItem[];
 }): { subject: string; html: string; text: string } {
-  const subject = `How was your VapeVault order? Share your feedback`;
+  const subject = `How was your CloudVape order? Share your feedback`;
   const reviewUrl = `${SITE_URL}/forum/new`;
   const productName = opts.items[0]?.name ?? "your recent purchase";
   const html = baseTemplate({
@@ -295,25 +295,25 @@ export function reviewRequestTemplate(opts: {
       ${p(`Order ${opts.orderNumber}`, `color:${MUTED};font-size:12px;font-family:monospace;`)}
     `,
   });
-  const text = `How was your VapeVault order?\n\nHi ${opts.customerName}, how are you getting on with ${productName}?\n\nShare your thoughts: ${reviewUrl}\n\nVapeVault`;
+  const text = `How was your CloudVape order?\n\nHi ${opts.customerName}, how are you getting on with ${productName}?\n\nShare your thoughts: ${reviewUrl}\n\nCloudVape`;
   return { subject, html, text };
 }
 
 export function newsletterConfirmTemplate(opts: {
   confirmUrl: string;
 }): { subject: string; html: string; text: string } {
-  const subject = "Confirm your VapeVault newsletter subscription";
+  const subject = "Confirm your CloudVape newsletter subscription";
   const html = baseTemplate({
-    preheader: "One click to confirm your subscription to VapeVault drops & deals.",
+    preheader: "One click to confirm your subscription to CloudVape drops & deals.",
     content: `
       ${h1("Confirm Your Subscription")}
-      ${p("You asked to subscribe to VapeVault's drops & deals newsletter. Click the button below to confirm.")}
+      ${p("You asked to subscribe to CloudVape's drops & deals newsletter. Click the button below to confirm.")}
       ${button(opts.confirmUrl, "Confirm Subscription")}
       ${divider()}
       ${p(`If you didn't request this, you can safely ignore this email.`, `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Confirm your VapeVault newsletter subscription\n\nClick to confirm: ${opts.confirmUrl}\n\nIf you didn't request this, ignore this email.\n\nVapeVault`;
+  const text = `Confirm your CloudVape newsletter subscription\n\nClick to confirm: ${opts.confirmUrl}\n\nIf you didn't request this, ignore this email.\n\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -333,6 +333,6 @@ export function marketingBroadcastTemplate(opts: {
       ${button(SITE_URL, "Visit the Shop")}
     `,
   });
-  const text = `${opts.subject}\n\n${opts.bodyText}\n\nVisit the shop: ${SITE_URL}\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nVapeVault`;
+  const text = `${opts.subject}\n\n${opts.bodyText}\n\nVisit the shop: ${SITE_URL}\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
   return { subject: opts.subject, html, text };
 }

@@ -11,7 +11,7 @@ import { useSeo } from "@/lib/seo";
 export default function Profile() {
   const { id } = useParams();
   const userId = parseInt(id || "0");
-  useSeo({ title: "Profile", description: "VapeVault member profile.", robots: "noindex, follow" });
+  useSeo({ title: "Profile", description: "CloudVape member profile.", robots: "noindex, follow" });
   
   const { data: user, isLoading: userLoading } = useGetUser(userId, { query: { enabled: !!userId } });
   const { data: posts, isLoading: postsLoading } = useListPosts(undefined, { query: { enabled: !!userId } });

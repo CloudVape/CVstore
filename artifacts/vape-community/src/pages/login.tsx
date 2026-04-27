@@ -19,7 +19,7 @@ const formSchema = z.object({
 });
 
 export default function Login() {
-  useSeo({ title: "Log in", description: "Log in to your VapeVault account.", canonical: "/login", robots: "noindex, follow" });
+  useSeo({ title: "Log in", description: "Log in to your CloudVape account.", canonical: "/login", robots: "noindex, follow" });
   const [, setLocation] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();

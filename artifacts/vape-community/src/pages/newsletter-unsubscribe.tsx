@@ -53,7 +53,7 @@ export default function NewsletterUnsubscribe() {
           <CheckCircle2 className="h-12 w-12 text-green-500" />
           <h1 className="text-2xl font-black font-mono uppercase">Unsubscribed</h1>
           <p className="text-muted-foreground font-mono text-sm max-w-sm">{message}</p>
-          <p className="text-[12px] text-muted-foreground font-mono">You won't receive any more marketing emails from VapeVault.</p>
+          <p className="text-[12px] text-muted-foreground font-mono">You won't receive any more marketing emails from CloudVape.</p>
           <Link href="/">
             <Button variant="outline" className="rounded-full font-mono text-xs uppercase tracking-wider mt-2">
               Back to Shop

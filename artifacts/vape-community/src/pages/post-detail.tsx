@@ -27,7 +27,7 @@ export default function PostDetail() {
 
   useSeo({
     title: post?.title,
-    description: post?.content?.slice(0, 200) ?? "Forum discussion on VapeVault.",
+    description: post?.content?.slice(0, 200) ?? "Forum discussion on CloudVape.",
     canonical: post ? `/forum/${post.id}` : undefined,
     type: "article",
     keywords: post ? [post.categoryName, ...(post.tags ?? [])].filter(Boolean) as string[] : undefined,

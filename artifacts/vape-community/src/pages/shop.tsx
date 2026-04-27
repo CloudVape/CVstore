@@ -54,12 +54,12 @@ export default function Shop() {
 
   const seoDescription =
     filterParam === "new"
-      ? "Browse the newest vape kits, pod systems, and e-liquids freshly added to VapeVault."
+      ? "Browse the newest vape kits, pod systems, and e-liquids freshly added to CloudVape."
       : filterParam === "bestsellers"
-      ? "The most-loved vape kits, pod systems, and e-liquids from VapeVault — community bestsellers."
+      ? "The most-loved vape kits, pod systems, and e-liquids from CloudVape — community bestsellers."
       : filterParam === "featured"
-      ? "Hand-picked featured vape products curated by the VapeVault team."
-      : "Shop the full range of vape kits, pod systems, e-liquids, coils, and accessories at VapeVault.";
+      ? "Hand-picked featured vape products curated by the CloudVape team."
+      : "Shop the full range of vape kits, pod systems, e-liquids, coils, and accessories at CloudVape.";
 
   useSeo({
     title: heading,

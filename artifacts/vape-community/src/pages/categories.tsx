@@ -105,7 +105,7 @@ export default function Categories() {
   useSeo({
     title: "Forum Categories",
     description:
-      "Explore VapeVault forum discussions by topic. From hardware reviews to juice recommendations, find your niche in the community.",
+      "Explore CloudVape forum discussions by topic. From hardware reviews to juice recommendations, find your niche in the community.",
     canonical: "/categories",
     keywords: ["vape forum categories", "vape topics", "vape discussions"],
   });
