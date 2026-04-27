@@ -58,6 +58,7 @@ function formatUserPrivate(u: typeof usersTable.$inferSelect) {
     ...formatUserPublic(u),
     isAdmin: u.isAdmin,
     sessionToken: u.sessionToken,
+    themePreference: u.themePreference,
   };
 }
 
@@ -241,6 +242,43 @@ router.post("/users/reset-password", async (req, res): Promise<void> => {
     .where(eq(usersTable.id, user.id));
 
   res.json({ message: "Password reset successfully. Please log in with your new password." });
+});
+
+const ThemePreferenceBody = z.object({
+  theme: z.enum(["light", "dark"]),
+});
+
+router.patch("/users/me/theme", async (req, res): Promise<void> => {
+  const auth = req.header("authorization") ?? "";
+  const m = /^Bearer\s+(.+)$/i.exec(auth.trim());
+  const token = m ? m[1].trim() : "";
+  if (!token) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
+  const parsed = ThemePreferenceBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "theme must be 'light' or 'dark'" });
+    return;
+  }
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.sessionToken, token));
+
+  if (!user) {
+    res.status(401).json({ error: "Invalid session" });
+    return;
+  }
+
+  await db
+    .update(usersTable)
+    .set({ themePreference: parsed.data.theme })
+    .where(eq(usersTable.id, user.id));
+
+  res.json({ theme: parsed.data.theme });
 });
 
 router.get("/users/:id", async (req, res): Promise<void> => {

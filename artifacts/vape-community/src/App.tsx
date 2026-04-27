@@ -7,6 +7,7 @@ import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
 import { Layout } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeSyncer } from "@/components/theme-syncer";
 
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
@@ -79,6 +80,7 @@ function App() {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
+          <ThemeSyncer />
           <CartProvider>
             <TooltipProvider>
               <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>

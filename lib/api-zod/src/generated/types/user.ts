@@ -22,6 +22,11 @@ export interface User {
    * @nullable
    */
   sessionToken?: string | null;
+  /**
+   * User's saved theme preference ('light' or 'dark'). Only returned on login/signup. Null means no saved preference.
+   * @nullable
+   */
+  themePreference?: string | null;
   postCount: number;
   joinedAt: Date;
 }

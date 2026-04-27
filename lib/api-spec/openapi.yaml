@@ -580,6 +580,11 @@ components:
             Bearer token issued by login/signup. Only returned to the user it
             belongs to. Send as `Authorization: Bearer <token>` to call
             privileged endpoints.
+        themePreference:
+          type: ["string", "null"]
+          description: >-
+            User's saved theme preference ('light' or 'dark'). Only returned
+            on login/signup. Null means no saved preference.
         postCount:
           type: integer
         joinedAt:
