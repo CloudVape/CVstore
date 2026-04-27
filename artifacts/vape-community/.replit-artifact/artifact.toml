@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "VapeCommunity Forum"
+version = "1.0.0"
+id = "artifacts/vape-community"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23439
+
+[services.development]
+run = "pnpm --filter @workspace/vape-community run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/vape-community", "run", "build" ]
+publicDir = "artifacts/vape-community/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23439"
+BASE_PATH = "/"

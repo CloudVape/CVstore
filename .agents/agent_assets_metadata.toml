@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "l1eLHRHhG1ov6a8itzQl3"
+uri = "file://artifacts/vape-community/public/images/hero-banner.jpg"
+type = "image"
+title = "Dark atmospheric vapor clouds with neon lighting"
