@@ -21,15 +21,15 @@ export function Layout({ children }: { children: ReactNode }) {
         Free shipping on orders over $50 — Same-day dispatch before 3pm EST
       </div>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 max-w-6xl items-center px-4">
-          <Link href="/" className="mr-6 flex items-center gap-2 transition-opacity hover:opacity-80">
+        <div className="container mx-auto flex h-16 max-w-6xl items-center px-3 sm:px-4 gap-2 sm:gap-0">
+          <Link href="/" className="mr-2 sm:mr-6 flex items-center gap-2 transition-opacity hover:opacity-80 shrink-0">
             <Cloud className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-mono tracking-tight text-lg">
               VAPE<span className="text-primary">VAULT</span>
             </span>
           </Link>
 
-          <nav className="flex items-center space-x-1 sm:space-x-4 md:space-x-6 text-sm font-medium">
+          <nav className="flex items-center gap-1 sm:gap-4 md:gap-6 text-sm font-medium min-w-0 overflow-x-auto no-scrollbar">
             {navItems.map((item) => {
               const isActive = item.href === "/"
                 ? location === "/" || location.startsWith("/shop")
@@ -38,8 +38,8 @@ export function Layout({ children }: { children: ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`transition-colors hover:text-foreground/90 flex items-center gap-2 ${
-                    isActive ? "text-foreground" : "text-foreground/60"
+                  className={`transition-colors hover:text-foreground/90 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap rounded-full px-3 sm:px-1 py-2 sm:py-0 min-h-10 sm:min-h-0 ${
+                    isActive ? "text-foreground bg-foreground/5 sm:bg-transparent" : "text-foreground/60"
                   }`}
                 >
                   <item.icon className="h-4 w-4 hidden sm:block" />
@@ -49,9 +49,9 @@ export function Layout({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-3">
+          <div className="flex flex-1 items-center justify-end space-x-1 sm:space-x-3 min-w-0">
             <Link href="/cart">
-              <Button variant="ghost" size="sm" className="relative gap-2" aria-label="Cart">
+              <Button variant="ghost" size="sm" className="relative gap-2 px-2 sm:px-3" aria-label="Cart">
                 <ShoppingCart className="h-5 w-5" />
                 {itemCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-mono font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center shadow-[0_0_10px_rgba(var(--primary),0.5)]">
@@ -63,12 +63,12 @@ export function Layout({ children }: { children: ReactNode }) {
             {user ? (
               <>
                 <Link href={`/profile/${user.id}`}>
-                  <Button variant="ghost" size="sm" className="hidden sm:flex gap-2">
+                  <Button variant="ghost" size="sm" className="hidden sm:flex gap-2 px-3">
                     <User className="h-4 w-4" />
                     <span className="font-mono text-xs">{user.username}</span>
                   </Button>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={logout} className="gap-2 font-mono text-xs uppercase tracking-wider" aria-label="Logout">
+                <Button variant="ghost" size="sm" onClick={logout} className="gap-2 font-mono text-xs uppercase tracking-wider px-2 sm:px-3" aria-label="Logout">
                   <LogOut className="h-4 w-4" />
                 </Button>
               </>
@@ -78,7 +78,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   <Button variant="ghost" size="sm" className="font-mono text-xs uppercase tracking-wider hidden sm:flex">Log in</Button>
                 </Link>
                 <Link href="/join">
-                  <Button size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(var(--primary),0.3)]">Sign up</Button>
+                  <Button size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(var(--primary),0.3)] px-3 sm:px-4">Sign up</Button>
                 </Link>
               </div>
             )}
