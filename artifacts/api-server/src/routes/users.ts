@@ -5,7 +5,6 @@ import { GetUserParams } from "@workspace/api-zod";
 import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod/v4";
 import crypto from "crypto";
-import bcrypt from "bcryptjs";
 
 const router: IRouter = Router();
 
@@ -190,7 +189,9 @@ router.post("/users/legacy-login", async (req, res): Promise<void> => {
       return;
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
+    // Legacy passwords were hashed with SHA-256 (no salt) before Clerk was added.
+    const hashedInput = crypto.createHash("sha256").update(password).digest("hex");
+    const valid = hashedInput === user.passwordHash;
     if (!valid) {
       res.status(401).json({ error: "Invalid credentials" });
       return;
