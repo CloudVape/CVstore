@@ -16,7 +16,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
 
   return (
     <Link href={`/forum/${post.id}`}>
-      <Card className="group relative overflow-hidden border-border/40 bg-card/50 transition-all hover:bg-card hover:border-primary/50 cursor-pointer shadow-sm hover:shadow-[0_0_20px_rgba(0,0,0,0.2)]">
+      <Card className="group relative overflow-hidden border-border/40 bg-card/50 transition-all duration-300 hover:bg-card hover:border-primary/50 cursor-pointer shadow-sm hover:shadow-[0_0_20px_rgba(0,0,0,0.2)]">
         {!compact && post.imageUrl && (
           <div className="relative w-full aspect-[16/9] overflow-hidden bg-background/60 border-b border-border/40">
             <img

@@ -28,7 +28,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link href={`/shop/p/${product.slug}`}>
-      <Card className="group relative overflow-hidden border-border/40 bg-card/50 hover:bg-card hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col shadow-sm hover:shadow-[0_0_25px_rgba(0,0,0,0.4)]">
+      <Card className="group relative overflow-hidden border-border/40 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 cursor-pointer h-full flex flex-col shadow-sm hover:shadow-[0_0_25px_rgba(0,0,0,0.4)]">
         <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted/30 to-background border-b border-border/40">
           <img
             src={product.imageUrl}

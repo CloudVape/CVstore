@@ -35,7 +35,7 @@ export default function ShopCategories() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories?.map((c) => (
             <Link key={c.id} href={`/shop/c/${c.slug}`}>
-              <Card className="group p-6 bg-card/60 backdrop-blur-sm hover:bg-card hover:border-primary/50 transition-all cursor-pointer border-border/40 h-full flex flex-col gap-3 hover:shadow-[0_0_25px_rgba(0,0,0,0.4)]">
+              <Card className="group p-6 bg-card/60 backdrop-blur-sm hover:bg-card hover:border-primary/50 transition-all duration-300 cursor-pointer border-border/40 h-full flex flex-col gap-3 hover:shadow-[0_0_25px_rgba(0,0,0,0.4)]">
                 <div className="flex items-center gap-3">
                   <div className="text-3xl">{c.iconEmoji}</div>
                   <div className="flex-1">

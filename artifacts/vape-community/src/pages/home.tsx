@@ -75,7 +75,7 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-3">
               {(featured ?? []).slice(0, 4).map((p, idx) => (
                 <Link key={p.id} href={`/shop/p/${p.slug}`}>
-                  <Card className={`relative aspect-square overflow-hidden border-border/40 bg-card/50 hover:border-primary/50 transition-all hover:shadow-[0_0_25px_hsl(var(--primary)/0.2)] cursor-pointer ${idx % 3 === 0 ? "translate-y-4" : ""}`}>
+                  <Card className={`relative aspect-square overflow-hidden border-border/40 bg-card/50 hover:border-primary/50 transition-all duration-300 hover:shadow-[0_0_25px_hsl(var(--primary)/0.2)] cursor-pointer ${idx % 3 === 0 ? "translate-y-4" : ""}`}>
                     <img src={p.imageUrl} alt={p.name} className="absolute inset-0 w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/0 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-3">
@@ -121,7 +121,7 @@ export default function Home() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {categories?.map((c) => (
             <Link key={c.id} href={`/shop/c/${c.slug}`}>
-              <Card className="group p-4 bg-card/50 hover:bg-card hover:border-primary/50 border-border/40 transition-all cursor-pointer aspect-square flex flex-col items-center justify-center text-center gap-2 hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)]">
+              <Card className="group p-4 bg-card/50 hover:bg-card hover:border-primary/50 border-border/40 transition-all duration-300 cursor-pointer aspect-square flex flex-col items-center justify-center text-center gap-2 hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)]">
                 <div className="text-3xl group-hover:scale-110 transition-transform">{c.iconEmoji}</div>
                 <p className="text-xs font-bold uppercase tracking-tight leading-tight">{c.name}</p>
                 <p className="text-[10px] font-mono text-muted-foreground">{c.productCount}</p>
