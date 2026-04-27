@@ -29,10 +29,9 @@ export interface CreateOrderBody {
    */
   shippingCity: string;
   /**
-   * @minLength 1
    * @maxLength 100
    */
-  shippingState: string;
+  shippingState?: string;
   /**
    * @minLength 1
    * @maxLength 20

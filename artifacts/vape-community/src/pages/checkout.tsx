@@ -176,7 +176,7 @@ export default function Checkout() {
                 <span>Total</span>
                 <span className="text-primary">{formatPrice(totalCents)}</span>
               </div>
-              <p className="text-[10px] font-mono text-muted-foreground text-right">VAT included</p>
+              <p className="text-[10px] font-mono text-muted-foreground text-right">Includes 20% VAT</p>
             </div>
             <Button
               type="submit"

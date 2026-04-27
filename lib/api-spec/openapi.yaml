@@ -986,7 +986,6 @@ components:
           maxLength: 100
         shippingState:
           type: string
-          minLength: 1
           maxLength: 100
         shippingZip:
           type: string
@@ -996,7 +995,7 @@ components:
           type: string
           minLength: 2
           maxLength: 2
-          default: "US"
+          default: "GB"
         items:
           type: array
           minItems: 1
@@ -1008,7 +1007,6 @@ components:
         - customerName
         - shippingAddress
         - shippingCity
-        - shippingState
         - shippingZip
         - items
 

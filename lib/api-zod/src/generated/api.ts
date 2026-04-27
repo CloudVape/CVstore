@@ -553,7 +553,7 @@ export const createOrderBodyShippingStateMax = 100;
 
 export const createOrderBodyShippingZipMax = 20;
 
-export const createOrderBodyShippingCountryDefault = `US`;
+export const createOrderBodyShippingCountryDefault = `GB`;
 export const createOrderBodyShippingCountryMin = 2;
 export const createOrderBodyShippingCountryMax = 2;
 
@@ -570,7 +570,7 @@ export const CreateOrderBody = zod.object({
   customerName: zod.string().min(1).max(createOrderBodyCustomerNameMax),
   shippingAddress: zod.string().min(1).max(createOrderBodyShippingAddressMax),
   shippingCity: zod.string().min(1).max(createOrderBodyShippingCityMax),
-  shippingState: zod.string().min(1).max(createOrderBodyShippingStateMax),
+  shippingState: zod.string().max(createOrderBodyShippingStateMax).optional().default(""),
   shippingZip: zod.string().min(1).max(createOrderBodyShippingZipMax),
   shippingCountry: zod
     .string()
