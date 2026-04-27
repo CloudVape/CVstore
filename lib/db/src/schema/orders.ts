@@ -14,6 +14,7 @@ export type OrderItem = {
 export const ordersTable = pgTable("orders", {
   id: serial("id").primaryKey(),
   orderNumber: text("order_number").notNull().unique(),
+  userId: integer("user_id"),
   email: text("email").notNull(),
   customerName: text("customer_name").notNull(),
   shippingAddress: text("shipping_address").notNull(),

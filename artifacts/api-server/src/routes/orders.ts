@@ -1,10 +1,11 @@
 import { Router, type IRouter } from "express";
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray, sql, desc } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
-import { db, ordersTable, productsTable, type OrderItem } from "@workspace/db";
+import { db, ordersTable, productsTable, usersTable, type OrderItem } from "@workspace/db";
 import { CreateOrderBody } from "@workspace/api-zod";
 import { sendEmail, fireAndForget } from "../lib/email";
 import { orderConfirmationTemplate } from "../lib/email-templates";
+import { getAuth } from "@clerk/express";
 
 const router: IRouter = Router();
 
@@ -22,6 +23,14 @@ router.post("/orders", async (req, res): Promise<void> => {
     return;
   }
   const data = parsed.data;
+
+  // Optionally link order to authenticated user
+  let linkedUserId: number | null = null;
+  const { userId: clerkId } = getAuth(req);
+  if (clerkId) {
+    const [dbUser] = await db.select({ id: usersTable.id }).from(usersTable).where(eq(usersTable.clerkId, clerkId));
+    if (dbUser) linkedUserId = dbUser.id;
+  }
 
   // Collapse duplicate productIds into single lines (sum quantities)
   const qtyByProductId = new Map<number, number>();
@@ -87,6 +96,7 @@ router.post("/orders", async (req, res): Promise<void> => {
         .insert(ordersTable)
         .values({
           orderNumber: generateOrderNumber(),
+          userId: linkedUserId ?? undefined,
           email: data.email,
           customerName: data.customerName,
           shippingAddress: data.shippingAddress,
@@ -129,6 +139,25 @@ router.post("/orders", async (req, res): Promise<void> => {
     req.log?.error?.({ err }, "order creation failed");
     res.status(500).json({ error: "Failed to create order" });
   }
+});
+
+router.get("/orders/mine", async (req, res): Promise<void> => {
+  const { userId: clerkId } = getAuth(req);
+  if (!clerkId) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
+  const [dbUser] = await db.select({ id: usersTable.id }).from(usersTable).where(eq(usersTable.clerkId, clerkId));
+  if (!dbUser) {
+    res.json([]);
+    return;
+  }
+  const orders = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.userId, dbUser.id))
+    .orderBy(desc(ordersTable.createdAt));
+  res.json(orders);
 });
 
 router.get("/orders/:orderNumber", async (req, res): Promise<void> => {
