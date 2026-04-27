@@ -194,9 +194,10 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
           <div className="space-y-2">
             <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Help</p>
-            <span className="block text-foreground/80">Shipping & Returns</span>
-            <span className="block text-foreground/80">FAQ</span>
-            <span className="block text-foreground/80">Contact</span>
+            <Link href="/help" className="block text-foreground/80 hover:text-primary transition-colors">Help Center</Link>
+            <Link href="/help/returns-refunds/what-is-your-return-policy" className="block text-foreground/80 hover:text-primary transition-colors">Returns Policy</Link>
+            <Link href="/help/orders-shipping/how-long-does-shipping-take" className="block text-foreground/80 hover:text-primary transition-colors">Shipping Info</Link>
+            <Link href="/contact" className="block text-foreground/80 hover:text-primary transition-colors">Contact Us</Link>
           </div>
           <div className="col-span-2 md:col-span-4 mt-2 pt-4 border-t border-border/30 space-y-2">
             <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Drops & Deals Newsletter</p>

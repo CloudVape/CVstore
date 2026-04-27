@@ -11,6 +11,8 @@ import ordersRouter from "./orders";
 import seoRouter from "./seo";
 import newsletterRouter from "./newsletter";
 import emailWebhooksRouter from "./email-webhooks";
+import helpRouter from "./help";
+import supportRouter from "./support";
 import adminRouter from "./admin";
 
 const router: IRouter = Router();
@@ -27,6 +29,8 @@ router.use(ordersRouter);
 router.use(seoRouter);
 router.use(newsletterRouter);
 router.use(emailWebhooksRouter);
+router.use(helpRouter);
+router.use(supportRouter);
 router.use(adminRouter);
 
 export default router;

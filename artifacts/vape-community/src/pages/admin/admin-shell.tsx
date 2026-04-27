@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
-import { Boxes, History, Upload, Mail, Users, Send, Package } from "lucide-react";
+import { Boxes, History, Upload, Mail, Users, Send, Package, BookOpen, Headphones } from "lucide-react";
 
 const tabs = [
   { href: "/admin/suppliers", label: "Suppliers", icon: Boxes },
@@ -12,6 +12,8 @@ const tabs = [
   { href: "/admin/email-log", label: "Email Log", icon: Mail },
   { href: "/admin/subscribers", label: "Subscribers", icon: Users },
   { href: "/admin/broadcast", label: "Broadcast", icon: Send },
+  { href: "/admin/help-articles", label: "Help Center", icon: BookOpen },
+  { href: "/admin/support", label: "Support Inbox", icon: Headphones },
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {

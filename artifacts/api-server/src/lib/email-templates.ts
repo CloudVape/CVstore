@@ -317,6 +317,61 @@ export function newsletterConfirmTemplate(opts: {
   return { subject, html, text };
 }
 
+export function ticketConfirmationTemplate(opts: {
+  customerName: string;
+  ticketId: number;
+  category: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `[#${opts.ticketId}] We received your message — VapeVault Support`;
+  const html = baseTemplate({
+    preheader: `Ticket #${opts.ticketId} confirmed — we'll reply to this email thread.`,
+    content: `
+      ${h1("We've Got Your Message")}
+      ${p(`Hi ${opts.customerName}, thanks for reaching out. Your support request has been logged and our team will be in touch shortly.`)}
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0;background:#0f0f11;border-radius:8px;border:1px solid #27272a;padding:16px;">
+        <tr>
+          <td style="color:#71717a;font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Ticket</td>
+          <td style="color:#f4f4f5;font-size:14px;font-family:monospace;text-align:right;">#${opts.ticketId}</td>
+        </tr>
+        <tr>
+          <td style="color:#71717a;font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;padding-top:8px;">Topic</td>
+          <td style="color:#f4f4f5;font-size:14px;font-family:monospace;text-align:right;padding-top:8px;">${opts.category}</td>
+        </tr>
+      </table>
+      ${divider()}
+      ${p(`You can reply directly to this email to add more information to your ticket. Please keep the ticket number in the subject line so your reply threads correctly.`, `color:${MUTED};font-size:13px;`)}
+    `,
+  });
+  const text = `VapeVault Support — Ticket #${opts.ticketId} confirmed\n\nHi ${opts.customerName}, we've received your message and will reply shortly.\n\nTicket: #${opts.ticketId}\nTopic: ${opts.category}\n\nYou can reply to this email to add more details.\n\nVapeVault Support`;
+  return { subject, html, text };
+}
+
+export function ticketReplyTemplate(opts: {
+  customerName: string;
+  ticketId: number;
+  replyBody: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `[#${opts.ticketId}] Reply from VapeVault Support`;
+  const escaped = opts.replyBody
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+  const safeBody = escaped.replace(/\n/g, "<br/>");
+  const html = baseTemplate({
+    preheader: `New reply on your VapeVault support ticket #${opts.ticketId}.`,
+    content: `
+      ${h1("Reply from VapeVault Support")}
+      ${p(`Hi ${opts.customerName}, here's our response to your support ticket #${opts.ticketId}:`)}
+      <div style="background:#0f0f11;border-radius:8px;border:1px solid #27272a;padding:20px;margin:16px 0;color:#f4f4f5;font-size:15px;line-height:1.7;">${safeBody}</div>
+      ${divider()}
+      ${p(`You can reply directly to this email if you have follow-up questions. Please keep the ticket number in the subject so your reply threads correctly.`, `color:${MUTED};font-size:13px;`)}
+    `,
+  });
+  const text = `VapeVault Support — Reply to ticket #${opts.ticketId}\n\nHi ${opts.customerName},\n\n${opts.replyBody}\n\nReply to this email if you have further questions.\n\nVapeVault Support`;
+  return { subject, html, text };
+}
+
 export function marketingBroadcastTemplate(opts: {
   subject: string;
   bodyHtml: string;

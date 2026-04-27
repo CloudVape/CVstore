@@ -27,7 +27,9 @@ export type EmailTemplate =
   | "refund-confirmation"
   | "review-request"
   | "marketing-broadcast"
-  | "newsletter-confirm";
+  | "newsletter-confirm"
+  | "support-ticket-confirmation"
+  | "support-reply";
 
 export interface SendEmailOptions {
   to: string;

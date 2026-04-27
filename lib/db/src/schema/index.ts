@@ -9,3 +9,5 @@ export * from "./suppliers";
 export * from "./import-runs";
 export * from "./email-log";
 export * from "./newsletter";
+export * from "./help-center";
+export * from "./support";

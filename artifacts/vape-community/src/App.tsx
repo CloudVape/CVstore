@@ -33,9 +33,15 @@ import AdminOrders from "@/pages/admin/orders";
 import AdminEmailLog from "@/pages/admin/email-log";
 import AdminSubscribers from "@/pages/admin/subscribers";
 import AdminBroadcast from "@/pages/admin/broadcast";
+import AdminHelpArticles from "@/pages/admin/help-articles";
+import AdminSupport from "@/pages/admin/support";
 import NewsletterConfirm from "@/pages/newsletter-confirm";
 import NewsletterUnsubscribe from "@/pages/newsletter-unsubscribe";
 import VerifyEmail from "@/pages/verify-email";
+import ResetPassword from "@/pages/reset-password";
+import Help from "@/pages/help";
+import HelpArticle from "@/pages/help-article";
+import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
@@ -276,9 +282,15 @@ function Router() {
         <Route path="/admin/email-log" component={AdminEmailLog} />
         <Route path="/admin/subscribers" component={AdminSubscribers} />
         <Route path="/admin/broadcast" component={AdminBroadcast} />
+        <Route path="/admin/help-articles" component={AdminHelpArticles} />
+        <Route path="/admin/support" component={AdminSupport} />
         <Route path="/newsletter/confirm" component={NewsletterConfirm} />
         <Route path="/newsletter/unsubscribe" component={NewsletterUnsubscribe} />
         <Route path="/verify-email" component={VerifyEmail} />
+        <Route path="/reset-password" component={ResetPassword} />
+        <Route path="/help" component={Help} />
+        <Route path="/help/:category/:slug" component={HelpArticle} />
+        <Route path="/contact" component={Contact} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
