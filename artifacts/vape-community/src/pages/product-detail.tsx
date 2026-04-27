@@ -159,7 +159,7 @@ export default function ProductDetail() {
 
           {(product.flavor || product.nicotineStrength || product.vgPgRatio || product.bottleSize) && (
             <Card className="bg-card/40 border-border/40 p-4 space-y-2 text-sm font-mono">
-              {product.flavor && <div className="flex justify-between"><span className="text-muted-foreground uppercase text-xs tracking-wider">Flavor</span><span>{product.flavor}</span></div>}
+              {product.flavor && <div className="flex justify-between"><span className="text-muted-foreground uppercase text-xs tracking-wider">Flavour</span><span>{product.flavor}</span></div>}
               {product.nicotineStrength && <div className="flex justify-between"><span className="text-muted-foreground uppercase text-xs tracking-wider">Nicotine</span><span>{product.nicotineStrength}</span></div>}
               {product.vgPgRatio && <div className="flex justify-between"><span className="text-muted-foreground uppercase text-xs tracking-wider">VG/PG</span><span>{product.vgPgRatio}</span></div>}
               {product.bottleSize && <div className="flex justify-between"><span className="text-muted-foreground uppercase text-xs tracking-wider">Size</span><span>{product.bottleSize}</span></div>}
@@ -213,7 +213,7 @@ export default function ProductDetail() {
           <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border/40 text-center text-xs font-mono">
             <div className="space-y-1">
               <Truck className="w-5 h-5 mx-auto text-primary/80" />
-              <p className="text-muted-foreground">Free over $50</p>
+              <p className="text-muted-foreground">Free over £50</p>
             </div>
             <div className="space-y-1">
               <Shield className="w-5 h-5 mx-auto text-primary/80" />

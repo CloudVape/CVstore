@@ -18,7 +18,7 @@ export default function Home() {
   useSeo({
     title: "Premium Vape Shop & Community",
     description:
-      "Shop authentic vape kits, pod systems, e-liquids, coils, and accessories at CloudVape. Free shipping over $50, same-day dispatch before 3pm EST.",
+      "Shop authentic vape kits, pod systems, e-liquids, coils, and accessories at CloudVape. Free shipping over £50, same-day dispatch.",
     canonical: "/",
     keywords: [
       "vape shop",
@@ -49,14 +49,14 @@ export default function Home() {
           <div className="space-y-6">
             <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary font-mono backdrop-blur-md">
               <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse" />
-              Free shipping over $50
+              Free shipping over £50
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase leading-[1.05]">
               Premium gear.<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Curated by vapers.</span>
             </h1>
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-md">
-              Mods, pods, juices, coils — the gear we'd buy ourselves, vetted by our community of cloud chasers and flavor heads.
+              Mods, pods, juices, coils — the gear we'd buy ourselves, vetted by our community of cloud chasers and flavour heads.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/shop/categories">
@@ -94,7 +94,7 @@ export default function Home() {
       <section className="border-b border-border/40 bg-card/30">
         <div className="container mx-auto max-w-6xl px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           {[
-            { Icon: Truck, label: "Free shipping $50+", sub: "Same-day dispatch" },
+            { Icon: Truck, label: "Free shipping £50+", sub: "Same-day dispatch" },
             { Icon: ShieldCheck, label: "100% authentic", sub: "Direct from brands" },
             { Icon: Award, label: "Community vetted", sub: "Real vaper reviews" },
             { Icon: Headphones, label: "Expert support", sub: "Vapers helping vapers" },

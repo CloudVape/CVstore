@@ -10,9 +10,8 @@ export default function Cart() {
   useSeo({ title: "Cart", description: "Your CloudVape shopping cart.", canonical: "/cart", robots: "noindex, nofollow" });
   const { items, subtotalCents, updateQuantity, removeItem } = useCart();
 
-  const shippingCents = subtotalCents >= 5000 ? 0 : subtotalCents > 0 ? 599 : 0;
-  const taxCents = Math.round(subtotalCents * 0.0875);
-  const totalCents = subtotalCents + shippingCents + taxCents;
+  const shippingCents = subtotalCents >= 5000 ? 0 : subtotalCents > 0 ? 399 : 0;
+  const totalCents = subtotalCents + shippingCents;
   const amountToFreeShipping = Math.max(0, 5000 - subtotalCents);
 
   if (items.length === 0) {
@@ -105,14 +104,11 @@ export default function Cart() {
                 <span className="text-muted-foreground">Shipping</span>
                 <span>{shippingCents === 0 ? <span className="text-primary">Free</span> : formatPrice(shippingCents)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax (est.)</span>
-                <span>{formatPrice(taxCents)}</span>
-              </div>
               <div className="flex justify-between text-base font-bold pt-3 border-t border-border/40">
                 <span>Total</span>
                 <span className="text-primary">{formatPrice(totalCents)}</span>
               </div>
+              <p className="text-[10px] font-mono text-muted-foreground text-right">VAT included</p>
             </div>
 
             <Link href="/checkout" className="block">

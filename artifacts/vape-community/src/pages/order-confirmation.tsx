@@ -59,11 +59,11 @@ export default function OrderConfirmation() {
         <div className="space-y-2 text-sm font-mono pt-4 border-t border-border/40">
           <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatPrice(order.subtotalCents)}</span></div>
           <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>{order.shippingCents === 0 ? <span className="text-primary">Free</span> : formatPrice(order.shippingCents)}</span></div>
-          <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>{formatPrice(order.taxCents)}</span></div>
           <div className="flex justify-between text-base font-bold pt-3 border-t border-border/40">
             <span>Total</span>
             <span className="text-primary">{formatPrice(order.totalCents)}</span>
           </div>
+          <p className="text-[10px] font-mono text-muted-foreground text-right">VAT included</p>
         </div>
       </Card>
 
@@ -74,7 +74,8 @@ export default function OrderConfirmation() {
         <div className="text-sm font-mono">
           <p>{order.customerName}</p>
           <p className="text-muted-foreground">{order.shippingAddress}</p>
-          <p className="text-muted-foreground">{order.shippingCity}, {order.shippingState} {order.shippingZip}</p>
+          <p className="text-muted-foreground">{order.shippingCity}{order.shippingState ? `, ${order.shippingState}` : ""}</p>
+          <p className="text-muted-foreground">{order.shippingZip}</p>
           <p className="text-muted-foreground">{order.shippingCountry}</p>
         </div>
         <p className="text-xs font-mono text-muted-foreground border-t border-border/40 pt-3">

@@ -83,7 +83,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <JsonLd id="org" data={organizationJsonLd()} />
       <JsonLd id="website" data={websiteJsonLd()} />
       <div className="w-full bg-primary/10 border-b border-primary/20 text-center py-1.5 text-[11px] font-mono uppercase tracking-wider text-primary">
-        Free shipping on orders over $50 — Same-day dispatch before 3pm EST
+        Free shipping on orders over £50 — Same-day dispatch before 3pm
       </div>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 max-w-6xl items-center px-3 sm:px-4 gap-2 sm:gap-0">
@@ -176,7 +176,7 @@ export function Layout({ children }: { children: ReactNode }) {
               </span>
             </Link>
             <p className="text-muted-foreground text-xs leading-relaxed">
-              The shop and community for cloud chasers and flavor enthusiasts. 21+ only.
+              The shop and community for cloud chasers and flavour enthusiasts. 21+ only.
             </p>
           </div>
           <div className="space-y-2">

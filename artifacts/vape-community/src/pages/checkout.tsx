@@ -25,15 +25,14 @@ export default function Checkout() {
     shippingCity: "",
     shippingState: "",
     shippingZip: "",
-    shippingCountry: "US",
+    shippingCountry: "GB",
     cardNumber: "",
     cardExpiry: "",
     cardCvc: "",
   });
 
-  const shippingCents = subtotalCents >= 5000 ? 0 : 599;
-  const taxCents = Math.round(subtotalCents * 0.0875);
-  const totalCents = subtotalCents + shippingCents + taxCents;
+  const shippingCents = subtotalCents >= 5000 ? 0 : 399;
+  const totalCents = subtotalCents + shippingCents;
 
   if (items.length === 0) {
     return (
@@ -117,11 +116,11 @@ export default function Checkout() {
                   <Input id="city" required value={form.shippingCity} onChange={(e) => set("shippingCity", e.target.value)} className="bg-background/50 mt-1" />
                 </div>
                 <div>
-                  <Label htmlFor="state" className="text-xs font-mono uppercase tracking-wider">State</Label>
-                  <Input id="state" required value={form.shippingState} onChange={(e) => set("shippingState", e.target.value)} className="bg-background/50 mt-1" />
+                  <Label htmlFor="state" className="text-xs font-mono uppercase tracking-wider">County <span className="normal-case tracking-normal opacity-60">(optional)</span></Label>
+                  <Input id="state" value={form.shippingState} onChange={(e) => set("shippingState", e.target.value)} className="bg-background/50 mt-1" />
                 </div>
                 <div>
-                  <Label htmlFor="zip" className="text-xs font-mono uppercase tracking-wider">ZIP</Label>
+                  <Label htmlFor="zip" className="text-xs font-mono uppercase tracking-wider">Postcode</Label>
                   <Input id="zip" required value={form.shippingZip} onChange={(e) => set("shippingZip", e.target.value)} className="bg-background/50 mt-1" />
                 </div>
               </div>
@@ -173,11 +172,11 @@ export default function Checkout() {
             <div className="space-y-2 text-sm font-mono pt-3 border-t border-border/40">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatPrice(subtotalCents)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>{shippingCents === 0 ? <span className="text-primary">Free</span> : formatPrice(shippingCents)}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>{formatPrice(taxCents)}</span></div>
               <div className="flex justify-between text-base font-bold pt-3 border-t border-border/40">
                 <span>Total</span>
                 <span className="text-primary">{formatPrice(totalCents)}</span>
               </div>
+              <p className="text-[10px] font-mono text-muted-foreground text-right">VAT included</p>
             </div>
             <Button
               type="submit"

@@ -21,7 +21,7 @@ export const ordersTable = pgTable("orders", {
   shippingCity: text("shipping_city").notNull(),
   shippingState: text("shipping_state").notNull(),
   shippingZip: text("shipping_zip").notNull(),
-  shippingCountry: text("shipping_country").notNull().default("US"),
+  shippingCountry: text("shipping_country").notNull().default("GB"),
   items: jsonb("items").$type<OrderItem[]>().notNull(),
   subtotalCents: integer("subtotal_cents").notNull(),
   shippingCents: integer("shipping_cents").notNull().default(0),

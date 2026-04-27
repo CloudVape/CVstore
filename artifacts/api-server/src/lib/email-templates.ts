@@ -20,7 +20,7 @@ function baseTemplate(opts: {
     : "";
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -95,12 +95,12 @@ function orderItemsTable(items: OrderItem[], subtotalCents: number, shippingCent
         `<tr>
           <td style="padding:8px 0;color:${TEXT};font-size:14px;border-bottom:1px solid #27272a;">${item.name}</td>
           <td style="padding:8px 0;color:${MUTED};font-size:14px;text-align:center;border-bottom:1px solid #27272a;">×${item.quantity}</td>
-          <td style="padding:8px 0;color:${TEXT};font-size:14px;text-align:right;border-bottom:1px solid #27272a;">$${(item.priceCents * item.quantity / 100).toFixed(2)}</td>
+          <td style="padding:8px 0;color:${TEXT};font-size:14px;text-align:right;border-bottom:1px solid #27272a;">£${(item.priceCents * item.quantity / 100).toFixed(2)}</td>
         </tr>`
     )
     .join("");
 
-  const shipping = shippingCents === 0 ? "FREE" : `$${(shippingCents / 100).toFixed(2)}`;
+  const shipping = shippingCents === 0 ? "FREE" : `£${(shippingCents / 100).toFixed(2)}`;
 
   return `<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0;">
     <thead>
@@ -112,10 +112,10 @@ function orderItemsTable(items: OrderItem[], subtotalCents: number, shippingCent
     </thead>
     <tbody>${rows}</tbody>
     <tfoot>
-      <tr><td colspan="2" style="padding:8px 0;color:${MUTED};font-size:13px;">Subtotal</td><td style="padding:8px 0;color:${TEXT};font-size:13px;text-align:right;">$${(subtotalCents/100).toFixed(2)}</td></tr>
+      <tr><td colspan="2" style="padding:8px 0;color:${MUTED};font-size:13px;">Subtotal</td><td style="padding:8px 0;color:${TEXT};font-size:13px;text-align:right;">£${(subtotalCents/100).toFixed(2)}</td></tr>
       <tr><td colspan="2" style="padding:4px 0;color:${MUTED};font-size:13px;">Shipping</td><td style="padding:4px 0;color:${TEXT};font-size:13px;text-align:right;">${shipping}</td></tr>
-      <tr><td colspan="2" style="padding:4px 0;color:${MUTED};font-size:13px;">Tax</td><td style="padding:4px 0;color:${TEXT};font-size:13px;text-align:right;">$${(taxCents/100).toFixed(2)}</td></tr>
-      <tr><td colspan="2" style="padding:12px 0 4px;color:${TEXT};font-size:16px;font-weight:700;border-top:1px solid #3f3f46;">Total</td><td style="padding:12px 0 4px;color:${BRAND_COLOR};font-size:16px;font-weight:700;text-align:right;border-top:1px solid #3f3f46;">$${(totalCents/100).toFixed(2)}</td></tr>
+      <tr><td colspan="2" style="padding:12px 0 4px;color:${TEXT};font-size:16px;font-weight:700;border-top:1px solid #3f3f46;">Total</td><td style="padding:12px 0 4px;color:${BRAND_COLOR};font-size:16px;font-weight:700;text-align:right;border-top:1px solid #3f3f46;">£${(totalCents/100).toFixed(2)}</td></tr>
+      <tr><td colspan="3" style="padding:4px 0;color:${MUTED};font-size:11px;font-family:monospace;text-align:right;">VAT included</td></tr>
     </tfoot>
   </table>`;
 }
@@ -200,11 +200,11 @@ export function orderConfirmationTemplate(opts: {
       ${orderItemsTable(opts.items, opts.subtotalCents, opts.shippingCents, opts.taxCents, opts.totalCents)}
       ${divider()}
       <p style="margin:0 0 4px;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Shipping to</p>
-      <p style="margin:0 0 24px;color:${TEXT};font-size:14px;line-height:1.6;">${opts.shippingAddress}<br/>${opts.shippingCity}, ${opts.shippingState} ${opts.shippingZip}</p>
+      <p style="margin:0 0 24px;color:${TEXT};font-size:14px;line-height:1.6;">${opts.shippingAddress}<br/>${opts.shippingCity}${opts.shippingState ? `, ${opts.shippingState}` : ""}<br/>${opts.shippingZip}</p>
       ${button(orderUrl, "View Order")}
     `,
   });
-  const text = `Order Confirmed — ${opts.orderNumber}\n\nHi ${opts.customerName}, your order is confirmed.\n\nItems:\n${opts.items.map((i) => `  ${i.name} x${i.quantity} — $${(i.priceCents * i.quantity / 100).toFixed(2)}`).join("\n")}\n\nTotal: $${(opts.totalCents / 100).toFixed(2)}\n\nTrack your order: ${orderUrl}\n\nCloudVape`;
+  const text = `Order Confirmed — ${opts.orderNumber}\n\nHi ${opts.customerName}, your order is confirmed.\n\nItems:\n${opts.items.map((i) => `  ${i.name} x${i.quantity} — £${(i.priceCents * i.quantity / 100).toFixed(2)}`).join("\n")}\n\nTotal: £${(opts.totalCents / 100).toFixed(2)} (VAT included)\n\nTrack your order: ${orderUrl}\n\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -261,18 +261,18 @@ export function refundConfirmationTemplate(opts: {
 }): { subject: string; html: string; text: string } {
   const subject = `Refund processed for order ${opts.orderNumber}`;
   const html = baseTemplate({
-    preheader: `Your refund of $${(opts.totalCents / 100).toFixed(2)} for order ${opts.orderNumber} has been processed.`,
+    preheader: `Your refund of £${(opts.totalCents / 100).toFixed(2)} for order ${opts.orderNumber} has been processed.`,
     content: `
       ${h1("Refund Processed")}
       ${p(`Hi ${opts.customerName}, your refund has been processed.`)}
       <p style="margin:0 0 4px;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Amount Refunded</p>
-      <p style="margin:0 0 24px;color:${BRAND_COLOR};font-size:24px;font-weight:800;font-family:monospace;">$${(opts.totalCents / 100).toFixed(2)}</p>
+      <p style="margin:0 0 24px;color:${BRAND_COLOR};font-size:24px;font-weight:800;font-family:monospace;">£${(opts.totalCents / 100).toFixed(2)}</p>
       ${p("Please allow 5–10 business days for the funds to appear on your statement depending on your payment provider.")}
       ${divider()}
       ${p(`Questions? Reply to this email and we'll help.`, `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Refund processed for order ${opts.orderNumber}\n\nHi ${opts.customerName}, a refund of $${(opts.totalCents / 100).toFixed(2)} has been processed. Allow 5–10 business days.\n\nCloudVape`;
+  const text = `Refund processed for order ${opts.orderNumber}\n\nHi ${opts.customerName}, a refund of £${(opts.totalCents / 100).toFixed(2)} has been processed. Allow 5–10 business days.\n\nCloudVape`;
   return { subject, html, text };
 }
 

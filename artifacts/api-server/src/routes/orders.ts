@@ -79,9 +79,9 @@ router.post("/orders", async (req, res): Promise<void> => {
       }
 
       const subtotalCents = items.reduce((sum, i) => sum + i.priceCents * i.quantity, 0);
-      const shippingCents = subtotalCents >= 5000 ? 0 : 599;
-      const taxCents = Math.round(subtotalCents * 0.0875);
-      const totalCents = subtotalCents + shippingCents + taxCents;
+      const shippingCents = subtotalCents >= 5000 ? 0 : 399;
+      const taxCents = 0;
+      const totalCents = subtotalCents + shippingCents;
 
       // Decrement stock atomically
       for (const product of products) {
@@ -103,7 +103,7 @@ router.post("/orders", async (req, res): Promise<void> => {
           shippingCity: data.shippingCity,
           shippingState: data.shippingState,
           shippingZip: data.shippingZip,
-          shippingCountry: data.shippingCountry ?? "US",
+          shippingCountry: data.shippingCountry ?? "GB",
           items,
           subtotalCents,
           shippingCents,
