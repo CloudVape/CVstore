@@ -1,8 +1,103 @@
 import { useListCategories } from "@workspace/api-client-react";
 import { Link } from "wouter";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Grid, Hash, ArrowRight } from "lucide-react";
+import {
+  Grid,
+  ArrowUpRight,
+  Cpu,
+  Droplets,
+  Wind,
+  LifeBuoy,
+  Newspaper,
+  Wrench,
+  MessagesSquare,
+  type LucideIcon,
+} from "lucide-react";
 import { useSeo } from "@/lib/seo";
+
+type CategoryStyle = {
+  Icon: LucideIcon;
+  iconGradient: string;
+  ring: string;
+  glow: string;
+  accentText: string;
+  badgeBg: string;
+  ghostIconColor: string;
+  tag: string;
+};
+
+const STYLES: Record<string, CategoryStyle> = {
+  "hardware-reviews": {
+    Icon: Cpu,
+    iconGradient: "from-cyan-400 to-sky-600",
+    ring: "ring-cyan-400/30 group-hover:ring-cyan-400/60",
+    glow: "group-hover:shadow-[0_0_40px_-8px_rgba(34,211,238,0.45)]",
+    accentText: "group-hover:text-cyan-300",
+    badgeBg: "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30",
+    ghostIconColor: "text-cyan-400",
+    tag: "REVIEWS",
+  },
+  "e-liquid-talk": {
+    Icon: Droplets,
+    iconGradient: "from-pink-400 to-fuchsia-600",
+    ring: "ring-pink-400/30 group-hover:ring-pink-400/60",
+    glow: "group-hover:shadow-[0_0_40px_-8px_rgba(236,72,153,0.45)]",
+    accentText: "group-hover:text-pink-300",
+    badgeBg: "bg-pink-500/10 text-pink-300 border border-pink-500/30",
+    ghostIconColor: "text-pink-400",
+    tag: "FLAVOUR",
+  },
+  "cloud-chasing": {
+    Icon: Wind,
+    iconGradient: "from-sky-300 to-indigo-500",
+    ring: "ring-sky-400/30 group-hover:ring-sky-400/60",
+    glow: "group-hover:shadow-[0_0_40px_-8px_rgba(56,189,248,0.45)]",
+    accentText: "group-hover:text-sky-300",
+    badgeBg: "bg-sky-500/10 text-sky-300 border border-sky-500/30",
+    ghostIconColor: "text-sky-400",
+    tag: "CLOUDS",
+  },
+  "beginner-help": {
+    Icon: LifeBuoy,
+    iconGradient: "from-amber-300 to-orange-600",
+    ring: "ring-amber-400/30 group-hover:ring-amber-400/60",
+    glow: "group-hover:shadow-[0_0_40px_-8px_rgba(251,191,36,0.45)]",
+    accentText: "group-hover:text-amber-300",
+    badgeBg: "bg-amber-500/10 text-amber-300 border border-amber-500/30",
+    ghostIconColor: "text-amber-400",
+    tag: "STARTERS",
+  },
+  "industry-news": {
+    Icon: Newspaper,
+    iconGradient: "from-violet-400 to-purple-700",
+    ring: "ring-violet-400/30 group-hover:ring-violet-400/60",
+    glow: "group-hover:shadow-[0_0_40px_-8px_rgba(167,139,250,0.45)]",
+    accentText: "group-hover:text-violet-300",
+    badgeBg: "bg-violet-500/10 text-violet-300 border border-violet-500/30",
+    ghostIconColor: "text-violet-400",
+    tag: "NEWS",
+  },
+  "diy-coil-building": {
+    Icon: Wrench,
+    iconGradient: "from-rose-400 to-red-600",
+    ring: "ring-rose-400/30 group-hover:ring-rose-400/60",
+    glow: "group-hover:shadow-[0_0_40px_-8px_rgba(251,113,133,0.45)]",
+    accentText: "group-hover:text-rose-300",
+    badgeBg: "bg-rose-500/10 text-rose-300 border border-rose-500/30",
+    ghostIconColor: "text-rose-400",
+    tag: "BUILDS",
+  },
+};
+
+const FALLBACK_STYLE: CategoryStyle = {
+  Icon: MessagesSquare,
+  iconGradient: "from-primary to-secondary",
+  ring: "ring-primary/30 group-hover:ring-primary/60",
+  glow: "group-hover:shadow-[0_0_40px_-8px_rgba(34,211,238,0.45)]",
+  accentText: "group-hover:text-primary",
+  badgeBg: "bg-primary/10 text-primary border border-primary/30",
+  ghostIconColor: "text-primary",
+  tag: "TOPIC",
+};
 
 export default function Categories() {
   const { data: categories, isLoading } = useListCategories();
@@ -23,7 +118,8 @@ export default function Categories() {
           Categories
         </h1>
         <p className="text-muted-foreground font-mono max-w-2xl mx-auto">
-          Explore discussions by topic. From hardware reviews to juice recommendations, find your niche.
+          Explore discussions by topic. From hardware reviews to juice
+          recommendations, find your niche.
         </p>
       </div>
 
@@ -32,35 +128,76 @@ export default function Categories() {
           <span className="animate-pulse">Loading categories...</span>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {categories?.map((category) => (
-            <Link key={category.id} href={`/forum?categoryId=${category.id}`}>
-              <Card className="h-full border-border/40 bg-card/30 hover:bg-card hover:border-secondary/50 transition-all cursor-pointer group shadow-sm hover:shadow-[0_0_20px_rgba(var(--secondary),0.1)]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="font-bold text-xl tracking-tight group-hover:text-secondary transition-colors">
-                      {category.name}
-                    </span>
-                    <Hash className="h-5 w-5 text-muted-foreground group-hover:text-secondary transition-colors opacity-50" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-6 line-clamp-3">
-                    {category.description}
-                  </p>
-                  <div className="flex items-center justify-between pt-4 border-t border-border/20">
-                    <span className="text-xs font-mono uppercase bg-background/50 px-2.5 py-1 rounded text-muted-foreground">
-                      {category.postCount} Posts
-                    </span>
-                    <span className="text-xs font-mono text-secondary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                      Browse <ArrowRight className="h-3 w-3" />
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {categories?.map((category) => {
+            const style = STYLES[category.slug] ?? FALLBACK_STYLE;
+            const { Icon } = style;
+            return (
+              <Link
+                key={category.id}
+                href={`/forum?categoryId=${category.id}`}
+                data-testid={`link-category-${category.slug}`}
+              >
+                <article
+                  className={`relative h-full overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/40 p-6 cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:border-border ${style.glow}`}
+                >
+                  <Icon
+                    aria-hidden="true"
+                    className={`absolute -right-6 -bottom-6 h-40 w-40 opacity-[0.06] ${style.ghostIconColor} transition-all duration-500 group-hover:opacity-[0.12] group-hover:scale-110 group-hover:rotate-6`}
+                  />
+
+                  <div
+                    className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background:
+                        "radial-gradient(circle at top right, rgba(255,255,255,0.04), transparent 60%)",
+                    }}
+                  />
+
+                  <div className="relative flex items-start justify-between gap-4 mb-5">
+                    <div
+                      className={`h-14 w-14 rounded-xl bg-gradient-to-br ${style.iconGradient} flex items-center justify-center shadow-lg ring-1 ${style.ring} transition-all duration-300 group-hover:scale-105`}
+                    >
+                      <Icon className="h-7 w-7 text-white drop-shadow-sm" strokeWidth={2.25} />
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono font-bold tracking-[0.18em] px-2 py-1 rounded-md ${style.badgeBg}`}
+                    >
+                      {style.tag}
                     </span>
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-          
+
+                  <h2
+                    className={`relative font-black text-xl tracking-tight mb-2 transition-colors ${style.accentText}`}
+                  >
+                    {category.name}
+                  </h2>
+
+                  <p className="relative text-sm text-muted-foreground/90 mb-6 line-clamp-2 leading-relaxed">
+                    {category.description}
+                  </p>
+
+                  <div className="relative flex items-center justify-between pt-4 border-t border-border/30">
+                    <span className="inline-flex items-baseline gap-1.5 text-xs font-mono uppercase tracking-wider">
+                      <span className="text-foreground font-bold text-sm tabular-nums">
+                        {category.postCount}
+                      </span>
+                      <span className="text-muted-foreground/70">
+                        {category.postCount === 1 ? "post" : "posts"}
+                      </span>
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-1 text-xs font-mono font-semibold opacity-60 group-hover:opacity-100 transition-all group-hover:gap-2 ${style.accentText}`}
+                    >
+                      Browse
+                      <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-12" />
+                    </span>
+                  </div>
+                </article>
+              </Link>
+            );
+          })}
+
           {categories?.length === 0 && (
             <div className="col-span-full py-12 text-center text-muted-foreground font-mono">
               No categories found.
