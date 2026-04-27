@@ -50,7 +50,7 @@ export default function Forum() {
         
         {user ? (
           <Link href="/forum/new">
-            <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(var(--primary),0.3)]">
+            <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-wider shadow-[0_0_15px_hsl(var(--primary)/0.3)]">
               <PlusCircle className="mr-2 h-4 w-4" /> New Post
             </Button>
           </Link>

@@ -189,7 +189,7 @@ export default function CreatePost() {
               <Button 
                 type="submit" 
                 disabled={createPost.isPending}
-                className="h-12 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-sm uppercase tracking-wider shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+                className="h-12 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-sm uppercase tracking-wider shadow-[0_0_15px_hsl(var(--primary)/0.3)]"
               >
                 {createPost.isPending ? "Publishing..." : "Publish Post"}
               </Button>

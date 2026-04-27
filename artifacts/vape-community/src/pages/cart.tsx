@@ -22,7 +22,7 @@ export default function Cart() {
         <h1 className="text-3xl font-black uppercase tracking-tight">Your cart is empty</h1>
         <p className="text-muted-foreground font-mono text-sm">Time to fill it with clouds.</p>
         <Link href="/">
-          <Button size="lg" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono uppercase tracking-wider shadow-[0_0_20px_rgba(var(--primary),0.4)]">
+          <Button size="lg" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono uppercase tracking-wider shadow-[0_0_20px_hsl(var(--primary)/0.4)]">
             Browse the shop
           </Button>
         </Link>
@@ -118,7 +118,7 @@ export default function Cart() {
             <Link href="/checkout" className="block">
               <Button
                 size="lg"
-                className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono uppercase tracking-wider shadow-[0_0_20px_rgba(var(--primary),0.4)] hover:shadow-[0_0_30px_rgba(var(--primary),0.6)]"
+                className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono uppercase tracking-wider shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)]"
               >
                 Checkout
               </Button>

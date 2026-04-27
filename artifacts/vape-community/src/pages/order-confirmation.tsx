@@ -27,7 +27,7 @@ export default function OrderConfirmation() {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12 space-y-8">
       <div className="text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/15 border border-primary/30 shadow-[0_0_30px_rgba(var(--primary),0.3)]">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/15 border border-primary/30 shadow-[0_0_30px_hsl(var(--primary)/0.3)]">
           <CheckCircle2 className="w-8 h-8 text-primary" />
         </div>
         <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight">Order confirmed</h1>

@@ -59,7 +59,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <Button variant="ghost" size="sm" className="relative gap-2 px-2 sm:px-3" aria-label="Cart">
                 <ShoppingCart className="h-5 w-5" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-mono font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center shadow-[0_0_10px_rgba(var(--primary),0.5)]">
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-mono font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center shadow-[0_0_10px_hsl(var(--primary)/0.5)]">
                     {itemCount}
                   </span>
                 )}
@@ -97,7 +97,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   <Button variant="ghost" size="sm" className="font-mono text-xs uppercase tracking-wider hidden sm:flex">Log in</Button>
                 </Link>
                 <Link href="/join">
-                  <Button size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(var(--primary),0.3)] px-3 sm:px-4">Sign up</Button>
+                  <Button size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-wider shadow-[0_0_15px_hsl(var(--primary)/0.3)] px-3 sm:px-4">Sign up</Button>
                 </Link>
               </div>
             )}

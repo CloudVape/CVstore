@@ -195,7 +195,7 @@ export default function ProductDetail() {
               size="lg"
               onClick={handleAdd}
               disabled={!product.inStock}
-              className="flex-1 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono uppercase tracking-wider shadow-[0_0_20px_rgba(var(--primary),0.4)] hover:shadow-[0_0_30px_rgba(var(--primary),0.6)] gap-2"
+              className="flex-1 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono uppercase tracking-wider shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] gap-2"
             >
               <ShoppingCart className="w-4 h-4" /> Add to Cart
             </Button>

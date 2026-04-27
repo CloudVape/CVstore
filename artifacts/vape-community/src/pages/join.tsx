@@ -141,7 +141,7 @@ export default function Join() {
               />
               <Button 
                 type="submit" 
-                className="w-full h-12 mt-6 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-sm uppercase tracking-wider shadow-[0_0_15px_rgba(var(--primary),0.3)]" 
+                className="w-full h-12 mt-6 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-sm uppercase tracking-wider shadow-[0_0_15px_hsl(var(--primary)/0.3)]" 
                 disabled={createUser.isPending || loginUser.isPending}
               >
                 {createUser.isPending ? "Creating Account..." : "Sign Up"}

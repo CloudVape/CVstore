@@ -41,12 +41,12 @@ export function ProductCard({ product }: { product: Product }) {
           />
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {product.isNew && (
-              <Badge className="bg-secondary text-secondary-foreground border-0 font-mono text-[9px] uppercase tracking-wider gap-1 shadow-[0_0_10px_rgba(var(--secondary),0.4)]">
+              <Badge className="bg-secondary text-secondary-foreground border-0 font-mono text-[9px] uppercase tracking-wider gap-1 shadow-[0_0_10px_hsl(var(--secondary)/0.4)]">
                 <Sparkles className="w-2.5 h-2.5" /> New
               </Badge>
             )}
             {product.isBestseller && (
-              <Badge className="bg-primary text-primary-foreground border-0 font-mono text-[9px] uppercase tracking-wider gap-1 shadow-[0_0_10px_rgba(var(--primary),0.4)]">
+              <Badge className="bg-primary text-primary-foreground border-0 font-mono text-[9px] uppercase tracking-wider gap-1 shadow-[0_0_10px_hsl(var(--primary)/0.4)]">
                 <Flame className="w-2.5 h-2.5" /> Bestseller
               </Badge>
             )}
@@ -86,7 +86,7 @@ export function ProductCard({ product }: { product: Product }) {
               size="sm"
               onClick={handleAdd}
               disabled={!product.inStock}
-              className="rounded-full h-9 w-9 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_15px_rgba(var(--primary),0.3)] hover:shadow-[0_0_20px_rgba(var(--primary),0.5)]"
+              className="rounded-full h-9 w-9 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_15px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.5)]"
               aria-label="Add to cart"
             >
               <ShoppingCart className="w-4 h-4" />
