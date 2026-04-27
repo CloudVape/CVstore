@@ -6,7 +6,6 @@ import {
   LoginUserBody,
   GetUserParams,
 } from "@workspace/api-zod";
-import { logger } from "../lib/logger";
 import crypto from "crypto";
 
 const router: IRouter = Router();
@@ -15,7 +14,15 @@ function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
 
-function formatUser(u: typeof usersTable.$inferSelect) {
+function newSessionToken(): string {
+  return crypto.randomBytes(32).toString("base64url");
+}
+
+/**
+ * Public projection — safe to return on listings and lookups by other users.
+ * Deliberately omits `isAdmin` (privilege disclosure) and `sessionToken`.
+ */
+function formatUserPublic(u: typeof usersTable.$inferSelect) {
   return {
     id: u.id,
     username: u.username,
@@ -28,9 +35,23 @@ function formatUser(u: typeof usersTable.$inferSelect) {
   };
 }
 
-router.get("/users", async (req, res): Promise<void> => {
+/**
+ * Private projection — only returned to the authenticated requester
+ * (login/signup responses). Includes `isAdmin` so the client can render the
+ * admin nav, and the freshly-issued `sessionToken` to be sent back as a
+ * Bearer token on subsequent privileged requests.
+ */
+function formatUserPrivate(u: typeof usersTable.$inferSelect) {
+  return {
+    ...formatUserPublic(u),
+    isAdmin: u.isAdmin,
+    sessionToken: u.sessionToken,
+  };
+}
+
+router.get("/users", async (_req, res): Promise<void> => {
   const users = await db.select().from(usersTable).orderBy(usersTable.joinedAt);
-  res.json(users.map(formatUser));
+  res.json(users.map(formatUserPublic));
 });
 
 router.post("/users/login", async (req, res): Promise<void> => {
@@ -50,7 +71,13 @@ router.post("/users/login", async (req, res): Promise<void> => {
     res.status(401).json({ error: "Invalid email or password" });
     return;
   }
-  res.json(formatUser(user));
+  const token = newSessionToken();
+  const [updated] = await db
+    .update(usersTable)
+    .set({ sessionToken: token })
+    .where(eq(usersTable.id, user.id))
+    .returning();
+  res.json(formatUserPrivate(updated));
 });
 
 router.post("/users", async (req, res): Promise<void> => {
@@ -70,6 +97,7 @@ router.post("/users", async (req, res): Promise<void> => {
     return;
   }
 
+  const token = newSessionToken();
   const [user] = await db
     .insert(usersTable)
     .values({
@@ -78,10 +106,11 @@ router.post("/users", async (req, res): Promise<void> => {
       passwordHash: hashPassword(password),
       bio: bio ?? null,
       isAiPersona: false,
+      sessionToken: token,
     })
     .returning();
   req.log.info({ userId: user.id }, "New user registered");
-  res.status(201).json(formatUser(user));
+  res.status(201).json(formatUserPrivate(user));
 });
 
 router.get("/users/:id", async (req, res): Promise<void> => {
@@ -98,7 +127,7 @@ router.get("/users/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "User not found" });
     return;
   }
-  res.json(formatUser(user));
+  res.json(formatUserPublic(user));
 });
 
 export default router;

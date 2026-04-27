@@ -10,6 +10,14 @@ export const usersTable = pgTable("users", {
   avatarUrl: text("avatar_url"),
   bio: text("bio"),
   isAiPersona: boolean("is_ai_persona").notNull().default(false),
+  isAdmin: boolean("is_admin").notNull().default(false),
+  /**
+   * Random per-user token, rotated on each login. Sent by the client as
+   * `Authorization: Bearer <token>` to verify identity for privileged routes
+   * (notably /api/admin/*). NULL means the user has never logged in or has
+   * been signed out everywhere.
+   */
+  sessionToken: text("session_token"),
   postCount: integer("post_count").notNull().default(0),
   joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
 });

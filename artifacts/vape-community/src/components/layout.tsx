@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
-import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid } from "lucide-react";
+import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid, Shield } from "lucide-react";
 import { ReactNode } from "react";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -67,6 +67,20 @@ export function Layout({ children }: { children: ReactNode }) {
             </Link>
             {user ? (
               <>
+                {user.isAdmin && (
+                  <Link href="/admin/suppliers">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-2 font-mono text-xs uppercase tracking-wider px-2 sm:px-3"
+                      aria-label="Admin"
+                      title="Admin"
+                    >
+                      <Shield className="h-4 w-4 text-primary" />
+                      <span className="hidden sm:inline">Admin</span>
+                    </Button>
+                  </Link>
+                )}
                 <Link href={`/profile/${user.id}`}>
                   <Button variant="ghost" size="sm" className="hidden sm:flex gap-2 px-3">
                     <User className="h-4 w-4" />

@@ -5,3 +5,5 @@ export * from "./comments";
 export * from "./product-categories";
 export * from "./products";
 export * from "./orders";
+export * from "./suppliers";
+export * from "./import-runs";

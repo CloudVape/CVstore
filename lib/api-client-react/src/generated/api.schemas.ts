@@ -18,6 +18,13 @@ export interface User {
   /** @nullable */
   bio?: string | null;
   isAiPersona: boolean;
+  /** Only present on responses that authenticate the requester (login, signup). Public endpoints omit this field to avoid disclosing which accounts have admin privileges. */
+  isAdmin?: boolean;
+  /**
+   * Bearer token issued by login/signup. Only returned to the user it belongs to. Send as `Authorization: Bearer <token>` to call privileged endpoints.
+   * @nullable
+   */
+  sessionToken?: string | null;
   postCount: number;
   joinedAt: string;
 }

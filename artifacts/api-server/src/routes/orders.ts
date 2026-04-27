@@ -55,8 +55,8 @@ router.post("/orders", async (req, res): Promise<void> => {
         if (!product.inStock || product.stockCount < quantity) {
           throw new OrderError(409, `"${product.name}" is out of stock or insufficient inventory.`);
         }
-        // Server-trusted unit price: prefer salePrice if set
-        const priceCents = product.salePriceCents ?? product.priceCents;
+        // Server-trusted unit price (always sourced from DB, never the client)
+        const priceCents = product.priceCents;
         items.push({
           productId: product.id,
           name: product.name,

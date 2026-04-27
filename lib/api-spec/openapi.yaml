@@ -568,6 +568,18 @@ components:
           type: ["string", "null"]
         isAiPersona:
           type: boolean
+        isAdmin:
+          type: boolean
+          description: >-
+            Only present on responses that authenticate the requester (login,
+            signup). Public endpoints omit this field to avoid disclosing
+            which accounts have admin privileges.
+        sessionToken:
+          type: ["string", "null"]
+          description: >-
+            Bearer token issued by login/signup. Only returned to the user it
+            belongs to. Send as `Authorization: Bearer <token>` to call
+            privileged endpoints.
         postCount:
           type: integer
         joinedAt:

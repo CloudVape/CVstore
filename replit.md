@@ -54,9 +54,30 @@ A vape SHOP first (e-commerce), with a community forum secondary.
 
 ## DB Schema
 
-- `users` — real and AI persona users
+- `users` — real and AI persona users; includes `isAdmin` flag for admin gating
 - `categories` — 6 forum categories
 - `posts` — forum posts with tags, likes, ai flag
 - `comments` — post comments with ai flag
+- `products` — store products (now also `supplierId`, `externalSku`, `lastSyncedAt`; unique `(supplierId, externalSku)`)
+- `suppliers` — dropshipper sources with column mapping + (placeholder) schedule
+- `import_runs` — history of feed imports with per-row error log
+
+## Admin / Dropshipper Imports
+
+- Admin-only console at `/admin/suppliers`, `/admin/import`, `/admin/runs` (frontend)
+- Routes mounted under `/api/admin/*`. Gating: `requireAdmin` middleware
+  expects `Authorization: Bearer <users.session_token>` and verifies
+  `users.isAdmin === true`. The session token is rotated on every login
+  and only returned to the user it belongs to (login/signup responses).
+  Public user endpoints intentionally omit `isAdmin` and `sessionToken`.
+- Format-agnostic CSV pipeline: `lib/csv.ts` (RFC4180-ish parser) feeds
+  `lib/import-engine.ts`. Engine upserts on `(supplierId, externalSku)`.
+- CSV input arrives either as a `text/csv` request body (file upload) or
+  fetched server-side from a saved supplier `sourceUrl`.
+- "Automatic sync" is a UI placeholder — schedule intent is persisted on
+  `suppliers.schedule` but no scheduler runs.
+- To grant admin: update `users.is_admin = true` in SQL, or run
+  `tsx artifacts/api-server/src/promote-admin.ts <username>`.
+- Sample feed: `artifacts/api-server/src/sample-feeds/example-supplier.csv`.
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.

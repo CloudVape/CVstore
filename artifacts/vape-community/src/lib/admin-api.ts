@@ -1,0 +1,257 @@
+// Lightweight client for `/api/admin/*` endpoints. These routes are not in the
+// OpenAPI spec, so we don't go through orval — we just call fetch directly and
+// attach an `Authorization: Bearer <sessionToken>` header derived from the
+// currently signed-in user. The token is issued by the server at login/signup
+// and rotated on every login, so a stolen user id alone is not enough to
+// impersonate an admin.
+
+export type Supplier = {
+  id: number;
+  name: string;
+  sourceType: "csv-upload" | "csv-url";
+  sourceUrl: string | null;
+  columnMapping: Record<string, string>;
+  schedule: {
+    enabled: boolean;
+    frequency: "hourly" | "daily" | "weekly" | "manual";
+    hourOfDay?: number | null;
+    notes?: string | null;
+  } | null;
+  lastRunAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ImportRunSummary = {
+  id: number;
+  supplierId: number;
+  supplierName: string | null;
+  source: "csv-upload" | "csv-url";
+  sourceUrl: string | null;
+  status: "running" | "completed" | "failed";
+  startedAt: string;
+  finishedAt: string | null;
+  triggeredByUserId: number | null;
+  triggeredByUsername: string | null;
+  totalRows: number;
+  createdCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  erroredCount: number;
+  errorMessage: string | null;
+  errors: { row: number; externalSku: string | null; message: string }[];
+};
+
+export type PreviewResponse = {
+  headers: string[];
+  sample: Record<string, string>[];
+  sampleSize: number;
+  totalRows: number;
+  importableFields: { key: string; required: boolean; description: string }[];
+};
+
+export type RunResult = {
+  runId: number;
+  totalRows: number;
+  createdCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  erroredCount: number;
+  errors: { row: number; externalSku: string | null; message: string }[];
+};
+
+const BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
+
+function authHeaders(token: string | null | undefined): HeadersInit {
+  if (!token) throw new Error("Admin session token required");
+  return { Authorization: `Bearer ${token}` };
+}
+
+async function asJson<T>(resp: Response): Promise<T> {
+  if (!resp.ok) {
+    let detail = "";
+    try {
+      const data = (await resp.json()) as { error?: string };
+      detail = data?.error ?? "";
+    } catch {
+      detail = await resp.text().catch(() => "");
+    }
+    throw new Error(detail || `HTTP ${resp.status}`);
+  }
+  return (await resp.json()) as T;
+}
+
+export const adminApi = {
+  async listSuppliers(token: string): Promise<Supplier[]> {
+    const r = await fetch(`${BASE}/admin/suppliers`, {
+      headers: authHeaders(token),
+    });
+    return asJson<Supplier[]>(r);
+  },
+  async getSupplier(token: string, id: number): Promise<Supplier> {
+    const r = await fetch(`${BASE}/admin/suppliers/${id}`, {
+      headers: authHeaders(token),
+    });
+    return asJson<Supplier>(r);
+  },
+  async createSupplier(
+    token: string,
+    body: Partial<Supplier> & { name: string; sourceType: Supplier["sourceType"] },
+  ): Promise<Supplier> {
+    const r = await fetch(`${BASE}/admin/suppliers`, {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return asJson<Supplier>(r);
+  },
+  async updateSupplier(
+    token: string,
+    id: number,
+    body: Partial<Supplier>,
+  ): Promise<Supplier> {
+    const r = await fetch(`${BASE}/admin/suppliers/${id}`, {
+      method: "PUT",
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return asJson<Supplier>(r);
+  },
+  async deleteSupplier(token: string, id: number): Promise<void> {
+    const r = await fetch(`${BASE}/admin/suppliers/${id}`, {
+      method: "DELETE",
+      headers: authHeaders(token),
+    });
+    if (!r.ok && r.status !== 204) {
+      throw new Error(`HTTP ${r.status}`);
+    }
+  },
+
+  async previewCsv(token: string, csvText: string): Promise<PreviewResponse> {
+    const r = await fetch(`${BASE}/admin/imports/preview`, {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": "text/csv" },
+      body: csvText,
+    });
+    return asJson<PreviewResponse>(r);
+  },
+  async previewUrl(token: string, url: string): Promise<PreviewResponse> {
+    const r = await fetch(
+      `${BASE}/admin/imports/preview?url=${encodeURIComponent(url)}`,
+      { method: "POST", headers: authHeaders(token) },
+    );
+    return asJson<PreviewResponse>(r);
+  },
+
+  async runWithCsv(
+    token: string,
+    args: {
+      supplierId: number;
+      csvText: string;
+      mapping: Record<string, string>;
+      saveMapping?: boolean;
+    },
+  ): Promise<RunResult> {
+    const params = new URLSearchParams({
+      supplierId: String(args.supplierId),
+      mapping: JSON.stringify(args.mapping),
+    });
+    if (args.saveMapping) params.set("saveMapping", "true");
+    const r = await fetch(`${BASE}/admin/imports/run?${params.toString()}`, {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": "text/csv" },
+      body: args.csvText,
+    });
+    return asJson<RunResult>(r);
+  },
+
+  async previewFile(
+    token: string,
+    file: File | Blob,
+    contentType: string,
+  ): Promise<PreviewResponse> {
+    const r = await fetch(`${BASE}/admin/imports/preview`, {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": contentType },
+      body: file,
+    });
+    return asJson<PreviewResponse>(r);
+  },
+  async runWithFile(
+    token: string,
+    args: {
+      supplierId: number;
+      file: File | Blob;
+      contentType: string;
+      mapping: Record<string, string>;
+      saveMapping?: boolean;
+    },
+  ): Promise<RunResult> {
+    const params = new URLSearchParams({
+      supplierId: String(args.supplierId),
+      mapping: JSON.stringify(args.mapping),
+    });
+    if (args.saveMapping) params.set("saveMapping", "true");
+    const r = await fetch(`${BASE}/admin/imports/run?${params.toString()}`, {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": args.contentType },
+      body: args.file,
+    });
+    return asJson<RunResult>(r);
+  },
+  async runWithUrl(
+    token: string,
+    args: {
+      supplierId: number;
+      mapping?: Record<string, string>;
+      saveMapping?: boolean;
+    },
+  ): Promise<RunResult> {
+    const r = await fetch(`${BASE}/admin/imports/run`, {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "url", ...args }),
+    });
+    return asJson<RunResult>(r);
+  },
+
+  async listRuns(token: string, supplierId?: number): Promise<ImportRunSummary[]> {
+    const qs = supplierId ? `?supplierId=${supplierId}` : "";
+    const r = await fetch(`${BASE}/admin/import-runs${qs}`, {
+      headers: authHeaders(token),
+    });
+    return asJson<ImportRunSummary[]>(r);
+  },
+  async getRun(token: string, id: number): Promise<ImportRunSummary> {
+    const r = await fetch(`${BASE}/admin/import-runs/${id}`, {
+      headers: authHeaders(token),
+    });
+    return asJson<ImportRunSummary>(r);
+  },
+  /**
+   * Fetches the per-run errors CSV with the admin bearer token attached and
+   * triggers a browser download. We can't use a plain `<a href>` because that
+   * would not send the `Authorization` header.
+   */
+  async downloadErrorsCsv(token: string, runId: number): Promise<void> {
+    const r = await fetch(`${BASE}/admin/import-runs/${runId}/errors.csv`, {
+      headers: authHeaders(token),
+    });
+    if (!r.ok) {
+      throw new Error(`Download failed: HTTP ${r.status}`);
+    }
+    const blob = await r.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = `import-run-${runId}-errors.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } finally {
+      // Allow the browser a tick to start the download before we revoke it.
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    }
+  },
+};

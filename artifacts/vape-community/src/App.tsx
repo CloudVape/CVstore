@@ -23,6 +23,9 @@ import Profile from "@/pages/profile";
 import Login from "@/pages/login";
 import Join from "@/pages/join";
 import CreatePost from "@/pages/create-post";
+import AdminSuppliers from "@/pages/admin/suppliers";
+import AdminImporter from "@/pages/admin/importer";
+import AdminRuns from "@/pages/admin/runs";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +48,10 @@ function Router() {
         <Route path="/profile/:id" component={Profile} />
         <Route path="/login" component={Login} />
         <Route path="/join" component={Join} />
+        <Route path="/admin" component={AdminSuppliers} />
+        <Route path="/admin/suppliers" component={AdminSuppliers} />
+        <Route path="/admin/import" component={AdminImporter} />
+        <Route path="/admin/runs" component={AdminRuns} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

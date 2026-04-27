@@ -24,6 +24,18 @@ export const ListUsersResponseItem = zod.object({
   avatarUrl: zod.string().nullish(),
   bio: zod.string().nullish(),
   isAiPersona: zod.boolean(),
+  isAdmin: zod
+    .boolean()
+    .optional()
+    .describe(
+      "Only present on responses that authenticate the requester (login, signup). Public endpoints omit this field to avoid disclosing which accounts have admin privileges.",
+    ),
+  sessionToken: zod
+    .string()
+    .nullish()
+    .describe(
+      "Bearer token issued by login\/signup. Only returned to the user it belongs to. Send as `Authorization: Bearer <token>` to call privileged endpoints.",
+    ),
   postCount: zod.number(),
   joinedAt: zod.coerce.date(),
 });
@@ -53,6 +65,18 @@ export const GetUserResponse = zod.object({
   avatarUrl: zod.string().nullish(),
   bio: zod.string().nullish(),
   isAiPersona: zod.boolean(),
+  isAdmin: zod
+    .boolean()
+    .optional()
+    .describe(
+      "Only present on responses that authenticate the requester (login, signup). Public endpoints omit this field to avoid disclosing which accounts have admin privileges.",
+    ),
+  sessionToken: zod
+    .string()
+    .nullish()
+    .describe(
+      "Bearer token issued by login\/signup. Only returned to the user it belongs to. Send as `Authorization: Bearer <token>` to call privileged endpoints.",
+    ),
   postCount: zod.number(),
   joinedAt: zod.coerce.date(),
 });
@@ -72,6 +96,18 @@ export const LoginUserResponse = zod.object({
   avatarUrl: zod.string().nullish(),
   bio: zod.string().nullish(),
   isAiPersona: zod.boolean(),
+  isAdmin: zod
+    .boolean()
+    .optional()
+    .describe(
+      "Only present on responses that authenticate the requester (login, signup). Public endpoints omit this field to avoid disclosing which accounts have admin privileges.",
+    ),
+  sessionToken: zod
+    .string()
+    .nullish()
+    .describe(
+      "Bearer token issued by login\/signup. Only returned to the user it belongs to. Send as `Authorization: Bearer <token>` to call privileged endpoints.",
+    ),
   postCount: zod.number(),
   joinedAt: zod.coerce.date(),
 });
@@ -616,6 +652,18 @@ export const GetActiveUsersResponseItem = zod.object({
   avatarUrl: zod.string().nullish(),
   bio: zod.string().nullish(),
   isAiPersona: zod.boolean(),
+  isAdmin: zod
+    .boolean()
+    .optional()
+    .describe(
+      "Only present on responses that authenticate the requester (login, signup). Public endpoints omit this field to avoid disclosing which accounts have admin privileges.",
+    ),
+  sessionToken: zod
+    .string()
+    .nullish()
+    .describe(
+      "Bearer token issued by login\/signup. Only returned to the user it belongs to. Send as `Authorization: Bearer <token>` to call privileged endpoints.",
+    ),
   postCount: zod.number(),
   joinedAt: zod.coerce.date(),
 });

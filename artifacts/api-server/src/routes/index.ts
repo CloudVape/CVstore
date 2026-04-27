@@ -9,6 +9,7 @@ import productCategoriesRouter from "./product-categories";
 import productsRouter from "./products";
 import ordersRouter from "./orders";
 import seoRouter from "./seo";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(productCategoriesRouter);
 router.use(productsRouter);
 router.use(ordersRouter);
 router.use(seoRouter);
+router.use(adminRouter);
 
 export default router;
