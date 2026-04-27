@@ -40,7 +40,7 @@ export default function NewsletterConfirm() {
     <div className="container mx-auto flex flex-col items-center justify-center min-h-[70vh] px-4 py-12 text-center">
       <Link href="/" className="mb-8 flex items-center gap-2">
         <Cloud className="h-8 w-8 text-primary" />
-        <span className="font-bold font-mono tracking-tight text-xl">VAPE<span className="text-primary">VAULT</span></span>
+        <span className="font-bold font-mono tracking-tight text-xl">CLOUD<span className="text-primary">VAPE</span></span>
       </Link>
 
       {status === "loading" && (

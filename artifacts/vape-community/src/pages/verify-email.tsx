@@ -39,7 +39,7 @@ export default function VerifyEmail() {
       <Link href="/" className="mb-8 flex items-center gap-2">
         <Cloud className="h-8 w-8 text-primary" />
         <span className="font-bold font-mono tracking-tight text-xl">
-          VAPE<span className="text-primary">VAULT</span>
+          CLOUD<span className="text-primary">VAPE</span>
         </span>
       </Link>
 
