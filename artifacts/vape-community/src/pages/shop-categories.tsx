@@ -63,7 +63,7 @@ export default function ShopCategories() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
                   <div className="absolute top-3 left-3">
-                    <span className="text-xl bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1 border border-white/10">
+                    <span className="text-xl bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1 border border-white/10 opacity-70">
                       {c.iconEmoji}
                     </span>
                   </div>
