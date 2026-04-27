@@ -661,6 +661,8 @@ components:
             type: string
         sourceUrl:
           type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
         createdAt:
           type: string
           format: date-time

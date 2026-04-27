@@ -159,6 +159,18 @@ export default function PostDetail() {
           </div>
         </div>
 
+        {post.imageUrl && (
+          <div className="relative w-full overflow-hidden bg-background/50 border-b border-border/40">
+            <img
+              src={post.imageUrl}
+              alt={post.title}
+              loading="lazy"
+              className="w-full max-h-[480px] object-contain"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+            />
+          </div>
+        )}
+
         <div className="p-6 md:p-10 bg-background/30 prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-card/50 prose-pre:border prose-pre:border-border/40">
           <div className="whitespace-pre-wrap text-foreground/90 font-sans text-base md:text-lg">
             {post.content}

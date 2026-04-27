@@ -17,6 +17,17 @@ export function PostCard({ post, compact = false }: PostCardProps) {
   return (
     <Link href={`/forum/${post.id}`}>
       <Card className="group relative overflow-hidden border-border/40 bg-card/50 transition-all hover:bg-card hover:border-primary/50 cursor-pointer shadow-sm hover:shadow-[0_0_20px_rgba(0,0,0,0.2)]">
+        {!compact && post.imageUrl && (
+          <div className="relative w-full aspect-[16/9] overflow-hidden bg-background/60 border-b border-border/40">
+            <img
+              src={post.imageUrl}
+              alt={post.title}
+              loading="lazy"
+              className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+              onError={(e) => { const wrap = (e.currentTarget as HTMLImageElement).parentElement; if (wrap) wrap.style.display = 'none'; }}
+            />
+          </div>
+        )}
         <CardHeader className={`${compact ? "p-4 pb-2" : "p-6 pb-3"}`}>
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1.5">

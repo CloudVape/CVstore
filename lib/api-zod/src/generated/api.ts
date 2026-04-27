@@ -112,6 +112,7 @@ export const ListPostsResponseItem = zod.object({
   commentCount: zod.number(),
   tags: zod.array(zod.string()),
   sourceUrl: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -146,6 +147,7 @@ export const GetTrendingPostsResponseItem = zod.object({
   commentCount: zod.number(),
   tags: zod.array(zod.string()),
   sourceUrl: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -168,6 +170,7 @@ export const GetLatestPostsResponseItem = zod.object({
   commentCount: zod.number(),
   tags: zod.array(zod.string()),
   sourceUrl: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -194,6 +197,7 @@ export const GetPostResponse = zod.object({
   commentCount: zod.number(),
   tags: zod.array(zod.string()),
   sourceUrl: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -225,6 +229,7 @@ export const UpdatePostResponse = zod.object({
   commentCount: zod.number(),
   tags: zod.array(zod.string()),
   sourceUrl: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -257,6 +262,7 @@ export const LikePostResponse = zod.object({
   commentCount: zod.number(),
   tags: zod.array(zod.string()),
   sourceUrl: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });

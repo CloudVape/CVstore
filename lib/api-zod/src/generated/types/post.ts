@@ -23,6 +23,8 @@ export interface Post {
   tags: string[];
   /** @nullable */
   sourceUrl?: string | null;
+  /** @nullable */
+  imageUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

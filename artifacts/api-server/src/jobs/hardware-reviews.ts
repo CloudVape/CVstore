@@ -335,6 +335,10 @@ function nextReview(used: Set<string>): ReviewSeed | null {
   return null;
 }
 
+function imageUrlForSlug(slug: string): string {
+  return `/images/hardware-reviews/${slug}.jpg`;
+}
+
 async function insertReview(
   review: ReviewSeed,
   categoryId: number,
@@ -350,6 +354,7 @@ async function insertReview(
     isAiGenerated: true,
     tags: review.tags,
     sourceUrl: SOURCE_PREFIX + review.slug,
+    imageUrl: imageUrlForSlug(review.slug),
     createdAt: at,
     updatedAt: at,
   });
@@ -401,6 +406,29 @@ async function ensureDailyReviews(opts: { backfillDays: number }): Promise<void>
 
   if (inserted > 0) {
     logger.info({ inserted }, "Hardware review job inserted posts");
+  }
+
+  await backfillReviewImages();
+}
+
+async function backfillReviewImages(): Promise<void> {
+  const rows = await db
+    .select({ id: postsTable.id, sourceUrl: postsTable.sourceUrl, imageUrl: postsTable.imageUrl })
+    .from(postsTable)
+    .where(sql`${postsTable.sourceUrl} LIKE ${SOURCE_PREFIX + "%"} AND ${postsTable.imageUrl} IS NULL`);
+  if (rows.length === 0) return;
+  let updated = 0;
+  for (const row of rows) {
+    const slug = row.sourceUrl?.slice(SOURCE_PREFIX.length);
+    if (!slug) continue;
+    await db
+      .update(postsTable)
+      .set({ imageUrl: imageUrlForSlug(slug) })
+      .where(eq(postsTable.id, row.id));
+    updated++;
+  }
+  if (updated > 0) {
+    logger.info({ updated }, "Hardware review job backfilled image URLs");
   }
 }
 
