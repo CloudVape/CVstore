@@ -109,4 +109,26 @@ router.get("/sitemap.xml", async (req, res): Promise<void> => {
   }
 });
 
+router.get("/robots.txt", (req, res): void => {
+  const origin = originFromRequest(req);
+  const body = [
+    "User-agent: *",
+    "Allow: /",
+    "Disallow: /cart",
+    "Disallow: /checkout",
+    "Disallow: /order/",
+    "Disallow: /login",
+    "Disallow: /join",
+    "Disallow: /profile/",
+    "Disallow: /forum/new",
+    "Disallow: /api/",
+    "",
+    `Sitemap: ${origin}/api/sitemap.xml`,
+    "",
+  ].join("\n");
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.status(200).send(body);
+});
+
 export default router;

@@ -43,8 +43,8 @@ export default function Home() {
     <div className="flex flex-col w-full">
       {/* Hero */}
       <section className="relative w-full overflow-hidden border-b border-border/40 bg-background">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(var(--primary),0.15),transparent_50%)] z-0" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(var(--secondary),0.12),transparent_50%)] z-0" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--primary)/0.18),transparent_55%)] z-0" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(var(--secondary)/0.15),transparent_55%)] z-0" />
         <div className="container relative z-10 mx-auto max-w-6xl px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
           <div className="space-y-6">
             <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary font-mono backdrop-blur-md">
@@ -173,7 +173,7 @@ export default function Home() {
       <section className="container mx-auto max-w-6xl px-4 py-12 border-t border-border/40">
         <div className="grid lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-1 p-8 bg-gradient-to-br from-primary/10 via-card/50 to-secondary/10 border-primary/20 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(var(--primary),0.2),transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.22),transparent_55%)]" />
             <div className="relative space-y-4">
               <MessageSquare className="w-8 h-8 text-primary" />
               <h3 className="text-2xl font-black uppercase tracking-tight">Join the Community</h3>

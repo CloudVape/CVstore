@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid } from "lucide-react";
 import { ReactNode } from "react";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
@@ -53,6 +54,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </nav>
 
           <div className="flex flex-1 items-center justify-end space-x-1 sm:space-x-3 min-w-0">
+            <ThemeToggle />
             <Link href="/cart">
               <Button variant="ghost" size="sm" className="relative gap-2 px-2 sm:px-3" aria-label="Cart">
                 <ShoppingCart className="h-5 w-5" />
