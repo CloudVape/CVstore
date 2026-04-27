@@ -111,7 +111,7 @@ export default function Forum() {
         {/* Sidebar Filters */}
         <div className="w-full lg:w-64 space-y-6 shrink-0">
           <div className="bg-card/30 rounded-xl border border-border/40 p-5 sticky top-24">
-            <h3 className="font-mono font-bold uppercase tracking-wider mb-4 pb-2 border-b border-border/40 text-sm">Categories</h3>
+            <h3 className="font-mono font-bold uppercase tracking-wider mb-4 pb-2 border-b border-border/40 text-sm">Topics</h3>
             <ul className="space-y-1 mb-8">
               <li>
                 <Link href="/forum" className={`flex justify-between items-center px-3 py-2 rounded-lg transition-colors font-mono text-sm ${!categoryId ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground hover:bg-card hover:text-foreground'}`}>
