@@ -50,6 +50,8 @@
   --color-sidebar-accent-border: var(--sidebar-accent-border);
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
+  --color-overlay: var(--overlay);
+
   --font-sans: var(--app-font-sans);
   --font-serif: var(--app-font-serif);
   --font-mono: var(--app-font-mono);
@@ -90,6 +92,8 @@
 /* LIGHT THEME (default) */
 :root {
   color-scheme: light;
+  --overlay: rgba(15, 10, 30, 0.45);
+
   --button-outline: rgba(0, 0, 0, .10);
   --badge-outline: rgba(0, 0, 0, .06);
 
@@ -148,6 +152,8 @@
 /* DARK THEME */
 .dark {
   color-scheme: dark;
+  --overlay: rgba(0, 0, 0, 0.80);
+
   --button-outline: rgba(255, 255, 255, .10);
   --badge-outline: rgba(255, 255, 255, .05);
 
