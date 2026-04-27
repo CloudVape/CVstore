@@ -3,7 +3,7 @@ import { useGetPost, useListComments, useLikePost, useDeletePost, getGetPostQuer
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, Clock, Heart, MessageSquare, User, Sparkles, Tag as TagIcon, ExternalLink, Trash2 } from "lucide-react";
+import { ArrowLeft, Clock, Heart, MessageSquare, User, Tag as TagIcon, ExternalLink, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -77,11 +77,6 @@ export default function PostDetail() {
             {post.categoryName && (
               <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 font-mono text-xs uppercase px-3 py-1">
                 {post.categoryName}
-              </Badge>
-            )}
-            {post.isAiGenerated && (
-              <Badge variant="secondary" className="font-mono text-xs uppercase px-3 py-1 gap-1.5 opacity-90 border-secondary/30">
-                <Sparkles className="w-3.5 h-3.5" /> AI Persona
               </Badge>
             )}
             <span className="text-muted-foreground text-sm font-mono flex items-center gap-1.5">

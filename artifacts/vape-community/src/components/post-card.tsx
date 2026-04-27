@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
-import { MessageSquare, Heart, Clock, User, Tag as TagIcon, Sparkles } from "lucide-react";
+import { MessageSquare, Heart, Clock, User, Tag as TagIcon } from "lucide-react";
 import { Post } from "@workspace/api-client-react/src/generated/api.schemas";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,11 +17,6 @@ export function PostCard({ post, compact = false }: PostCardProps) {
   return (
     <Link href={`/forum/${post.id}`}>
       <Card className="group relative overflow-hidden border-border/40 bg-card/50 transition-all hover:bg-card hover:border-primary/50 cursor-pointer shadow-sm hover:shadow-[0_0_20px_rgba(0,0,0,0.2)]">
-        {post.isAiGenerated && (
-          <div className="absolute top-0 right-0 p-1">
-            <div className="h-2 w-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--secondary),0.8)]" title="AI Generated" />
-          </div>
-        )}
         <CardHeader className={`${compact ? "p-4 pb-2" : "p-6 pb-3"}`}>
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1.5">
@@ -29,11 +24,6 @@ export function PostCard({ post, compact = false }: PostCardProps) {
                 {post.categoryName && (
                   <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 font-mono text-[10px] uppercase px-2 py-0">
                     {post.categoryName}
-                  </Badge>
-                )}
-                {post.isAiGenerated && (
-                  <Badge variant="secondary" className="font-mono text-[10px] uppercase px-2 py-0 gap-1 opacity-80">
-                    <Sparkles className="w-3 h-3" /> AI Post
                   </Badge>
                 )}
               </div>

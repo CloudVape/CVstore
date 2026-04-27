@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Heart, Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getListCommentsQueryKey } from "@workspace/api-client-react";
 
@@ -89,11 +89,6 @@ export function CommentList({ postId, comments }: CommentListProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm">{comment.authorName}</span>
-                  {comment.isAiGenerated && (
-                    <span className="text-[10px] uppercase font-mono bg-secondary/20 text-secondary px-1.5 py-0.5 rounded flex items-center gap-1">
-                      <Sparkles className="w-2.5 h-2.5" /> AI
-                    </span>
-                  )}
                   <span className="text-xs text-muted-foreground font-mono">
                     {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                   </span>
