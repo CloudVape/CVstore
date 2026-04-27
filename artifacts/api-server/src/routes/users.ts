@@ -5,6 +5,7 @@ import { GetUserParams } from "@workspace/api-zod";
 import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod/v4";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 
 const router: IRouter = Router();
 
@@ -150,6 +151,81 @@ router.patch("/users/me/theme", async (req, res): Promise<void> => {
     .where(eq(usersTable.id, user.id));
 
   res.json({ theme: parsed.data.theme });
+});
+
+/**
+ * POST /users/legacy-login
+ *
+ * Migration bridge for users who registered before Clerk.
+ * Verifies the stored bcrypt password hash, then either:
+ * - Creates a Clerk sign-in token (if the user already has a Clerk account), or
+ * - Creates a Clerk user account and returns a sign-in token.
+ *
+ * The frontend uses the returned `signInToken` with clerk.client.signIn.create()
+ * (strategy: "ticket") to establish a Clerk session without re-registration.
+ */
+const LegacyLoginBody = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
+router.post("/users/legacy-login", async (req, res): Promise<void> => {
+  const parsed = LegacyLoginBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "email and password are required" });
+    return;
+  }
+  const { email, password } = parsed.data;
+
+  try {
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email));
+    if (!user) {
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
+    }
+
+    if (!user.passwordHash) {
+      // User was created without a password (e.g. AI persona or already migrated)
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
+    }
+
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) {
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
+    }
+
+    // Find or create a Clerk user for this email
+    let clerkUserId = user.clerkId;
+    if (!clerkUserId) {
+      const clerkUsers = await clerkClient.users.getUserList({ emailAddress: [email] });
+      if (clerkUsers.data.length > 0) {
+        clerkUserId = clerkUsers.data[0].id;
+      } else {
+        // Create the Clerk user (no password — they'll use email magic link going forward)
+        const created = await clerkClient.users.createUser({
+          emailAddress: [email],
+          firstName: user.username,
+          skipPasswordRequirement: true,
+        });
+        clerkUserId = created.id;
+      }
+      // Link the Clerk account to the DB user
+      await db.update(usersTable).set({ clerkId: clerkUserId, emailVerified: true }).where(eq(usersTable.id, user.id));
+    }
+
+    // Create a short-lived sign-in token so the client can establish a Clerk session
+    const tokenResource = await clerkClient.signInTokens.createSignInToken({
+      userId: clerkUserId,
+      expiresInSeconds: 60,
+    });
+
+    res.json({ signInToken: tokenResource.token });
+  } catch (err) {
+    req.log?.error?.({ err }, "POST /users/legacy-login failed");
+    res.status(500).json({ error: "Login failed" });
+  }
 });
 
 router.get("/users/:id", async (req, res): Promise<void> => {

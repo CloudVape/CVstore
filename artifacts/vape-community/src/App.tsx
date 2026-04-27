@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { ClerkProvider, SignIn, SignUp, useClerk, useAuth as useClerkAuth } from "@clerk/react";
@@ -10,6 +10,8 @@ import { CartProvider } from "@/lib/cart";
 import { Layout } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeSyncer } from "@/components/theme-syncer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
@@ -97,15 +99,116 @@ const clerkAppearance = {
   },
 };
 
-function SignInPage() {
+/**
+ * Legacy account migration form — lets pre-Clerk users authenticate with their
+ * original email + password. On success the backend verifies the bcrypt hash,
+ * creates/links a Clerk user, and returns a short-lived sign-in token that
+ * we exchange for a full Clerk session client-side (ticket strategy).
+ */
+function LegacyLoginForm() {
+  const { client } = useClerk();
+  const [, setLocation] = useLocation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch(`${basePath}/api/users/legacy-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError((data as { error?: string }).error ?? "Invalid credentials");
+        return;
+      }
+      const { signInToken } = await res.json() as { signInToken: string };
+      const result = await client.signIn.create({ strategy: "ticket", ticket: signInToken });
+      if (result.status === "complete") {
+        await client.setActive({ session: result.createdSessionId });
+        setLocation("/");
+      }
+    } catch {
+      setError("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4">
-      <SignIn
-        routing="path"
-        path={`${basePath}/sign-in`}
-        signUpUrl={`${basePath}/sign-up`}
-        appearance={clerkAppearance}
-      />
+    <div className="w-[440px] max-w-full bg-white rounded-2xl shadow-xl p-8">
+      <p className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-4">
+        Had an account before?
+      </p>
+      <p className="text-xs text-muted-foreground mb-5">
+        Enter your original email and password. We&apos;ll automatically link your existing profile, posts, and order history to your new sign-in.
+      </p>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <Input
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="h-11"
+        />
+        <Input
+          type="password"
+          placeholder="your old password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="h-11"
+        />
+        {error && <p className="text-xs text-destructive">{error}</p>}
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-sm uppercase tracking-wider"
+        >
+          {loading ? "Verifying…" : "Claim my account"}
+        </Button>
+      </form>
+    </div>
+  );
+}
+
+function SignInPage() {
+  const [showLegacy, setShowLegacy] = useState(false);
+  return (
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 gap-4">
+      {showLegacy ? (
+        <>
+          <LegacyLoginForm />
+          <button
+            onClick={() => setShowLegacy(false)}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← Back to sign in
+          </button>
+        </>
+      ) : (
+        <>
+          <SignIn
+            routing="path"
+            path={`${basePath}/sign-in`}
+            signUpUrl={`${basePath}/sign-up`}
+            appearance={clerkAppearance}
+          />
+          <button
+            onClick={() => setShowLegacy(true)}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Had an account before Clerk was added? Claim it here →
+          </button>
+        </>
+      )}
     </div>
   );
 }
