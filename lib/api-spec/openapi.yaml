@@ -118,6 +118,44 @@ paths:
         "401":
           description: Unauthorized
 
+  /users/me/theme:
+    patch:
+      operationId: updateThemePreference
+      tags: [users]
+      summary: Save the authenticated user's theme preference
+      description: >-
+        Persists the user's light/dark theme choice so it can be restored
+        on login from any device. Requires a valid session token issued at
+        login/signup as a Bearer token.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [theme]
+              properties:
+                theme:
+                  type: string
+                  enum: [light, dark]
+      responses:
+        "200":
+          description: Preference saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  theme:
+                    type: string
+                    enum: [light, dark]
+        "400":
+          description: Invalid theme value
+        "401":
+          description: Missing or invalid session token
+
   # ─── Categories ───────────────────────────────────────────────────────────────
   /categories:
     get:
