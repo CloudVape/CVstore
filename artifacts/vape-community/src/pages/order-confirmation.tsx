@@ -76,7 +76,7 @@ export default function OrderConfirmation() {
           <p className="text-muted-foreground">{order.shippingAddress}</p>
           <p className="text-muted-foreground">{order.shippingCity}{order.shippingState ? `, ${order.shippingState}` : ""}</p>
           <p className="text-muted-foreground">{order.shippingZip}</p>
-          <p className="text-muted-foreground">{order.shippingCountry}</p>
+          <p className="text-muted-foreground">{order.shippingCountry === "GB" ? "United Kingdom" : order.shippingCountry}</p>
         </div>
         <p className="text-xs font-mono text-muted-foreground border-t border-border/40 pt-3">
           A confirmation email has been sent to <span className="text-foreground">{order.email}</span>

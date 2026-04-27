@@ -110,6 +110,10 @@ export default function Checkout() {
                 <Label htmlFor="address" className="text-xs font-mono uppercase tracking-wider">Address</Label>
                 <Input id="address" required value={form.shippingAddress} onChange={(e) => set("shippingAddress", e.target.value)} className="bg-background/50 mt-1" />
               </div>
+              <div>
+                <Label className="text-xs font-mono uppercase tracking-wider">Country</Label>
+                <Input value="United Kingdom" readOnly className="bg-background/30 mt-1 text-muted-foreground cursor-default" />
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div className="col-span-2 sm:col-span-1">
                   <Label htmlFor="city" className="text-xs font-mono uppercase tracking-wider">City</Label>
