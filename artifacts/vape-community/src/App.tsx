@@ -101,12 +101,12 @@ const clerkAppearance = {
 
 /**
  * Legacy account migration form — lets pre-Clerk users authenticate with their
- * original email + password. On success the backend verifies the bcrypt hash,
+ * original email + password. On success the backend verifies the SHA-256 hash,
  * creates/links a Clerk user, and returns a short-lived sign-in token that
  * we exchange for a full Clerk session client-side (ticket strategy).
  */
 function LegacyLoginForm() {
-  const { client } = useClerk();
+  const { client, setActive } = useClerk();
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -131,7 +131,7 @@ function LegacyLoginForm() {
       const { signInToken } = await res.json() as { signInToken: string };
       const result = await client.signIn.create({ strategy: "ticket", ticket: signInToken });
       if (result.status === "complete") {
-        await client.setActive({ session: result.createdSessionId });
+        await setActive({ session: result.createdSessionId });
         setLocation("/");
       }
     } catch {
