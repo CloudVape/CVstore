@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSeo } from "@/lib/seo";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,7 @@ const formSchema = z.object({
 });
 
 export default function CreatePost() {
+  useSeo({ title: "New Post", description: "Create a new forum post.", canonical: "/forum/new", robots: "noindex, follow" });
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();

@@ -8,6 +8,7 @@ import statsRouter from "./stats";
 import productCategoriesRouter from "./product-categories";
 import productsRouter from "./products";
 import ordersRouter from "./orders";
+import seoRouter from "./seo";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(statsRouter);
 router.use(productCategoriesRouter);
 router.use(productsRouter);
 router.use(ordersRouter);
+router.use(seoRouter);
 
 export default router;

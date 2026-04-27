@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatPrice } from "@/lib/utils";
 import { Minus, Plus, Trash2, ShoppingBag, Truck } from "lucide-react";
+import { useSeo } from "@/lib/seo";
 
 export default function Cart() {
+  useSeo({ title: "Cart", description: "Your VapeVault shopping cart.", canonical: "/cart", robots: "noindex, nofollow" });
   const { items, subtotalCents, updateQuantity, removeItem } = useCart();
 
   const shippingCents = subtotalCents >= 5000 ? 0 : subtotalCents > 0 ? 599 : 0;

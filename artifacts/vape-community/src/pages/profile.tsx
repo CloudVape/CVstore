@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PostCard } from "@/components/post-card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MessageSquare, User as UserIcon } from "lucide-react";
+import { useSeo } from "@/lib/seo";
 
 export default function Profile() {
   const { id } = useParams();
   const userId = parseInt(id || "0");
+  useSeo({ title: "Profile", description: "VapeVault member profile.", robots: "noindex, follow" });
   
   const { data: user, isLoading: userLoading } = useGetUser(userId, { query: { enabled: !!userId } });
   const { data: posts, isLoading: postsLoading } = useListPosts(undefined, { query: { enabled: !!userId } });

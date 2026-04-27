@@ -12,8 +12,26 @@ import { PostCard } from "@/components/post-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Flame, Sparkles, ArrowRight, Truck, ShieldCheck, Headphones, Award, MessageSquare } from "lucide-react";
+import { useSeo } from "@/lib/seo";
 
 export default function Home() {
+  useSeo({
+    title: "Premium Vape Shop & Community",
+    description:
+      "Shop authentic vape kits, pod systems, e-liquids, coils, and accessories at VapeVault. Free shipping over $50, same-day dispatch before 3pm EST.",
+    canonical: "/",
+    keywords: [
+      "vape shop",
+      "vape kits",
+      "pod systems",
+      "e-liquid",
+      "vape juice",
+      "coils",
+      "disposables",
+      "vape accessories",
+      "vape community",
+    ],
+  });
   const { data: featured } = useGetFeaturedProducts();
   const { data: bestsellers } = useGetBestsellerProducts();
   const { data: newProducts } = useGetNewProducts();

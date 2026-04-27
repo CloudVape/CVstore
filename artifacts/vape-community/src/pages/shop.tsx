@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, SlidersHorizontal } from "lucide-react";
+import { useSeo, JsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export default function Shop() {
   const search = useSearch();
@@ -51,8 +52,31 @@ export default function Shop() {
       ? "Featured"
       : "Shop All";
 
+  const seoDescription =
+    filterParam === "new"
+      ? "Browse the newest vape kits, pod systems, and e-liquids freshly added to VapeVault."
+      : filterParam === "bestsellers"
+      ? "The most-loved vape kits, pod systems, and e-liquids from VapeVault — community bestsellers."
+      : filterParam === "featured"
+      ? "Hand-picked featured vape products curated by the VapeVault team."
+      : "Shop the full range of vape kits, pod systems, e-liquids, coils, and accessories at VapeVault.";
+
+  useSeo({
+    title: heading,
+    description: seoDescription,
+    canonical: filterParam ? `/shop?filter=${filterParam}` : "/shop",
+    keywords: ["vape shop", "vape kits", "pod systems", "e-liquid", "coils", heading.toLowerCase()],
+  });
+
   return (
     <div className="container mx-auto max-w-6xl px-4 py-10 space-y-8">
+      <JsonLd
+        id="shop-breadcrumbs"
+        data={breadcrumbJsonLd([
+          { name: "Home", url: "/" },
+          { name: heading, url: filterParam ? `/shop?filter=${filterParam}` : "/shop" },
+        ])}
+      />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border/40 pb-6">
         <div>
           <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight">{heading}</h1>

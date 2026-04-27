@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CommentList } from "@/components/comment-list";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+import { useSeo, JsonLd, articleJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -23,6 +24,14 @@ export default function PostDetail() {
   const { data: comments, isLoading: commentsLoading } = useListComments(postId, { query: { enabled: !!postId } });
   const likePost = useLikePost();
   const deletePost = useDeletePost();
+
+  useSeo({
+    title: post?.title,
+    description: post?.content?.slice(0, 200) ?? "Forum discussion on VapeVault.",
+    canonical: post ? `/forum/${post.id}` : undefined,
+    type: "article",
+    keywords: post ? [post.categoryName, ...(post.tags ?? [])].filter(Boolean) as string[] : undefined,
+  });
 
   const handleLike = () => {
     if (!user) {
@@ -67,6 +76,25 @@ export default function PostDetail() {
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
+      <JsonLd
+        id={`post-bc-${post.id}`}
+        data={breadcrumbJsonLd([
+          { name: "Home", url: "/" },
+          { name: "Forum", url: "/forum" },
+          { name: post.title, url: `/forum/${post.id}` },
+        ])}
+      />
+      <JsonLd
+        id={`post-article-${post.id}`}
+        data={articleJsonLd({
+          title: post.title,
+          description: post.content?.slice(0, 200),
+          authorName: post.authorName,
+          datePublished: post.createdAt,
+          dateModified: post.updatedAt,
+          url: `/forum/${post.id}`,
+        })}
+      />
       <Link href="/forum" className="inline-flex items-center text-sm font-mono text-muted-foreground hover:text-primary mb-8 transition-colors">
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Forum
       </Link>

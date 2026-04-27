@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatPrice } from "@/lib/utils";
 import { CheckCircle2, Package, Mail } from "lucide-react";
+import { useSeo } from "@/lib/seo";
 
 export default function OrderConfirmation() {
+  useSeo({ title: "Order Confirmation", description: "Order confirmation.", robots: "noindex, nofollow" });
   const [, params] = useRoute("/order/:orderNumber");
   const orderNumber = params?.orderNumber ?? "";
   const { data: order, isLoading } = useGetOrderByNumber(orderNumber);

@@ -1,12 +1,29 @@
 import { Link } from "wouter";
 import { useListProductCategories } from "@workspace/api-client-react";
 import { Card } from "@/components/ui/card";
+import { useSeo, JsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export default function ShopCategories() {
   const { data: categories } = useListProductCategories();
 
+  useSeo({
+    title: "Shop by Category",
+    description:
+      "Browse VapeVault categories: vape kits, pod systems, e-liquids, coils, disposables, and accessories. Find exactly what you're looking for.",
+    canonical: "/shop/categories",
+    keywords: ["vape categories", "vape kits", "pods", "e-liquid categories", "coils", "disposables"],
+  });
+
   return (
     <div className="container mx-auto max-w-6xl px-4 py-12 space-y-8">
+      <JsonLd
+        id="categories-breadcrumbs"
+        data={breadcrumbJsonLd([
+          { name: "Home", url: "/" },
+          { name: "Shop", url: "/shop" },
+          { name: "Categories", url: "/shop/categories" },
+        ])}
+      />
       <div className="border-b border-border/40 pb-6">
         <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight">Shop by Category</h1>
         <p className="text-muted-foreground font-mono text-sm mt-2">Find exactly what you're looking for</p>

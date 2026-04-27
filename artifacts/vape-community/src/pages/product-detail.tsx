@@ -9,6 +9,7 @@ import { useCart } from "@/lib/cart";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/utils";
 import { Star, Sparkles, Flame, Truck, Shield, RefreshCw, ChevronLeft, Minus, Plus, ShoppingCart } from "lucide-react";
+import { useSeo, JsonLd, breadcrumbJsonLd, productJsonLd } from "@/lib/seo";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/shop/p/:slug");
@@ -23,6 +24,21 @@ export default function ProductDetail() {
     { categoryId: product?.categoryId, limit: 8 },
     { query: { enabled: !!product?.categoryId } }
   );
+
+  const seoTitle = product ? `${product.name} — ${product.brand}` : "Product";
+  const seoDescription = product
+    ? (product.shortDescription || product.description || "").slice(0, 200)
+    : "VapeVault product";
+  useSeo({
+    title: seoTitle,
+    description: seoDescription,
+    canonical: `/shop/p/${slug}`,
+    image: product?.imageUrl ?? undefined,
+    type: "product",
+    keywords: product
+      ? [product.brand, product.name, product.categoryName ?? "vape", ...(product.tags ?? [])].filter(Boolean) as string[]
+      : undefined,
+  });
 
   if (isLoading) {
     return <div className="container mx-auto max-w-6xl px-4 py-20 text-center font-mono text-muted-foreground">Loading product...</div>;
@@ -57,6 +73,17 @@ export default function ProductDetail() {
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8 space-y-12">
+      <JsonLd id={`product-${product.id}`} data={productJsonLd(product)} />
+      <JsonLd
+        id={`product-bc-${product.id}`}
+        data={breadcrumbJsonLd([
+          { name: "Home", url: "/" },
+          ...(product.categoryName && product.categorySlug
+            ? [{ name: product.categoryName, url: `/shop/c/${product.categorySlug}` }]
+            : []),
+          { name: product.name, url: `/shop/p/${product.slug}` },
+        ])}
+      />
       <div className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
         <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1">
           <ChevronLeft className="w-4 h-4" /> Shop
@@ -74,7 +101,13 @@ export default function ProductDetail() {
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
         <div className="relative">
           <div className="relative aspect-square bg-gradient-to-br from-card to-background rounded-2xl overflow-hidden border border-border/40">
-            <img src={product.imageUrl} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
+            <img
+              src={product.imageUrl}
+              alt={`${product.name} by ${product.brand}`}
+              loading="eager"
+              fetchPriority="high"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
             <div className="absolute top-4 left-4 flex flex-col gap-2">
               {product.isNew && (
                 <Badge className="bg-secondary text-secondary-foreground border-0 font-mono uppercase tracking-wider gap-1 shadow-lg">

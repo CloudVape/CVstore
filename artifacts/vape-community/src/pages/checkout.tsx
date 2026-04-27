@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { useSeo } from "@/lib/seo";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/utils";
 import { Lock, ChevronLeft } from "lucide-react";
 
 export default function Checkout() {
+  useSeo({ title: "Checkout", description: "Complete your VapeVault order.", canonical: "/checkout", robots: "noindex, nofollow" });
   const { items, subtotalCents, clear } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();

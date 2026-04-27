@@ -1,0 +1,15 @@
+{
+  "name": "VapeVault — Premium Vape Shop & Community",
+  "short_name": "VapeVault",
+  "description": "Shop authentic vape kits, pod systems, e-liquids, coils, and accessories.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0b0f",
+  "theme_color": "#0b0b0f",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/apple-touch-icon.svg", "sizes": "180x180", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

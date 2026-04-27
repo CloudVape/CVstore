@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSeo } from "@/lib/seo";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  useSeo({ title: "Log in", description: "Log in to your VapeVault account.", canonical: "/login", robots: "noindex, follow" });
   const [, setLocation] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();

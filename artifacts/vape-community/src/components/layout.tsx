@@ -4,6 +4,7 @@ import { useCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
 import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid } from "lucide-react";
 import { ReactNode } from "react";
+import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 export function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
@@ -17,6 +18,8 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
+      <JsonLd id="org" data={organizationJsonLd()} />
+      <JsonLd id="website" data={websiteJsonLd()} />
       <div className="w-full bg-primary/10 border-b border-primary/20 text-center py-1.5 text-[11px] font-mono uppercase tracking-wider text-primary">
         Free shipping on orders over $50 — Same-day dispatch before 3pm EST
       </div>

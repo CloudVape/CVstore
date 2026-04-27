@@ -7,8 +7,16 @@ import { Filter, Search, PlusCircle, MessageSquare, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSeo } from "@/lib/seo";
 
 export default function Forum() {
+  useSeo({
+    title: "Community Forum",
+    description:
+      "Join the VapeVault community forum — reviews, recommendations, hardware tips, juice talk, and discussions from fellow vapers.",
+    canonical: "/forum",
+    keywords: ["vape forum", "vape community", "vape discussion", "vape reviews", "e-liquid recommendations"],
+  });
   const searchString = useSearch();
   const searchParams = new URLSearchParams(searchString);
   const categoryIdParam = searchParams.get("categoryId");

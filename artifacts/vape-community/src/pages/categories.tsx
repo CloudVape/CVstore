@@ -2,9 +2,18 @@ import { useListCategories } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Grid, Hash, ArrowRight } from "lucide-react";
+import { useSeo } from "@/lib/seo";
 
 export default function Categories() {
   const { data: categories, isLoading } = useListCategories();
+
+  useSeo({
+    title: "Forum Categories",
+    description:
+      "Explore VapeVault forum discussions by topic. From hardware reviews to juice recommendations, find your niche in the community.",
+    canonical: "/categories",
+    keywords: ["vape forum categories", "vape topics", "vape discussions"],
+  });
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-12">
