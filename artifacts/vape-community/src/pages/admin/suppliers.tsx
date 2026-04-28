@@ -206,7 +206,7 @@ function SupplierForm({
 }: {
   initial?: Supplier;
   onSubmit: (
-    body: Pick<Supplier, "name" | "sourceType" | "feedFormat" | "sourceUrl">,
+    body: Pick<Supplier, "name" | "sourceType" | "feedFormat" | "sourceUrl" | "alertEmail">,
   ) => void;
   onCancel: () => void;
   submitting: boolean;
@@ -219,6 +219,7 @@ function SupplierForm({
     initial?.feedFormat ?? "csv",
   );
   const [sourceUrl, setSourceUrl] = useState(initial?.sourceUrl ?? "");
+  const [alertEmail, setAlertEmail] = useState(initial?.alertEmail ?? "");
 
   return (
     <form
@@ -231,6 +232,7 @@ function SupplierForm({
           feedFormat,
           sourceUrl:
             sourceType === "csv-url" && sourceUrl.trim() ? sourceUrl.trim() : null,
+          alertEmail: alertEmail.trim() || null,
         });
       }}
     >
@@ -290,6 +292,19 @@ function SupplierForm({
           />
         </div>
       )}
+      <div className="space-y-2">
+        <Label htmlFor="sup-alert-email">Alert email (optional)</Label>
+        <Input
+          id="sup-alert-email"
+          type="email"
+          value={alertEmail}
+          onChange={(e) => setAlertEmail(e.target.value)}
+          placeholder="e.g. supplier-manager@yourcompany.com"
+        />
+        <p className="text-xs text-muted-foreground">
+          Sync failure alerts for this supplier go here. Leave blank to use the global alert email.
+        </p>
+      </div>
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
@@ -317,7 +332,7 @@ export default function AdminSuppliersPage() {
   });
 
   const createMut = useMutation({
-    mutationFn: async (body: Pick<Supplier, "name" | "sourceType" | "feedFormat" | "sourceUrl">) => {
+    mutationFn: async (body: Pick<Supplier, "name" | "sourceType" | "feedFormat" | "sourceUrl" | "alertEmail">) => {
       const token = await getToken();
       return adminApi.createSupplier(token!, body);
     },

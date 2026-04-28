@@ -13,6 +13,7 @@ export type Supplier = {
   sourceType: "csv-upload" | "csv-url";
   feedFormat: FeedFormat;
   sourceUrl: string | null;
+  alertEmail: string | null;
   columnMapping: Record<string, string>;
   schedule: {
     enabled: boolean;

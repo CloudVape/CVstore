@@ -206,7 +206,7 @@ async function runScheduledSuppliers(): Promise<void> {
             errorMessage,
             importHistoryUrl,
           });
-          const alertEmail = await getAdminAlertEmail();
+          const alertEmail = s.alertEmail?.trim() || (await getAdminAlertEmail());
           fireAndForget(
             sendEmail({ to: alertEmail, subject, html, text, template: "supplier-sync-failure" }),
           );

@@ -28,6 +28,7 @@ export const suppliersTable = pgTable("suppliers", {
   sourceType: text("source_type").notNull(), // 'csv-upload' | 'csv-url'
   feedFormat: text("feed_format").notNull().default("csv"), // FeedFormat
   sourceUrl: text("source_url"),
+  alertEmail: text("alert_email"),
   columnMapping: jsonb("column_mapping").$type<SupplierColumnMapping>().notNull().default({}),
   schedule: jsonb("schedule").$type<SupplierSchedule | null>(),
   lastRunAt: timestamp("last_run_at", { withTimezone: true }),
