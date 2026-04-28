@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PostCard } from "@/components/post-card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, MessageSquare, User as UserIcon } from "lucide-react";
 import { useSeo } from "@/lib/seo";
 
@@ -20,7 +21,36 @@ export default function Profile() {
   const userPosts = posts?.filter(p => p.authorId === userId) || [];
 
   if (userLoading) {
-    return <div className="container mx-auto py-20 text-center font-mono text-muted-foreground">Loading profile...</div>;
+    return (
+      <div className="container mx-auto max-w-4xl px-4 py-12">
+        <Card className="border-border/40 bg-card/40 backdrop-blur overflow-hidden mb-8">
+          <div className="h-32 bg-gradient-to-r from-primary/20 via-background to-secondary/20 border-b border-border/40" />
+          <CardContent className="pt-0 relative px-6 md:px-10 pb-10">
+            <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end -mt-16 sm:-mt-12 mb-6">
+              <Skeleton className="h-32 w-32 rounded-full border-4 border-card shrink-0" />
+              <div className="flex-1 space-y-3 mb-2">
+                <Skeleton className="h-8 w-48" />
+                <div className="flex gap-3">
+                  <Skeleton className="h-6 w-32 rounded" />
+                  <Skeleton className="h-6 w-24 rounded" />
+                </div>
+              </div>
+            </div>
+            <div className="mt-8 pt-6 border-t border-border/20 space-y-3">
+              <Skeleton className="h-3 w-10" />
+              <Skeleton className="h-4 w-full max-w-2xl" />
+              <Skeleton className="h-4 w-3/4 max-w-xl" />
+            </div>
+          </CardContent>
+        </Card>
+        <div className="space-y-6">
+          <Skeleton className="h-7 w-48 mb-4" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+        </div>
+      </div>
+    );
   }
 
   if (!user) {

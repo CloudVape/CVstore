@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, MessageSquarePlus } from "lucide-react";
 
 const formSchema = z.object({
@@ -25,7 +26,7 @@ const formSchema = z.object({
 export default function CreatePost() {
   useSeo({ title: "New Post", description: "Create a new forum post.", canonical: "/forum/new", robots: "noindex, follow" });
   const [, setLocation] = useLocation();
-  const { user } = useAuth();
+  const { user, isLoaded } = useAuth();
   const { toast } = useToast();
   const createPost = useCreatePost();
   const { data: categories } = useListCategories();
@@ -40,6 +41,50 @@ export default function CreatePost() {
       sourceUrl: "",
     },
   });
+
+  if (!isLoaded) {
+    return (
+      <div className="container mx-auto max-w-3xl px-4 py-12">
+        <Skeleton className="h-4 w-28 mb-8" />
+        <div className="bg-card/40 border border-border/40 rounded-2xl p-6 md:p-10 shadow-lg">
+          <div className="flex items-center gap-4 mb-8 border-b border-border/40 pb-6">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-7 w-48" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+          </div>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-12" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-[250px] w-full" />
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-10" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+            <div className="pt-6 border-t border-border/40 flex justify-end">
+              <Skeleton className="h-12 w-36 rounded-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
