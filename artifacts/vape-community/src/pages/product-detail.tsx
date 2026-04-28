@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/utils";
 import { Star, Sparkles, Flame, Truck, Shield, RefreshCw, ChevronLeft, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useSeo, JsonLd, breadcrumbJsonLd, productJsonLd } from "@/lib/seo";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/shop/p/:slug");
@@ -41,7 +42,42 @@ export default function ProductDetail() {
   });
 
   if (isLoading) {
-    return <div className="container mx-auto max-w-6xl px-4 py-20 text-center font-mono text-muted-foreground">Loading product...</div>;
+    return (
+      <div className="container mx-auto max-w-6xl px-4 py-8 space-y-12">
+        <Skeleton className="h-4 w-32" />
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <Skeleton className="aspect-square w-full rounded-2xl" />
+          <div className="flex flex-col gap-5">
+            <div className="space-y-3">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-10 w-3/4" />
+              <Skeleton className="h-10 w-1/2" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+            <Skeleton className="h-12 w-40" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-4/5" />
+            </div>
+            <Skeleton className="h-4 w-36" />
+            <div className="flex items-center gap-3 pt-2">
+              <Skeleton className="h-10 w-28 rounded-full" />
+              <Skeleton className="h-10 flex-1 rounded-full" />
+            </div>
+            <Skeleton className="h-10 w-full rounded-full" />
+            <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border/40">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="flex flex-col items-center gap-2">
+                  <Skeleton className="h-5 w-5 rounded" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
   if (!product) {
     return (

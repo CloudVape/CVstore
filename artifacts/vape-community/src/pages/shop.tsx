@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useSearch, Link } from "wouter";
 import { useListProducts, useListProductCategories } from "@workspace/api-client-react";
-import { ProductCard } from "@/components/product-card";
+import { ProductCard, ProductCardSkeleton } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, SlidersHorizontal } from "lucide-react";
@@ -155,7 +155,9 @@ export default function Shop() {
 
         <div className="flex-1">
           {isLoading ? (
-            <div className="text-center py-20 text-muted-foreground font-mono">Loading products...</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+              {Array.from({ length: 9 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+            </div>
           ) : visible.length === 0 ? (
             <div className="text-center py-20 text-muted-foreground font-mono border border-dashed border-border/40 rounded-xl">
               No products match your filters.

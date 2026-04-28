@@ -1,6 +1,6 @@
 import { useRoute, Link } from "wouter";
 import { useListProducts, useListProductCategories } from "@workspace/api-client-react";
-import { ProductCard } from "@/components/product-card";
+import { ProductCard, ProductCardSkeleton } from "@/components/product-card";
 import { ChevronLeft } from "lucide-react";
 import { useSeo, JsonLd, breadcrumbJsonLd, collectionJsonLd } from "@/lib/seo";
 
@@ -64,7 +64,9 @@ export default function CategoryDetail() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-20 text-muted-foreground font-mono">Loading products...</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+        </div>
       ) : !products?.length ? (
         <div className="text-center py-20 text-muted-foreground font-mono border border-dashed border-border/40 rounded-xl">
           No products in this category yet.

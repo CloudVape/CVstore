@@ -7,6 +7,29 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function ProductCardSkeleton() {
+  return (
+    <Card className="overflow-hidden border-border/40 bg-card/50 h-full flex flex-col shadow-sm">
+      <Skeleton className="aspect-square w-full rounded-none" />
+      <div className="p-4 flex flex-col flex-1 gap-2">
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-4/5" />
+        <Skeleton className="h-3 w-20" />
+        <div className="flex-1" />
+        <div className="flex items-end justify-between gap-2 pt-2">
+          <div className="space-y-1">
+            <Skeleton className="h-6 w-16" />
+            <Skeleton className="h-3 w-12" />
+          </div>
+          <Skeleton className="h-9 w-9 rounded-full" />
+        </div>
+      </div>
+    </Card>
+  );
+}
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
