@@ -60,6 +60,10 @@ Thumbs.db
 .env.production.local
 .env.staging
 
+# Always keep example env files tracked (overrides .env.* above)
+!.env.example
+!**/.env.example
+
 # pnpm lock is intentionally tracked; ignore pnpm store cache
 .pnpm-store/
 
