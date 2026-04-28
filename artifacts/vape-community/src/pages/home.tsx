@@ -122,7 +122,7 @@ export default function Home() {
           {categories?.map((c) => (
             <Link key={c.id} href={`/shop/c/${c.slug}`}>
               <Card className="group p-4 bg-card/50 hover:bg-card hover:border-primary/50 border-border/40 transition-all duration-300 cursor-pointer aspect-square flex flex-col items-center justify-center text-center gap-2 hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)]">
-                <div className="text-3xl group-hover:scale-110 transition-transform">{c.iconEmoji}</div>
+                <div className="text-3xl group-hover:scale-110 transition-all duration-300 group-hover:drop-shadow-[0_0_12px_hsl(var(--primary)/0.9)]">{c.iconEmoji}</div>
                 <p className="text-xs font-bold uppercase tracking-tight leading-tight">{c.name}</p>
                 <p className="text-[10px] font-mono text-muted-foreground">{c.productCount}</p>
               </Card>

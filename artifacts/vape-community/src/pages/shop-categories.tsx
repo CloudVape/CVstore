@@ -62,8 +62,8 @@ export default function ShopCategories() {
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-                  <div className="absolute top-3 left-3">
-                    <span className="text-xl bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1 border border-white/10 opacity-70">
+                  <div className="absolute top-4 left-4">
+                    <span className="text-3xl transition-all duration-300 group-hover:drop-shadow-[0_0_14px_hsl(var(--primary)/0.9)]">
                       {c.iconEmoji}
                     </span>
                   </div>
