@@ -6,7 +6,7 @@ import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod/v4";
 import crypto from "crypto";
 import { sendEmail, fireAndForget } from "../lib/email";
-import { welcomeTemplate } from "../lib/email-templates";
+import { welcomeTemplate, verifyEmailTemplate } from "../lib/email-templates";
 import { getSiteUrl } from "../lib/config";
 
 const router: IRouter = Router();
@@ -36,6 +36,86 @@ function formatUserPrivate(u: typeof usersTable.$inferSelect) {
     themePreference: u.themePreference,
   };
 }
+
+/**
+ * GET /users/verify-email?token=<token>
+ *
+ * Verifies the email address by matching the one-time token stored in the DB.
+ * Marks the user as verified and clears the token on success.
+ */
+router.get("/users/verify-email", async (req, res): Promise<void> => {
+  const token = typeof req.query.token === "string" ? req.query.token : null;
+  if (!token) {
+    res.status(400).json({ error: "Missing verification token." });
+    return;
+  }
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.verificationToken, token));
+
+  if (!user) {
+    res.status(400).json({ error: "Invalid or expired verification token." });
+    return;
+  }
+
+  await db
+    .update(usersTable)
+    .set({ emailVerified: true, verificationToken: null })
+    .where(eq(usersTable.id, user.id));
+
+  res.json({ message: "Email verified successfully. You can now log in." });
+});
+
+/**
+ * POST /users/resend-verification
+ *
+ * Sends (or re-sends) an email verification link to the authenticated user.
+ * Requires Clerk authentication. Only useful when emailVerified is false.
+ */
+router.post("/users/resend-verification", async (req, res): Promise<void> => {
+  const { userId } = getAuth(req);
+  if (!userId) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, userId));
+
+  if (!user) {
+    res.status(404).json({ error: "User profile not found" });
+    return;
+  }
+
+  if (user.emailVerified) {
+    res.status(400).json({ error: "Email address is already verified." });
+    return;
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  await db
+    .update(usersTable)
+    .set({ verificationToken: token })
+    .where(eq(usersTable.id, user.id));
+
+  fireAndForget(
+    getSiteUrl().then((siteUrl) => {
+      const verifyUrl = `${siteUrl}/verify-email?token=${encodeURIComponent(token)}`;
+      const { subject, html, text } = verifyEmailTemplate({
+        username: user.username,
+        verifyUrl,
+        siteUrl,
+      });
+      return sendEmail({ to: user.email, subject, html, text, template: "verify-email" });
+    }),
+  );
+
+  res.json({ message: "Verification email sent. Please check your inbox." });
+});
 
 router.get("/users", async (_req, res): Promise<void> => {
   const users = await db.select().from(usersTable).orderBy(usersTable.joinedAt);

@@ -125,9 +125,11 @@ function orderItemsTable(items: OrderItem[], subtotalCents: number, shippingCent
 export function verifyEmailTemplate(opts: {
   username: string;
   verifyUrl: string;
+  siteUrl?: string;
 }): { subject: string; html: string; text: string } {
   const subject = "Verify your CloudVape email address";
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: `Hi ${opts.username}, confirm your email to activate your CloudVape account.`,
     content: `
       ${h1("Verify Your Email")}
