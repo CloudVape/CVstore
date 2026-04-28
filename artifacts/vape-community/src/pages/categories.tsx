@@ -16,7 +16,7 @@ import { useSeo } from "@/lib/seo";
 
 type CategoryStyle = {
   Icon: LucideIcon;
-  iconGradient: string;
+  iconGlow: string;
   ring: string;
   glow: string;
   accentText: string;
@@ -28,7 +28,7 @@ type CategoryStyle = {
 const STYLES: Record<string, CategoryStyle> = {
   "hardware-reviews": {
     Icon: Cpu,
-    iconGradient: "from-cyan-400 to-sky-600",
+    iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]",
     ring: "ring-cyan-400/30 group-hover:ring-cyan-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(34,211,238,0.45)]",
     accentText: "group-hover:text-cyan-300",
@@ -38,7 +38,7 @@ const STYLES: Record<string, CategoryStyle> = {
   },
   "e-liquid-talk": {
     Icon: Droplets,
-    iconGradient: "from-pink-400 to-fuchsia-600",
+    iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.8)]",
     ring: "ring-pink-400/30 group-hover:ring-pink-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(236,72,153,0.45)]",
     accentText: "group-hover:text-pink-300",
@@ -48,7 +48,7 @@ const STYLES: Record<string, CategoryStyle> = {
   },
   "cloud-chasing": {
     Icon: Wind,
-    iconGradient: "from-sky-300 to-indigo-500",
+    iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.8)]",
     ring: "ring-sky-400/30 group-hover:ring-sky-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(56,189,248,0.45)]",
     accentText: "group-hover:text-sky-300",
@@ -58,7 +58,7 @@ const STYLES: Record<string, CategoryStyle> = {
   },
   "beginner-help": {
     Icon: LifeBuoy,
-    iconGradient: "from-amber-300 to-orange-600",
+    iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.8)]",
     ring: "ring-amber-400/30 group-hover:ring-amber-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(251,191,36,0.45)]",
     accentText: "group-hover:text-amber-300",
@@ -68,7 +68,7 @@ const STYLES: Record<string, CategoryStyle> = {
   },
   "industry-news": {
     Icon: Newspaper,
-    iconGradient: "from-violet-400 to-purple-700",
+    iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(167,139,250,0.8)]",
     ring: "ring-violet-400/30 group-hover:ring-violet-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(167,139,250,0.45)]",
     accentText: "group-hover:text-violet-300",
@@ -78,7 +78,7 @@ const STYLES: Record<string, CategoryStyle> = {
   },
   "diy-coil-building": {
     Icon: Wrench,
-    iconGradient: "from-rose-400 to-red-600",
+    iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(251,113,133,0.8)]",
     ring: "ring-rose-400/30 group-hover:ring-rose-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(251,113,133,0.45)]",
     accentText: "group-hover:text-rose-300",
@@ -90,7 +90,7 @@ const STYLES: Record<string, CategoryStyle> = {
 
 const FALLBACK_STYLE: CategoryStyle = {
   Icon: MessagesSquare,
-  iconGradient: "from-primary to-secondary",
+  iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]",
   ring: "ring-primary/30 group-hover:ring-primary/60",
   glow: "group-hover:shadow-[0_0_40px_-8px_rgba(34,211,238,0.45)]",
   accentText: "group-hover:text-primary",
@@ -155,11 +155,11 @@ export default function Categories() {
                   />
 
                   <div className="relative flex items-start justify-between gap-4 mb-5">
-                    <div
-                      className={`h-14 w-14 rounded-xl bg-gradient-to-br ${style.iconGradient} flex items-center justify-center shadow-lg ring-1 ${style.ring} transition-all duration-300 group-hover:scale-105`}
-                    >
-                      <Icon className="h-7 w-7 text-white drop-shadow-sm" strokeWidth={2.25} />
-                    </div>
+                    <Icon
+                      aria-hidden="true"
+                      className={`h-11 w-11 ${style.ghostIconColor} transition-all duration-300 group-hover:scale-110 ${style.iconGlow}`}
+                      strokeWidth={1.5}
+                    />
                     <span
                       className={`text-[10px] font-mono font-bold tracking-[0.18em] px-2 py-1 rounded-md ${style.badgeBg}`}
                     >
