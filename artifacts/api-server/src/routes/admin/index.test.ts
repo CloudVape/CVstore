@@ -293,4 +293,33 @@ describe("Admin route authentication", () => {
       expect(res.status).toBe(403);
     });
   });
+
+  describe("database error during auth check", () => {
+    beforeEach(() => {
+      mockGetAuth.mockReturnValue({ userId: "user_admin" });
+      mockDbSelect.mockRejectedValue(new Error("DB connection lost"));
+    });
+
+    for (const { label, path } of ROUTE_GROUPS.slice(0, 3)) {
+      it(`returns 500 (not 200/401/403) for GET ${path} when DB throws (${label})`, async () => {
+        const res = await request(app).get(path);
+        expect(res.status).toBe(500);
+        expect(res.body).toMatchObject({ error: expect.any(String) });
+      });
+    }
+
+    it("returns 500 for POST /admin/suppliers when DB throws during auth", async () => {
+      const res = await request(app)
+        .post("/admin/suppliers")
+        .send({ name: "Test", sourceType: "csv-url" });
+      expect(res.status).toBe(500);
+      expect(res.body).toMatchObject({ error: expect.any(String) });
+    });
+
+    it("returns 500 for DELETE /admin/suppliers/1 when DB throws during auth", async () => {
+      const res = await request(app).delete("/admin/suppliers/1");
+      expect(res.status).toBe(500);
+      expect(res.body).toMatchObject({ error: expect.any(String) });
+    });
+  });
 });
