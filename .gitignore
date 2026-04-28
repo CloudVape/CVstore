@@ -47,3 +47,26 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Environment variables — never commit real secrets
+.env
+.env.*
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
+
+# pnpm lock is intentionally tracked; ignore pnpm store cache
+.pnpm-store/
+
+# Drizzle generated migrations snapshot (optional — remove if you want to track them)
+# lib/db/drizzle/
+
+# OS / editor artifacts (extra)
+*.swp
+*.swo
+*~
