@@ -81,7 +81,7 @@ const clerkAppearance = {
     cardBox: "bg-white rounded-2xl w-[440px] max-w-full overflow-hidden shadow-xl",
     card: "!shadow-none !border-0 !bg-transparent !rounded-none",
     footer: "!shadow-none !border-0 !bg-transparent !rounded-none",
-    headerTitle: "text-[hsl(240_12%_10%)] font-black font-mono tracking-tight",
+    headerTitle: "text-[hsl(240_12%_10%)] font-black font-mono tracking-tight text-2xl",
     headerSubtitle: "text-[hsl(240_6%_38%)]",
     socialButtonsBlockButtonText: "text-[hsl(240_12%_10%)] font-medium",
     formFieldLabel: "text-[hsl(240_12%_10%)] text-xs font-mono uppercase tracking-wider",
@@ -92,7 +92,7 @@ const clerkAppearance = {
     formFieldSuccessText: "text-[hsl(140_60%_38%)]",
     alertText: "text-[hsl(240_12%_10%)]",
     logoBox: "flex justify-center mb-2",
-    logoImage: "h-10",
+    logoImage: "h-14",
     socialButtonsBlockButton: "border border-[hsl(240_10%_88%)] hover:bg-[hsl(220_25%_95%)]",
     formButtonPrimary: "bg-[hsl(190_90%_36%)] hover:bg-[hsl(190_90%_30%)] text-white font-mono uppercase tracking-wider rounded-full shadow-[0_0_20px_hsl(190_90%_36%/0.4)]",
     formFieldInput: "border-[hsl(240_10%_88%)] bg-white text-[hsl(240_12%_10%)]",
@@ -207,12 +207,6 @@ function SignInPage() {
             signUpUrl={`${basePath}/sign-up`}
             appearance={clerkAppearance}
           />
-          <button
-            onClick={() => setShowLegacy(true)}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Had an account before Clerk was added? Claim it here →
-          </button>
         </>
       )}
     </div>
