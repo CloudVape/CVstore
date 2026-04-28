@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+  <product>
+    <SKU>DS-1001</SKU>
+    <Product_Name>Cloud Reaper 60ml</Product_Name>
+    <Brand>VaporX</Brand>
+    <Short_Description>Bold tropical mango with a cool exhale</Short_Description>
+    <Description>Hand-crafted e-liquid with notes of ripe mango, pineapple, and a hint of menthol on the exhale.</Description>
+    <Price>18.99</Price>
+    <Compare_Price>24.99</Compare_Price>
+    <Category>e-liquids</Category>
+    <Image_URL>https://example.com/img/cloud-reaper.jpg</Image_URL>
+    <Stock>42</Stock>
+    <Flavor>Mango Menthol</Flavor>
+    <Nicotine>3mg</Nicotine>
+    <VG_PG>70/30</VG_PG>
+    <Bottle_Size>60ml</Bottle_Size>
+    <Tags>new,featured</Tags>
+  </product>
+  <product>
+    <SKU>DS-1002</SKU>
+    <Product_Name>Berry Frost 30ml</Product_Name>
+    <Brand>VaporX</Brand>
+    <Short_Description>Mixed berries on ice</Short_Description>
+    <Description>A frosted blend of strawberry, blueberry, and raspberry with a clean menthol finish.</Description>
+    <Price>12.99</Price>
+    <Compare_Price>15.99</Compare_Price>
+    <Category>e-liquids</Category>
+    <Image_URL>https://example.com/img/berry-frost.jpg</Image_URL>
+    <Stock>18</Stock>
+    <Flavor>Berry Frost</Flavor>
+    <Nicotine>6mg</Nicotine>
+    <VG_PG>60/40</VG_PG>
+    <Bottle_Size>30ml</Bottle_Size>
+    <Tags>bestseller</Tags>
+  </product>
+  <product>
+    <SKU>DS-1003</SKU>
+    <Product_Name>Citrus Burst 100ml</Product_Name>
+    <Brand>VaporX</Brand>
+    <Short_Description>Tangy citrus medley</Short_Description>
+    <Description>A bright fusion of orange, lemon, and grapefruit with a sweet candy backbone.</Description>
+    <Price>22.99</Price>
+    <Compare_Price>27.99</Compare_Price>
+    <Category>e-liquids</Category>
+    <Image_URL>https://example.com/img/citrus-burst.jpg</Image_URL>
+    <Stock>0</Stock>
+    <Flavor>Citrus Burst</Flavor>
+    <Nicotine>0mg</Nicotine>
+    <VG_PG>70/30</VG_PG>
+    <Bottle_Size>100ml</Bottle_Size>
+    <Tags>out-of-stock</Tags>
+  </product>
+  <product>
+    <SKU>DS-2001</SKU>
+    <Product_Name>Nimbus Pod Kit</Product_Name>
+    <Brand>AeroMod</Brand>
+    <Short_Description>Compact pod system with adjustable airflow</Short_Description>
+    <Description>A pocketable refillable pod kit featuring a 1000mAh battery, USB-C charging, and adjustable airflow.</Description>
+    <Price>34.99</Price>
+    <Compare_Price>39.99</Compare_Price>
+    <Category>pods</Category>
+    <Image_URL>https://example.com/img/nimbus-pod.jpg</Image_URL>
+    <Stock>7</Stock>
+    <Flavor></Flavor>
+    <Nicotine></Nicotine>
+    <VG_PG></VG_PG>
+    <Bottle_Size></Bottle_Size>
+    <Tags>new</Tags>
+  </product>
+  <product>
+    <SKU>DS-2002</SKU>
+    <Product_Name>Stratus Mod 80W</Product_Name>
+    <Brand>AeroMod</Brand>
+    <Short_Description>Variable wattage box mod</Short_Description>
+    <Description>An 80W single-battery box mod with TC modes, color display, and water-resistant chassis.</Description>
+    <Price>59.99</Price>
+    <Compare_Price>69.99</Compare_Price>
+    <Category>mods</Category>
+    <Image_URL>https://example.com/img/stratus-mod.jpg</Image_URL>
+    <Stock>3</Stock>
+    <Flavor></Flavor>
+    <Nicotine></Nicotine>
+    <VG_PG></VG_PG>
+    <Bottle_Size></Bottle_Size>
+    <Tags></Tags>
+  </product>
+  <product>
+    <SKU>DS-3001</SKU>
+    <Product_Name>Mesh Coils 0.4 ohm 5pk</Product_Name>
+    <Brand>CoilCraft</Brand>
+    <Short_Description>Pack of 5 mesh coils</Short_Description>
+    <Description>Pack of five 0.4-ohm mesh coils compatible with most sub-ohm tanks. Long lasting flavor profile.</Description>
+    <Price>14.99</Price>
+    <Compare_Price>17.99</Compare_Price>
+    <Category>coils</Category>
+    <Image_URL>https://example.com/img/mesh-coils.jpg</Image_URL>
+    <Stock>120</Stock>
+    <Flavor></Flavor>
+    <Nicotine></Nicotine>
+    <VG_PG></VG_PG>
+    <Bottle_Size></Bottle_Size>
+    <Tags>bestseller</Tags>
+  </product>
+  <product>
+    <SKU>DS-2003</SKU>
+    <Product_Name>Apex Disposable 5000 Puffs</Product_Name>
+    <Brand>SkyPuff</Brand>
+    <Short_Description>5000-puff disposable</Short_Description>
+    <Description>Pre-filled, pre-charged disposable rated for up to 5000 puffs with mesh coil and rechargeable battery.</Description>
+    <Price>17.99</Price>
+    <Compare_Price>21.99</Compare_Price>
+    <Category>disposables</Category>
+    <Image_URL>https://example.com/img/apex-disposable.jpg</Image_URL>
+    <Stock>55</Stock>
+    <Flavor>Blue Razz Ice</Flavor>
+    <Nicotine>5%</Nicotine>
+    <VG_PG>50/50</VG_PG>
+    <Bottle_Size>12ml</Bottle_Size>
+    <Tags>new,bestseller</Tags>
+  </product>
+</products>

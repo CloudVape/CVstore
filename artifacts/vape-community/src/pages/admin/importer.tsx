@@ -50,8 +50,10 @@ function autoMap(
         n === target ||
         n === target.replace(/cents$/, "") ||
         n === target.replace(/cents$/, "price") ||
+        (target === "name" && (n === "title" || n === "productname")) ||
+        (target === "brand" && n === "vendor") ||
         (target === "externalsku" && (n === "sku" || n === "id" || n === "productid" || n === "variantssku")) ||
-        (target === "categoryslug" && n === "category") ||
+        (target === "categoryslug" && (n === "category" || n === "producttype")) ||
         (target === "imageurl" && (n === "image" || n === "imageurl" || n === "img" || n === "imagessrc")) ||
         (target === "stockcount" && (n === "stock" || n === "qty" || n === "quantity" || n === "inventory" || n === "variantsinventoryquantity")) ||
         (target === "pricecents" && (n === "price" || n === "variantsprice")) ||

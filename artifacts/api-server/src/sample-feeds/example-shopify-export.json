@@ -1,0 +1,180 @@
+{
+  "products": [
+    {
+      "title": "Cloud Reaper E-Liquid",
+      "body_html": "<p>Hand-crafted e-liquid with notes of ripe mango, pineapple, and a hint of menthol on the exhale.</p>",
+      "vendor": "VaporX",
+      "product_type": "E-Liquid",
+      "handle": "cloud-reaper-e-liquid",
+      "tags": "new, featured, mango, menthol",
+      "images": [
+        { "src": "https://example.com/img/cloud-reaper.jpg", "position": 1 }
+      ],
+      "variants": [
+        {
+          "sku": "DS-1001-3MG",
+          "title": "60ml / 3mg",
+          "price": "18.99",
+          "compare_at_price": "24.99",
+          "inventory_quantity": 42,
+          "option1": "60ml",
+          "option2": "3mg"
+        },
+        {
+          "sku": "DS-1001-6MG",
+          "title": "60ml / 6mg",
+          "price": "18.99",
+          "compare_at_price": "24.99",
+          "inventory_quantity": 30,
+          "option1": "60ml",
+          "option2": "6mg"
+        }
+      ]
+    },
+    {
+      "title": "Berry Frost E-Liquid",
+      "body_html": "<p>A frosted blend of strawberry, blueberry, and raspberry with a clean menthol finish.</p>",
+      "vendor": "VaporX",
+      "product_type": "E-Liquid",
+      "handle": "berry-frost-e-liquid",
+      "tags": "bestseller, berry, menthol",
+      "images": [
+        { "src": "https://example.com/img/berry-frost.jpg", "position": 1 }
+      ],
+      "variants": [
+        {
+          "sku": "DS-1002-3MG",
+          "title": "30ml / 3mg",
+          "price": "12.99",
+          "compare_at_price": "15.99",
+          "inventory_quantity": 18,
+          "option1": "30ml",
+          "option2": "3mg"
+        },
+        {
+          "sku": "DS-1002-6MG",
+          "title": "30ml / 6mg",
+          "price": "12.99",
+          "compare_at_price": "15.99",
+          "inventory_quantity": 22,
+          "option1": "30ml",
+          "option2": "6mg"
+        }
+      ]
+    },
+    {
+      "title": "Citrus Burst E-Liquid",
+      "body_html": "<p>A bright fusion of orange, lemon, and grapefruit with a sweet candy backbone.</p>",
+      "vendor": "VaporX",
+      "product_type": "E-Liquid",
+      "handle": "citrus-burst-e-liquid",
+      "tags": "out-of-stock, citrus",
+      "images": [
+        { "src": "https://example.com/img/citrus-burst.jpg", "position": 1 }
+      ],
+      "variants": [
+        {
+          "sku": "DS-1003-0MG",
+          "title": "100ml / 0mg",
+          "price": "22.99",
+          "compare_at_price": "27.99",
+          "inventory_quantity": 0,
+          "option1": "100ml",
+          "option2": "0mg"
+        }
+      ]
+    },
+    {
+      "title": "Nimbus Pod Kit",
+      "body_html": "<p>A pocketable refillable pod kit featuring a 1000mAh battery, USB-C charging, and adjustable airflow.</p>",
+      "vendor": "AeroMod",
+      "product_type": "Pod System",
+      "handle": "nimbus-pod-kit",
+      "tags": "new, pod, hardware",
+      "images": [
+        { "src": "https://example.com/img/nimbus-pod.jpg", "position": 1 }
+      ],
+      "variants": [
+        {
+          "sku": "DS-2001",
+          "title": "Default Title",
+          "price": "34.99",
+          "compare_at_price": "39.99",
+          "inventory_quantity": 7,
+          "option1": "Default Title"
+        }
+      ]
+    },
+    {
+      "title": "Stratus Mod 80W",
+      "body_html": "<p>An 80W single-battery box mod with TC modes, color display, and water-resistant chassis.</p>",
+      "vendor": "AeroMod",
+      "product_type": "Box Mod",
+      "handle": "stratus-mod-80w",
+      "tags": "hardware, mod",
+      "images": [
+        { "src": "https://example.com/img/stratus-mod.jpg", "position": 1 }
+      ],
+      "variants": [
+        {
+          "sku": "DS-2002",
+          "title": "Default Title",
+          "price": "59.99",
+          "compare_at_price": "69.99",
+          "inventory_quantity": 3,
+          "option1": "Default Title"
+        }
+      ]
+    },
+    {
+      "title": "Mesh Coils 0.4 ohm 5pk",
+      "body_html": "<p>Pack of five 0.4-ohm mesh coils compatible with most sub-ohm tanks. Long lasting flavor profile.</p>",
+      "vendor": "CoilCraft",
+      "product_type": "Coils",
+      "handle": "mesh-coils-04-ohm-5pk",
+      "tags": "bestseller, coils, accessories",
+      "images": [
+        { "src": "https://example.com/img/mesh-coils.jpg", "position": 1 }
+      ],
+      "variants": [
+        {
+          "sku": "DS-3001",
+          "title": "Default Title",
+          "price": "14.99",
+          "compare_at_price": "17.99",
+          "inventory_quantity": 120,
+          "option1": "Default Title"
+        }
+      ]
+    },
+    {
+      "title": "Apex Disposable 5000 Puffs",
+      "body_html": "<p>Pre-filled, pre-charged disposable rated for up to 5000 puffs with mesh coil and rechargeable battery.</p>",
+      "vendor": "SkyPuff",
+      "product_type": "Disposable",
+      "handle": "apex-disposable-5000-puffs",
+      "tags": "new, bestseller, disposable",
+      "images": [
+        { "src": "https://example.com/img/apex-disposable.jpg", "position": 1 }
+      ],
+      "variants": [
+        {
+          "sku": "DS-2003-BLUE",
+          "title": "Blue Razz Ice",
+          "price": "17.99",
+          "compare_at_price": "21.99",
+          "inventory_quantity": 55,
+          "option1": "Blue Razz Ice"
+        },
+        {
+          "sku": "DS-2003-MANGO",
+          "title": "Mango Ice",
+          "price": "17.99",
+          "compare_at_price": "21.99",
+          "inventory_quantity": 38,
+          "option1": "Mango Ice"
+        }
+      ]
+    }
+  ]
+}
