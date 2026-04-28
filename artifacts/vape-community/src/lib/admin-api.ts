@@ -324,4 +324,24 @@ export const adminApi = {
     });
     return asJson<AdminOrder>(r);
   },
+
+  async getSettings(token: string): Promise<{ alertEmail?: string }> {
+    const r = await fetch(`${BASE}/admin/settings`, {
+      headers: authHeaders(token),
+    });
+    const data = await asJson<Record<string, string>>(r);
+    return { alertEmail: data["alert_email"] };
+  },
+
+  async updateSettings(
+    token: string,
+    body: { alertEmail: string },
+  ): Promise<{ alertEmail: string }> {
+    const r = await fetch(`${BASE}/admin/settings`, {
+      method: "PUT",
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return asJson<{ alertEmail: string }>(r);
+  },
 };

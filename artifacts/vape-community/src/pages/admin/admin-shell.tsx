@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
-import { Boxes, History, Upload, Mail, Users, Send, Package, BookOpen, Headphones } from "lucide-react";
+import { Boxes, History, Upload, Mail, Users, Send, Package, BookOpen, Headphones, Settings } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const tabs = [
@@ -15,6 +15,7 @@ const tabs = [
   { href: "/admin/broadcast", label: "Broadcast", icon: Send },
   { href: "/admin/help-articles", label: "Help Center", icon: BookOpen },
   { href: "/admin/support", label: "Support Inbox", icon: Headphones },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {

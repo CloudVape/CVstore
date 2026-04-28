@@ -35,6 +35,7 @@ import AdminSubscribers from "@/pages/admin/subscribers";
 import AdminBroadcast from "@/pages/admin/broadcast";
 import AdminHelpArticles from "@/pages/admin/help-articles";
 import AdminSupport from "@/pages/admin/support";
+import AdminSettings from "@/pages/admin/settings";
 import NewsletterConfirm from "@/pages/newsletter-confirm";
 import NewsletterUnsubscribe from "@/pages/newsletter-unsubscribe";
 import VerifyEmail from "@/pages/verify-email";
@@ -278,6 +279,7 @@ function Router() {
         <Route path="/admin/broadcast" component={AdminBroadcast} />
         <Route path="/admin/help-articles" component={AdminHelpArticles} />
         <Route path="/admin/support" component={AdminSupport} />
+        <Route path="/admin/settings" component={AdminSettings} />
         <Route path="/newsletter/confirm" component={NewsletterConfirm} />
         <Route path="/newsletter/unsubscribe" component={NewsletterUnsubscribe} />
         <Route path="/verify-email" component={VerifyEmail} />

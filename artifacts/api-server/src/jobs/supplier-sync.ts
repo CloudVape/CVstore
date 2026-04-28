@@ -1,4 +1,4 @@
-import { db, suppliersTable, importRunsTable, type SupplierSchedule } from "@workspace/db";
+import { db, suppliersTable, importRunsTable, settingsTable, type SupplierSchedule } from "@workspace/db";
 import { and, eq, isNotNull } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { fetchFeedFromUrl } from "../lib/fetch-feed";
@@ -7,14 +7,21 @@ import { executeImportRun } from "../lib/import-engine";
 import { sendEmail, fireAndForget } from "../lib/email";
 import { supplierSyncFailureTemplate } from "../lib/email-templates";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@cloudvape.store";
+const ADMIN_EMAIL_FALLBACK = process.env.ADMIN_EMAIL ?? "admin@cloudvape.store";
 const ADMIN_SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 
-if (!process.env.ADMIN_EMAIL) {
-  logger.warn(
-    { defaultAdminEmail: ADMIN_EMAIL },
-    "supplier-sync: ADMIN_EMAIL env var is not set — sync failure alerts will be sent to the hardcoded default address",
-  );
+async function getAdminAlertEmail(): Promise<string> {
+  try {
+    const [row] = await db
+      .select()
+      .from(settingsTable)
+      .where(eq(settingsTable.key, "alert_email"))
+      .limit(1);
+    if (row?.value) return row.value;
+  } catch (err) {
+    logger.warn({ err }, "supplier-sync: failed to read alert_email from settings — using fallback");
+  }
+  return ADMIN_EMAIL_FALLBACK;
 }
 
 const CHECK_INTERVAL_MS = 60_000;
@@ -186,8 +193,9 @@ async function runScheduledSuppliers(): Promise<void> {
             errorMessage,
             importHistoryUrl,
           });
+          const alertEmail = await getAdminAlertEmail();
           fireAndForget(
-            sendEmail({ to: ADMIN_EMAIL, subject, html, text, template: "supplier-sync-failure" }),
+            sendEmail({ to: alertEmail, subject, html, text, template: "supplier-sync-failure" }),
           );
           try {
             await db

@@ -6,6 +6,7 @@ import emailRouter from "./email";
 import helpRouter from "./help";
 import supportRouter from "./support";
 import seedHelpRouter from "./seed-help";
+import settingsRouter from "./settings";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(emailRouter);
 router.use(helpRouter);
 router.use(supportRouter);
 router.use(seedHelpRouter);
+router.use(settingsRouter);
 
 export default router;
