@@ -206,9 +206,9 @@ async function runAiAutoReply(ticketId: number): Promise<void> {
       ? `\n\nCUSTOMER ORDERS:\n${orders.map((o) => `Order ${o.orderNumber}: ${o.status}, $${(o.totalCents / 100).toFixed(2)}, placed ${new Date(o.createdAt).toLocaleDateString()}`).join("\n")}`
       : "";
 
-    const systemPrompt = `You are a helpful customer support agent for VapeVault, an online vape shop. You answer customer questions professionally, clearly, and concisely. You are knowledgeable about vaping products, shipping policies, and account issues.
+    const systemPrompt = `You are a helpful customer support agent for CloudVape, an online vape shop. You answer customer questions professionally, clearly, and concisely. You are knowledgeable about vaping products, shipping policies, and account issues.
 
-VapeVault policies:
+CloudVape policies:
 - Free shipping on orders over $50
 - Returns accepted within 30 days for unopened items
 - Age verification required (21+)

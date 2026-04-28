@@ -8,7 +8,7 @@ const SEED_CATEGORIES = [
   { slug: "orders-shipping", name: "Orders & Shipping", description: "Order status, shipping times, and tracking.", sortOrder: 1 },
   { slug: "returns-refunds", name: "Returns & Refunds", description: "How to return items and get refunds.", sortOrder: 2 },
   { slug: "product-questions", name: "Product Questions", description: "Questions about our vaping products.", sortOrder: 3 },
-  { slug: "account", name: "Account", description: "Managing your VapeVault account.", sortOrder: 4 },
+  { slug: "account", name: "Account", description: "Managing your CloudVape account.", sortOrder: 4 },
   { slug: "legal-age-verification", name: "Legal & Age Verification", description: "Age requirements and legal information.", sortOrder: 5 },
 ];
 
@@ -31,7 +31,7 @@ const SEED_ARTICLES = [
     categorySlug: "orders-shipping",
     slug: "which-states-do-you-ship-to",
     title: "Which states do you ship to?",
-    body: `VapeVault ships to all US states where the sale of vaping products is legally permitted. Due to local regulations, we are currently unable to ship to certain jurisdictions.\n\nAll shipments require an adult signature upon delivery (21+). Our carrier will make up to three delivery attempts before returning the package.\n\nWe do not currently ship internationally.`,
+    body: `CloudVape ships to all US states where the sale of vaping products is legally permitted. Due to local regulations, we are currently unable to ship to certain jurisdictions.\n\nAll shipments require an adult signature upon delivery (21+). Our carrier will make up to three delivery attempts before returning the package.\n\nWe do not currently ship internationally.`,
     published: true,
   },
   {
@@ -52,7 +52,7 @@ const SEED_ARTICLES = [
     categorySlug: "product-questions",
     slug: "nicotine-free-options",
     title: "Do you sell nicotine-free products?",
-    body: `Yes! VapeVault carries a range of nicotine-free options including:\n\n- **0mg e-liquids** — all the flavour, no nicotine\n- **Herbal vaporizers** — designed for dry herbs\n- **Hardware** — all our devices and mods are nicotine-free hardware\n\nFilter by "0mg nicotine" in the shop to see all nicotine-free liquid options.`,
+    body: `Yes! CloudVape carries a range of nicotine-free options including:\n\n- **0mg e-liquids** — all the flavour, no nicotine\n- **Herbal vaporizers** — designed for dry herbs\n- **Hardware** — all our devices and mods are nicotine-free hardware\n\nFilter by "0mg nicotine" in the shop to see all nicotine-free liquid options.`,
     published: true,
   },
   {
@@ -80,7 +80,7 @@ const SEED_ARTICLES = [
     categorySlug: "legal-age-verification",
     slug: "age-verification-requirements",
     title: "What are your age verification requirements?",
-    body: `VapeVault sells vaping and nicotine products exclusively to adults aged 21 and over, in compliance with the US Tobacco 21 law.\n\nAll orders require:\n- Confirmation that you are 21 or older at checkout\n- Adult signature upon delivery (our carriers require ID check)\n\nWe reserve the right to cancel any order where age verification cannot be completed. Providing false age information is illegal and will result in a permanent account ban.`,
+    body: `CloudVape sells vaping and nicotine products exclusively to adults aged 21 and over, in compliance with the US Tobacco 21 law.\n\nAll orders require:\n- Confirmation that you are 21 or older at checkout\n- Adult signature upon delivery (our carriers require ID check)\n\nWe reserve the right to cancel any order where age verification cannot be completed. Providing false age information is illegal and will result in a permanent account ban.`,
     published: true,
   },
 ];
