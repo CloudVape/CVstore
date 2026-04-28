@@ -1,0 +1,45 @@
+name: Deploy to IONOS VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: SSH deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+
+            cd /var/www/cloudvape
+
+            echo "--- Pulling latest code ---"
+            git pull origin main
+
+            echo "--- Installing dependencies ---"
+            pnpm install --frozen-lockfile
+
+            echo "--- Building DB lib ---"
+            pnpm --filter @workspace/db run push
+
+            echo "--- Building API server ---"
+            pnpm --filter @workspace/api-server run build
+
+            echo "--- Building frontend ---"
+            pnpm --filter @workspace/vape-community run build
+
+            echo "--- Restarting services ---"
+            pm2 reload all --update-env
+
+            echo "--- Deploy complete ---"
+            pm2 list
