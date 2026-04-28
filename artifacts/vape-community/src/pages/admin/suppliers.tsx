@@ -434,6 +434,7 @@ export default function AdminSuppliersPage() {
                 <th className="p-3 font-mono uppercase text-xs tracking-wider">Source</th>
                 <th className="p-3 font-mono uppercase text-xs tracking-wider">Last run</th>
                 <th className="p-3 font-mono uppercase text-xs tracking-wider">Mapping</th>
+                <th className="p-3 font-mono uppercase text-xs tracking-wider">Last alert sent</th>
                 <th className="p-3 font-mono uppercase text-xs tracking-wider text-right">Actions</th>
               </tr>
             </thead>
@@ -483,6 +484,11 @@ export default function AdminSuppliersPage() {
                         </div>
                       </div>
                     ) : null}
+                  </td>
+                  <td className="p-3 text-xs text-muted-foreground whitespace-nowrap">
+                    {s.lastAlertSentAt
+                      ? new Date(s.lastAlertSentAt).toLocaleString()
+                      : "Never"}
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-2 flex-wrap">
