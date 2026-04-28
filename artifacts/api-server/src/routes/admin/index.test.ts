@@ -294,6 +294,52 @@ describe("Admin route authentication", () => {
     });
   });
 
+  describe("PATCH /admin/orders/:orderNumber/status - write endpoint protection", () => {
+    it("returns 401 for unauthenticated PATCH", async () => {
+      mockGetAuth.mockReturnValue({ userId: null });
+
+      const res = await request(app)
+        .patch("/admin/orders/ORD-001/status")
+        .send({ status: "shipped" });
+
+      expect(res.status).toBe(401);
+    });
+
+    it("returns 403 for non-admin PATCH", async () => {
+      mockGetAuth.mockReturnValue({ userId: "user_regular" });
+      mockDbSelect.mockResolvedValue([{ clerkId: "user_regular", isAdmin: false }]);
+
+      const res = await request(app)
+        .patch("/admin/orders/ORD-001/status")
+        .send({ status: "shipped" });
+
+      expect(res.status).toBe(403);
+    });
+  });
+
+  describe("POST /admin/newsletter/broadcast - write endpoint protection", () => {
+    it("returns 401 for unauthenticated POST", async () => {
+      mockGetAuth.mockReturnValue({ userId: null });
+
+      const res = await request(app)
+        .post("/admin/newsletter/broadcast")
+        .send({ subject: "Hello", html: "<p>Hi</p>" });
+
+      expect(res.status).toBe(401);
+    });
+
+    it("returns 403 for non-admin POST", async () => {
+      mockGetAuth.mockReturnValue({ userId: "user_regular" });
+      mockDbSelect.mockResolvedValue([{ clerkId: "user_regular", isAdmin: false }]);
+
+      const res = await request(app)
+        .post("/admin/newsletter/broadcast")
+        .send({ subject: "Hello", html: "<p>Hi</p>" });
+
+      expect(res.status).toBe(403);
+    });
+  });
+
   describe("database error during auth check", () => {
     beforeEach(() => {
       mockGetAuth.mockReturnValue({ userId: "user_admin" });
