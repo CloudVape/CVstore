@@ -6,7 +6,17 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px 0 hsl(var(--primary) / 0.25), 0 0 12px 0 hsl(var(--primary) / 0.10);
+  }
+  50% {
+    box-shadow: 0 0 14px 3px hsl(var(--primary) / 0.50), 0 0 28px 4px hsl(var(--primary) / 0.20);
+  }
+}
+
 @theme inline {
+  --animate-glow-pulse: glow-pulse 2.5s ease-in-out infinite;
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-border: hsl(var(--border));

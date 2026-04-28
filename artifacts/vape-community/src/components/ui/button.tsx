@@ -11,8 +11,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-           // @replit: no hover, and add primary border
-           "bg-primary text-primary-foreground border border-primary-border",
+           // @replit: no hover, and add primary border; pulsing glow in dark mode
+           "bg-primary text-primary-foreground border border-primary-border dark:animate-glow-pulse hover:[animation-play-state:paused] focus-visible:[animation-play-state:paused]",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm border-destructive-border",
         outline:
