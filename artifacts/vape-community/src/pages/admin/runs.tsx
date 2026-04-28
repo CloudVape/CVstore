@@ -95,8 +95,12 @@ export default function AdminRunsPage() {
                   </td>
                   <td className="p-3">{r.supplierName ?? `#${r.supplierId}`}</td>
                   <td className="p-3 text-xs">
-                    {r.triggeredByUsername ?? (
-                      <span className="text-muted-foreground italic">system</span>
+                    {r.triggeredByUserId === null ? (
+                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-violet-500/15 text-violet-600 dark:text-violet-400">
+                        Scheduled
+                      </span>
+                    ) : (
+                      r.triggeredByUsername ?? <span className="text-muted-foreground italic">unknown</span>
                     )}
                   </td>
                   <td className="p-3 text-xs font-mono uppercase tracking-wider">
