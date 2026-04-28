@@ -11,6 +11,7 @@ import { CommentList } from "@/components/comment-list";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useSeo, JsonLd, articleJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -58,8 +59,52 @@ export default function PostDetail() {
 
   if (postLoading) {
     return (
-      <div className="container mx-auto max-w-4xl px-4 py-20 text-center font-mono text-muted-foreground">
-        Loading post...
+      <div className="container mx-auto max-w-4xl px-4 py-8">
+        <Skeleton className="h-4 w-28 mb-8" />
+        <div className="bg-card/30 rounded-2xl border border-border/40 overflow-hidden mb-10 shadow-lg">
+          <div className="p-6 md:p-10 border-b border-border/40 space-y-6">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-5 w-24 rounded-full" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-8 w-1/2" />
+            <div className="flex items-center justify-between border-t border-border/20 pt-6">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="space-y-1.5">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-8 w-20 rounded-full" />
+                <Skeleton className="h-8 w-28 rounded-full" />
+              </div>
+            </div>
+          </div>
+          <div className="p-6 md:p-10 space-y-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-4/5" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-5 w-32" />
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex gap-4">
+              <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-16 w-full rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -201,8 +246,21 @@ export default function PostDetail() {
 
       <section className="mb-20">
         {commentsLoading ? (
-          <div className="py-10 text-center text-muted-foreground font-mono border border-dashed border-border/40 rounded-xl">
-            Loading comments...
+          <div className="space-y-6">
+            <Skeleton className="h-5 w-36" />
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="flex gap-4">
+                <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                  <Skeleton className="h-16 w-full rounded-lg" />
+                  <Skeleton className="h-3 w-12" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <CommentList postId={postId} comments={comments || []} />
