@@ -288,6 +288,13 @@ export const adminApi = {
     }
   },
 
+  async listEmailLogFromAddresses(token: string): Promise<string[]> {
+    const r = await fetch(`${BASE}/admin/email-log/from-addresses`, {
+      headers: authHeaders(token),
+    });
+    return asJson<string[]>(r);
+  },
+
   async listEmailLog(
     token: string,
     filters?: { template?: string; status?: string; fromAddress?: string },

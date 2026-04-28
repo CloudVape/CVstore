@@ -7,12 +7,6 @@ import { Mail, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-const FROM_ADDRESSES = [
-  "CloudVape <support@cloudvape.store>",
-  "CloudVape <hello@cloudvape.store>",
-  "CloudVape <noreply@cloudvape.store>",
-];
-
 const TEMPLATES = [
   "welcome",
   "order-confirmation",
@@ -47,6 +41,15 @@ export default function AdminEmailLog() {
   const [templateFilter, setTemplateFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [fromFilter, setFromFilter] = useState("all");
+
+  const { data: fromAddresses = [] } = useQuery({
+    queryKey: ["admin-email-log-from-addresses"],
+    queryFn: async () => {
+      const token = await getToken();
+      return adminApi.listEmailLogFromAddresses(token!);
+    },
+    enabled: !!user,
+  });
 
   const { data: entries = [], isLoading, refetch } = useQuery({
     queryKey: ["admin-email-log", templateFilter, statusFilter, fromFilter],
@@ -94,7 +97,7 @@ export default function AdminEmailLog() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All senders</SelectItem>
-                {FROM_ADDRESSES.map((addr) => (
+                {fromAddresses.map((addr) => (
                   <SelectItem key={addr} value={addr}>{addr}</SelectItem>
                 ))}
               </SelectContent>

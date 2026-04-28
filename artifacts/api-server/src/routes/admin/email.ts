@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { desc, eq, and, gte, isNotNull } from "drizzle-orm";
+import { desc, eq, and, isNotNull, sql } from "drizzle-orm";
 import {
   db,
   emailLogTable,
@@ -35,6 +35,16 @@ router.get("/admin/email-log", async (req, res): Promise<void> => {
 
   const rows = await query.orderBy(desc(emailLogTable.createdAt)).limit(limit);
   res.json(rows);
+});
+
+router.get("/admin/email-log/from-addresses", async (_req, res): Promise<void> => {
+  const rows = await db
+    .selectDistinct({ fromAddress: emailLogTable.fromAddress })
+    .from(emailLogTable)
+    .where(isNotNull(emailLogTable.fromAddress))
+    .orderBy(sql`${emailLogTable.fromAddress} asc`);
+  const addresses = rows.map((r) => r.fromAddress).filter(Boolean) as string[];
+  res.json(addresses);
 });
 
 router.get("/admin/newsletter/subscribers", async (_req, res): Promise<void> => {
