@@ -22,7 +22,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, ExternalLink, Upload, Clock, Play, Pause } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, Upload, Clock, Play, Pause, BellOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
@@ -363,6 +363,19 @@ export default function AdminSuppliersPage() {
       toast({ title: "Delete failed", description: err.message, variant: "destructive" }),
   });
 
+  const resetCooldownMut = useMutation({
+    mutationFn: async (id: number) => {
+      const token = await getToken();
+      return adminApi.resetSupplierAlertCooldown(token!, id);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "suppliers"] });
+      toast({ title: "Alert cooldown reset", description: "The next failure will immediately send an alert." });
+    },
+    onError: (err: Error) =>
+      toast({ title: "Reset failed", description: err.message, variant: "destructive" }),
+  });
+
   return (
     <AdminShell>
       <div className="flex items-center justify-between mb-4">
@@ -494,6 +507,19 @@ export default function AdminSuppliersPage() {
                           ) : (
                             <Play className="h-3 w-3" />
                           )}
+                        </Button>
+                      )}
+                      {s.lastAlertSentAt && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1"
+                          title={`Alert cooldown active since ${new Date(s.lastAlertSentAt).toLocaleString()} — click to reset`}
+                          disabled={resetCooldownMut.isPending}
+                          onClick={() => resetCooldownMut.mutate(s.id)}
+                        >
+                          <BellOff className="h-3 w-3" />
+                          Reset alert
                         </Button>
                       )}
                       <Button

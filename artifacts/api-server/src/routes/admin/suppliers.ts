@@ -98,6 +98,24 @@ router.put("/admin/suppliers/:id", async (req, res): Promise<void> => {
   res.json(row);
 });
 
+router.post("/admin/suppliers/:id/reset-alert-cooldown", async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    res.status(400).json({ error: "Invalid supplier id" });
+    return;
+  }
+  const [row] = await db
+    .update(suppliersTable)
+    .set({ lastAlertSentAt: null })
+    .where(eq(suppliersTable.id, id))
+    .returning();
+  if (!row) {
+    res.status(404).json({ error: "Supplier not found" });
+    return;
+  }
+  res.json(row);
+});
+
 router.delete("/admin/suppliers/:id", async (req, res): Promise<void> => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id) || id <= 0) {

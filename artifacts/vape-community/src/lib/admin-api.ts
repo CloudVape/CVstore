@@ -21,6 +21,7 @@ export type Supplier = {
     notes?: string | null;
   } | null;
   lastRunAt: string | null;
+  lastAlertSentAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -153,6 +154,13 @@ export const adminApi = {
       method: "PUT",
       headers: { ...authHeaders(token), "Content-Type": "application/json" },
       body: JSON.stringify(body),
+    });
+    return asJson<Supplier>(r);
+  },
+  async resetSupplierAlertCooldown(token: string, id: number): Promise<Supplier> {
+    const r = await fetch(`${BASE}/admin/suppliers/${id}/reset-alert-cooldown`, {
+      method: "POST",
+      headers: authHeaders(token),
     });
     return asJson<Supplier>(r);
   },
