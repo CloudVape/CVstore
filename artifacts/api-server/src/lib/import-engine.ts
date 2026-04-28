@@ -4,6 +4,7 @@ import {
   productsTable,
   productCategoriesTable,
   importRunsTable,
+  suppliersTable,
   type ImportRowError,
   type SupplierColumnMapping,
 } from "@workspace/db";
@@ -332,6 +333,7 @@ export async function executeImportRun(opts: {
       mapping: opts.mapping,
       rows: opts.rows,
     });
+    const finishedAt = new Date();
     await db
       .update(importRunsTable)
       .set({
@@ -342,19 +344,28 @@ export async function executeImportRun(opts: {
         skippedCount: result.skippedCount,
         erroredCount: result.erroredCount,
         errors: result.errors,
-        finishedAt: new Date(),
+        finishedAt,
       })
       .where(eq(importRunsTable.id, run.id));
+    await db
+      .update(suppliersTable)
+      .set({ lastRunAt: finishedAt })
+      .where(eq(suppliersTable.id, opts.supplierId));
     return { runId: run.id, result };
   } catch (err) {
+    const finishedAt = new Date();
     await db
       .update(importRunsTable)
       .set({
         status: "failed",
         errorMessage: err instanceof Error ? err.message : String(err),
-        finishedAt: new Date(),
+        finishedAt,
       })
       .where(eq(importRunsTable.id, run.id));
+    await db
+      .update(suppliersTable)
+      .set({ lastRunAt: finishedAt })
+      .where(eq(suppliersTable.id, opts.supplierId));
     throw err;
   }
 }

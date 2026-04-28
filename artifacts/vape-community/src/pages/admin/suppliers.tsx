@@ -22,8 +22,73 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, ExternalLink, Upload, Clock } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, Upload, Clock, Play, Pause } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+/**
+ * Mirrors the backend scheduler's isDue() logic to compute the next run time.
+ * - hourly: lastRunAt + 1h
+ * - daily/weekly with hourOfDay: next occurrence of that UTC hour after the
+ *   minimum elapsed time (23h / 6.5d) has passed
+ * - daily/weekly without hourOfDay: lastRunAt + 24h / 7d
+ */
+function computeNextRun(
+  schedule: NonNullable<Supplier["schedule"]>,
+  lastRunAt: string | null,
+): Date | null {
+  const freq = schedule.frequency;
+  if (freq === "manual") return null;
+
+  const now = new Date();
+
+  if (freq === "hourly") {
+    if (!lastRunAt) return now;
+    const next = new Date(new Date(lastRunAt).getTime() + 60 * 60 * 1000);
+    return next < now ? now : next;
+  }
+
+  // daily or weekly — backend uses 23h / 6.5d as min elapsed to avoid drift
+  const minElapsedMs = freq === "daily" ? 23 * 60 * 60 * 1000 : 6.5 * 24 * 60 * 60 * 1000;
+  const nominalMs = freq === "daily" ? 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000;
+
+  if (!lastRunAt) {
+    if (schedule.hourOfDay !== null && schedule.hourOfDay !== undefined) {
+      const candidate = new Date();
+      candidate.setUTCHours(schedule.hourOfDay, 0, 0, 0);
+      if (candidate <= now) {
+        candidate.setUTCDate(candidate.getUTCDate() + (freq === "daily" ? 1 : 7));
+      }
+      return candidate;
+    }
+    return now;
+  }
+
+  const lastRun = new Date(lastRunAt);
+  const eligibleAfter = new Date(lastRun.getTime() + minElapsedMs);
+
+  if (schedule.hourOfDay !== null && schedule.hourOfDay !== undefined) {
+    const candidate = new Date(eligibleAfter);
+    candidate.setUTCHours(schedule.hourOfDay, 0, 0, 0);
+    if (candidate < eligibleAfter) {
+      candidate.setUTCDate(candidate.getUTCDate() + (freq === "daily" ? 1 : 7));
+    }
+    return candidate;
+  }
+
+  return new Date(lastRun.getTime() + nominalMs);
+}
+
+function formatNextRun(
+  schedule: NonNullable<Supplier["schedule"]>,
+  lastRunAt: string | null,
+): string {
+  if (!schedule.enabled) return "Paused";
+  if (schedule.frequency === "manual") return "Manual only";
+  const next = computeNextRun(schedule, lastRunAt);
+  if (!next) return "—";
+  if (next <= new Date()) return "Overdue — running soon";
+  return `Next: ${next.toLocaleString()}`;
+}
 
 function ScheduleForm({
   initial,
@@ -57,11 +122,10 @@ function ScheduleForm({
         });
       }}
     >
-      <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
-        <strong className="font-mono uppercase tracking-wider">Coming soon.</strong>{" "}
-        Background sync is not active yet — your schedule preference will be saved on
-        the supplier so it's ready when scheduling launches. For now, run imports
-        manually from the Import Feed tab.
+      <div className="rounded-md border border-green-500/40 bg-green-500/10 p-3 text-xs text-green-700 dark:text-green-400">
+        <strong className="font-mono uppercase tracking-wider">Automatic sync is active.</strong>{" "}
+        The background scheduler checks for due imports every minute. Only suppliers
+        with a CSV URL source and a column mapping will be synced automatically.
       </div>
 
       <label className="flex items-center gap-2 text-sm">
@@ -376,17 +440,19 @@ export default function AdminSuppliersPage() {
                   </td>
                   <td className="p-3 text-xs text-muted-foreground">
                     {Object.keys(s.columnMapping ?? {}).length} fields mapped
-                    {s.schedule?.enabled ? (
-                      <div className="mt-1 inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                        <Clock className="h-3 w-3" /> auto: {s.schedule.frequency}
-                        {(s.schedule.frequency === "daily" ||
-                          s.schedule.frequency === "weekly") &&
-                        s.schedule.hourOfDay != null
-                          ? ` @ ${String(s.schedule.hourOfDay).padStart(2, "0")}:00`
-                          : ""}
-                        <span className="ml-1 text-muted-foreground normal-case">
-                          (pending)
-                        </span>
+                    {s.schedule && s.schedule.frequency !== "manual" ? (
+                      <div className="mt-1 space-y-0.5">
+                        <div className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-primary">
+                          <Clock className="h-3 w-3" /> {s.schedule.frequency}
+                          {(s.schedule.frequency === "daily" ||
+                            s.schedule.frequency === "weekly") &&
+                          s.schedule.hourOfDay != null
+                            ? ` @ ${String(s.schedule.hourOfDay).padStart(2, "0")}:00`
+                            : ""}
+                        </div>
+                        <div className={`text-[10px] normal-case ${s.schedule.enabled ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
+                          {formatNextRun(s.schedule, s.lastRunAt)}
+                        </div>
                       </div>
                     ) : null}
                   </td>
@@ -405,8 +471,31 @@ export default function AdminSuppliersPage() {
                         className="gap-1"
                       >
                         <Clock className="h-3 w-3" />
-                        Set up automatic sync
+                        Schedule
                       </Button>
+                      {s.schedule && s.schedule.frequency !== "manual" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1"
+                          title={s.schedule.enabled ? "Pause automatic sync" : "Resume automatic sync"}
+                          disabled={updateMut.isPending}
+                          onClick={() =>
+                            updateMut.mutate({
+                              id: s.id,
+                              body: {
+                                schedule: { ...s.schedule!, enabled: !s.schedule!.enabled },
+                              },
+                            })
+                          }
+                        >
+                          {s.schedule.enabled ? (
+                            <Pause className="h-3 w-3" />
+                          ) : (
+                            <Play className="h-3 w-3" />
+                          )}
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         variant="outline"

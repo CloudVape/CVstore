@@ -12,13 +12,12 @@ import {
 import { parseFeed } from "../../lib/feed-parsers";
 import { executeImportRun, IMPORTABLE_FIELDS } from "../../lib/import-engine";
 import type { RequestWithAdmin } from "../../middlewares/admin";
-import { assertPublicHttpUrl, UrlSafetyError } from "../../lib/url-safety";
+import { fetchFeedFromUrl, FeedFetchError } from "../../lib/fetch-feed";
 
 const router: IRouter = Router();
 
 const MAX_FEED_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_PREVIEW_ROWS = 20;
-const MAX_REDIRECTS = 5;
 
 const FEED_FORMATS: FeedFormat[] = ["csv", "json", "xml", "shopify"];
 
@@ -35,15 +34,6 @@ const RAW_BODY_TYPES = [
 ];
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
-
-class HttpError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-  ) {
-    super(message);
-  }
-}
 
 /**
  * Get a raw byte buffer from the request body, regardless of content-type.
@@ -73,68 +63,6 @@ function resolveFormat(raw: unknown, fallback: FeedFormat = "csv"): FeedFormat {
   return fallback;
 }
 
-/**
- * Fetches a feed URL with SSRF protection. Each redirect hop is re-validated
- * against the private-IP block list. Returns the response body as raw bytes.
- */
-async function fetchFeedFromUrl(rawUrl: string): Promise<Buffer> {
-  let current = rawUrl;
-  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-    let safe: URL;
-    try {
-      safe = await assertPublicHttpUrl(current);
-    } catch (err) {
-      if (err instanceof UrlSafetyError) {
-        throw new HttpError(err.status, err.message);
-      }
-      throw err;
-    }
-
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 30_000);
-    let resp: Response;
-    try {
-      resp = await fetch(safe.toString(), {
-        redirect: "manual",
-        signal: ctrl.signal,
-        headers: { "user-agent": "CloudVape-Importer/1.0" },
-      });
-    } catch (err) {
-      clearTimeout(timer);
-      throw new HttpError(
-        502,
-        `Failed to reach feed URL: ${err instanceof Error ? err.message : "unknown error"}`,
-      );
-    }
-    clearTimeout(timer);
-
-    // Manual redirect handling so we can re-validate the target host.
-    if (resp.status >= 300 && resp.status < 400) {
-      const loc = resp.headers.get("location");
-      if (!loc) {
-        throw new HttpError(502, `Redirect with no Location header (HTTP ${resp.status})`);
-      }
-      // Resolve relative redirects against the previous URL
-      current = new URL(loc, safe).toString();
-      continue;
-    }
-
-    if (!resp.ok) {
-      throw new HttpError(resp.status, `Failed to fetch feed: HTTP ${resp.status}`);
-    }
-
-    const len = resp.headers.get("content-length");
-    if (len && Number(len) > MAX_FEED_BYTES) {
-      throw new HttpError(413, "Feed exceeds 10MB limit");
-    }
-    const ab = await resp.arrayBuffer();
-    if (ab.byteLength > MAX_FEED_BYTES) {
-      throw new HttpError(413, "Feed exceeds 10MB limit");
-    }
-    return Buffer.from(ab);
-  }
-  throw new HttpError(502, `Too many redirects (>${MAX_REDIRECTS})`);
-}
 
 // ─── /admin/imports/preview ──────────────────────────────────────────────────
 // Two ways to invoke:
@@ -169,7 +97,7 @@ router.post(
         importableFields: IMPORTABLE_FIELDS,
       });
     } catch (err) {
-      if (err instanceof HttpError) {
+      if (err instanceof FeedFetchError) {
         res.status(err.status).json({ error: err.message });
         return;
       }
@@ -304,7 +232,7 @@ router.post(
         ...result,
       });
     } catch (err) {
-      if (err instanceof HttpError) {
+      if (err instanceof FeedFetchError) {
         res.status(err.status).json({ error: err.message });
         return;
       }
