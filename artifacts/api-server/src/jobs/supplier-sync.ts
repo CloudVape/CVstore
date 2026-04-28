@@ -6,8 +6,8 @@ import { parseCsv, bufferToCsvText } from "../lib/csv";
 import { executeImportRun } from "../lib/import-engine";
 import { sendEmail, fireAndForget } from "../lib/email";
 import { supplierSyncFailureTemplate } from "../lib/email-templates";
+import { ADMIN_EMAIL_FALLBACK } from "../lib/config";
 
-const ADMIN_EMAIL_FALLBACK = process.env.ADMIN_EMAIL ?? "admin@cloudvape.store";
 const ADMIN_SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 
 async function getAdminAlertEmail(): Promise<string> {

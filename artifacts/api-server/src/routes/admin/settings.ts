@@ -2,21 +2,22 @@ import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
 import { db, settingsTable } from "@workspace/db";
 import { z } from "zod";
+import { ADMIN_EMAIL_FALLBACK } from "../../lib/config";
 
 const router: IRouter = Router();
 
-const ADMIN_EMAIL_FALLBACK = process.env.ADMIN_EMAIL ?? "admin@cloudvape.store";
-
 router.get("/admin/settings", async (_req, res): Promise<void> => {
   const rows = await db.select().from(settingsTable);
-  const result: Record<string, string> = {};
+  const kv: Record<string, string> = {};
   for (const row of rows) {
-    result[row.key] = row.value;
+    kv[row.key] = row.value;
   }
-  const savedEmail = result["alert_email"];
-  result["alert_email_effective"] = savedEmail ?? ADMIN_EMAIL_FALLBACK;
-  result["alert_email_is_default"] = savedEmail ? "false" : "true";
-  res.json(result);
+  const savedEmail = kv["alert_email"];
+  res.json({
+    ...kv,
+    alert_email_effective: savedEmail ?? ADMIN_EMAIL_FALLBACK,
+    alert_email_is_default: !savedEmail,
+  });
 });
 
 const UpdateSettingsBody = z.object({

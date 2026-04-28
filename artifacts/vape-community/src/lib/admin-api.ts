@@ -333,11 +333,11 @@ export const adminApi = {
     const r = await fetch(`${BASE}/admin/settings`, {
       headers: authHeaders(token),
     });
-    const data = await asJson<Record<string, string>>(r);
+    const data = await asJson<Record<string, unknown>>(r);
     return {
-      alertEmail: data["alert_email"],
-      alertEmailEffective: data["alert_email_effective"] ?? "",
-      alertEmailIsDefault: data["alert_email_is_default"] === "true",
+      alertEmail: typeof data["alert_email"] === "string" ? data["alert_email"] : undefined,
+      alertEmailEffective: typeof data["alert_email_effective"] === "string" ? data["alert_email_effective"] : "",
+      alertEmailIsDefault: data["alert_email_is_default"] === true,
     };
   },
 
