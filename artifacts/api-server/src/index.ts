@@ -3,6 +3,7 @@ import { logger } from "./lib/logger";
 import { startHardwareReviewJob } from "./jobs/hardware-reviews";
 import { startReviewEmailJob } from "./jobs/review-emails";
 import { startSupplierSyncJob } from "./jobs/supplier-sync";
+import { startProductSpotlightJob } from "./jobs/product-spotlight";
 
 const rawPort = process.env["PORT"];
 
@@ -28,4 +29,5 @@ app.listen(port, (err) => {
   startHardwareReviewJob();
   startReviewEmailJob();
   startSupplierSyncJob();
+  startProductSpotlightJob();
 });

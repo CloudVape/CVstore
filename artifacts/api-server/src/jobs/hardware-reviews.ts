@@ -1,4 +1,4 @@
-import { db, postsTable, usersTable, categoriesTable } from "@workspace/db";
+import { db, postsTable, usersTable, categoriesTable, productsTable } from "@workspace/db";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { logger } from "../lib/logger";
 
@@ -335,6 +335,16 @@ function imageUrlForSlug(slug: string): string {
   return `/images/hardware-reviews/${slug}.jpg`;
 }
 
+async function getStoreProductLink(reviewSlug: string): Promise<string | null> {
+  const rows = await db
+    .select({ name: productsTable.name, slug: productsTable.slug })
+    .from(productsTable)
+    .where(eq(productsTable.slug, reviewSlug))
+    .limit(1);
+  if (!rows[0]) return null;
+  return `\n\n---\n\n**Available in our store:** [${rows[0].name}](/shop/p/${rows[0].slug})`;
+}
+
 async function insertReview(
   review: ReviewSeed,
   categoryId: number,
@@ -342,9 +352,11 @@ async function insertReview(
   createdAt: Date,
 ): Promise<void> {
   const at = withNoonAndJitter(createdAt, authorId);
+  const storeLink = await getStoreProductLink(review.slug);
+  const content = storeLink ? review.content + storeLink : review.content;
   await db.insert(postsTable).values({
     title: review.title,
-    content: review.content,
+    content,
     categoryId,
     authorId,
     isAiGenerated: true,
