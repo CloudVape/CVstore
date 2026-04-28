@@ -3,6 +3,7 @@ import { and, eq, isNotNull, lte, isNull } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendEmail } from "../lib/email";
 import { reviewRequestTemplate } from "../lib/email-templates";
+import { getSiteUrl } from "../lib/config";
 
 const DAYS_AFTER_DELIVERY = 4;
 const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
@@ -29,12 +30,15 @@ async function sendPendingReviewEmails(): Promise<void> {
 
   logger.info({ count: orders.length }, "review-emails: sending review requests");
 
+  const siteUrl = await getSiteUrl();
+
   for (const order of orders) {
     try {
       const tpl = reviewRequestTemplate({
         customerName: order.customerName,
         orderNumber: order.orderNumber,
         items: order.items as OrderItem[],
+        siteUrl,
       });
       await sendEmail({ ...tpl, to: order.email, template: "review-request" });
       await db

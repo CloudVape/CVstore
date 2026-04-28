@@ -5,6 +5,7 @@ import { db, ordersTable, productsTable, usersTable, type OrderItem } from "@wor
 import { CreateOrderBody } from "@workspace/api-zod";
 import { sendEmail, fireAndForget } from "../lib/email";
 import { orderConfirmationTemplate } from "../lib/email-templates";
+import { getSiteUrl } from "../lib/config";
 import { getAuth } from "@clerk/express";
 
 const router: IRouter = Router();
@@ -115,6 +116,7 @@ router.post("/orders", async (req, res): Promise<void> => {
       return created;
     });
 
+    const siteUrl = await getSiteUrl();
     const tpl = orderConfirmationTemplate({
       customerName: order.customerName,
       orderNumber: order.orderNumber,
@@ -127,6 +129,7 @@ router.post("/orders", async (req, res): Promise<void> => {
       shippingCity: order.shippingCity,
       shippingState: order.shippingState,
       shippingZip: order.shippingZip,
+      siteUrl,
     });
     fireAndForget(sendEmail({ ...tpl, to: order.email, template: "order-confirmation" }));
 

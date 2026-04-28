@@ -1,4 +1,5 @@
 import type { OrderItem } from "@workspace/db";
+import { SITE_URL_FALLBACK } from "./config";
 
 const BRAND_COLOR = "#7c3aed";
 const DARK_BG = "#0f0f11";
@@ -6,13 +7,14 @@ const CARD_BG = "#18181b";
 const MUTED = "#71717a";
 const TEXT = "#f4f4f5";
 const LOGO_URL = "https://cloudvape.store/logo.png";
-const SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 
 function baseTemplate(opts: {
+  siteUrl?: string;
   preheader: string;
   content: string;
   unsubscribeUrl?: string;
 }): string {
+  const siteUrl = opts.siteUrl ?? SITE_URL_FALLBACK;
   const unsubscribeBlock = opts.unsubscribeUrl
     ? `<tr><td style="padding:16px 32px 32px;text-align:center;">
         <a href="${opts.unsubscribeUrl}" style="color:${MUTED};font-size:12px;font-family:monospace;text-decoration:underline;">Unsubscribe from marketing emails</a>
@@ -37,7 +39,7 @@ function baseTemplate(opts: {
         <!-- Header -->
         <tr>
           <td style="padding:0 0 24px;text-align:center;">
-            <a href="${SITE_URL}" style="text-decoration:none;">
+            <a href="${siteUrl}" style="text-decoration:none;">
               <span style="font-family:monospace;font-size:22px;font-weight:900;letter-spacing:0.05em;color:${TEXT};">Cloud<span style="color:${BRAND_COLOR};">Vape</span></span>
             </a>
           </td>
@@ -55,7 +57,7 @@ function baseTemplate(opts: {
           <td style="padding:24px 32px 0;text-align:center;color:${MUTED};font-size:12px;font-family:monospace;line-height:1.6;">
             CloudVape &mdash; Keep it cloudy.<br/>
             Must be 21+ to purchase. Vaping products contain nicotine.<br/>
-            <a href="${SITE_URL}" style="color:${MUTED};text-decoration:underline;">${SITE_URL}</a>
+            <a href="${siteUrl}" style="color:${MUTED};text-decoration:underline;">${siteUrl}</a>
           </td>
         </tr>
       </table>
@@ -158,20 +160,22 @@ export function passwordResetTemplate(opts: {
   return { subject, html, text };
 }
 
-export function welcomeTemplate(username: string): { subject: string; html: string; text: string } {
+export function welcomeTemplate(opts: { username: string; siteUrl: string }): { subject: string; html: string; text: string } {
+  const { username, siteUrl } = opts;
   const subject = `Welcome to CloudVape, ${username}!`;
   const html = baseTemplate({
+    siteUrl,
     preheader: `Thanks for joining CloudVape, ${username}. Your account is ready.`,
     content: `
       ${h1(`Welcome, ${username}!`)}
       ${p("You've just joined the CloudVape community — the home for cloud chasers and flavour enthusiasts.")}
       ${p("Browse the shop, join the forum, and share your builds.")}
-      ${button(`${SITE_URL}/shop`, "Start Shopping")}
+      ${button(`${siteUrl}/shop`, "Start Shopping")}
       ${divider()}
       ${p(`Keep it cloudy.`, `color:${MUTED};font-size:13px;`)}
     `,
   });
-  const text = `Welcome to CloudVape, ${username}!\n\nYour account is ready. Browse the shop at ${SITE_URL}/shop\n\nKeep it cloudy.\nCloudVape`;
+  const text = `Welcome to CloudVape, ${username}!\n\nYour account is ready. Browse the shop at ${siteUrl}/shop\n\nKeep it cloudy.\nCloudVape`;
   return { subject, html, text };
 }
 
@@ -187,10 +191,12 @@ export function orderConfirmationTemplate(opts: {
   shippingCity: string;
   shippingState: string;
   shippingZip: string;
+  siteUrl: string;
 }): { subject: string; html: string; text: string } {
   const subject = `Order confirmed — ${opts.orderNumber}`;
-  const orderUrl = `${SITE_URL}/order/${opts.orderNumber}`;
+  const orderUrl = `${opts.siteUrl}/order/${opts.orderNumber}`;
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: `Your CloudVape order ${opts.orderNumber} is confirmed and being prepared.`,
     content: `
       ${h1("Order Confirmed")}
@@ -212,14 +218,16 @@ export function shippingUpdateTemplate(opts: {
   customerName: string;
   orderNumber: string;
   trackingNumber?: string;
+  siteUrl: string;
 }): { subject: string; html: string; text: string } {
   const subject = `Your order ${opts.orderNumber} has shipped!`;
-  const orderUrl = `${SITE_URL}/order/${opts.orderNumber}`;
+  const orderUrl = `${opts.siteUrl}/order/${opts.orderNumber}`;
   const trackingBlock = opts.trackingNumber
     ? `<p style="margin:0 0 8px;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Tracking Number</p>
        <p style="margin:0 0 24px;color:${BRAND_COLOR};font-size:18px;font-weight:700;font-family:monospace;">${opts.trackingNumber}</p>`
     : "";
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: `Great news — your CloudVape order ${opts.orderNumber} is on its way!`,
     content: `
       ${h1("Your Order Has Shipped")}
@@ -237,10 +245,12 @@ export function shippingUpdateTemplate(opts: {
 export function deliveryConfirmationTemplate(opts: {
   customerName: string;
   orderNumber: string;
+  siteUrl: string;
 }): { subject: string; html: string; text: string } {
   const subject = `Your order ${opts.orderNumber} has been delivered`;
-  const orderUrl = `${SITE_URL}/order/${opts.orderNumber}`;
+  const orderUrl = `${opts.siteUrl}/order/${opts.orderNumber}`;
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: `Your CloudVape order ${opts.orderNumber} has been delivered. Enjoy!`,
     content: `
       ${h1("Delivered!")}
@@ -280,11 +290,13 @@ export function reviewRequestTemplate(opts: {
   customerName: string;
   orderNumber: string;
   items: OrderItem[];
+  siteUrl: string;
 }): { subject: string; html: string; text: string } {
   const subject = `How was your CloudVape order? Share your feedback`;
-  const reviewUrl = `${SITE_URL}/forum/new`;
+  const reviewUrl = `${opts.siteUrl}/forum/new`;
   const productName = opts.items[0]?.name ?? "your recent purchase";
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: `Enjoying ${productName}? We'd love to hear your thoughts.`,
     content: `
       ${h1("How's the Gear?")}
@@ -301,9 +313,11 @@ export function reviewRequestTemplate(opts: {
 
 export function newsletterConfirmTemplate(opts: {
   confirmUrl: string;
+  siteUrl: string;
 }): { subject: string; html: string; text: string } {
   const subject = "Confirm your CloudVape newsletter subscription";
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: "One click to confirm your subscription to CloudVape drops & deals.",
     content: `
       ${h1("Confirm Your Subscription")}
@@ -415,17 +429,19 @@ export function marketingBroadcastTemplate(opts: {
   bodyHtml: string;
   bodyText: string;
   unsubscribeUrl: string;
+  siteUrl: string;
 }): { subject: string; html: string; text: string } {
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: opts.bodyText.slice(0, 100),
     unsubscribeUrl: opts.unsubscribeUrl,
     content: `
       ${h1(opts.subject)}
       <div style="color:${TEXT};font-size:15px;line-height:1.7;">${opts.bodyHtml}</div>
       ${divider()}
-      ${button(SITE_URL, "Visit the Shop")}
+      ${button(opts.siteUrl, "Visit the Shop")}
     `,
   });
-  const text = `${opts.subject}\n\n${opts.bodyText}\n\nVisit the shop: ${SITE_URL}\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
+  const text = `${opts.subject}\n\n${opts.bodyText}\n\nVisit the shop: ${opts.siteUrl}\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
   return { subject: opts.subject, html, text };
 }

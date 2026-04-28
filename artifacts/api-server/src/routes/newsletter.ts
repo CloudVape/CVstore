@@ -1,14 +1,13 @@
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
 import { db, newsletterSubscribersTable } from "@workspace/db";
-import { randomBytes, createHmac } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { sendEmail, fireAndForget } from "../lib/email";
 import { newsletterConfirmTemplate } from "../lib/email-templates";
+import { getSiteUrl } from "../lib/config";
 import { z } from "zod";
 
 const router: IRouter = Router();
-
-const SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 
 function generateToken(): string {
   return randomBytes(32).toString("base64url");
@@ -37,8 +36,9 @@ router.post("/newsletter/subscribe", async (req, res): Promise<void> => {
       res.json({ message: "Already subscribed" });
       return;
     }
-    const confirmUrl = `${SITE_URL}/newsletter/confirm?token=${sub.token}`;
-    const tpl = newsletterConfirmTemplate({ confirmUrl });
+    const siteUrl = await getSiteUrl();
+    const confirmUrl = `${siteUrl}/newsletter/confirm?token=${sub.token}`;
+    const tpl = newsletterConfirmTemplate({ confirmUrl, siteUrl });
     fireAndForget(sendEmail({ ...tpl, to: email, template: "newsletter-confirm", noreply: true }));
     res.json({ message: "Confirmation email resent" });
     return;
@@ -47,8 +47,9 @@ router.post("/newsletter/subscribe", async (req, res): Promise<void> => {
   const token = generateToken();
   await db.insert(newsletterSubscribersTable).values({ email, token, status: "pending" });
 
-  const confirmUrl = `${SITE_URL}/newsletter/confirm?token=${token}`;
-  const tpl = newsletterConfirmTemplate({ confirmUrl });
+  const siteUrl = await getSiteUrl();
+  const confirmUrl = `${siteUrl}/newsletter/confirm?token=${token}`;
+  const tpl = newsletterConfirmTemplate({ confirmUrl, siteUrl });
   fireAndForget(sendEmail({ ...tpl, to: email, template: "newsletter-confirm", noreply: true }));
 
   res.status(201).json({ message: "Check your email to confirm your subscription" });

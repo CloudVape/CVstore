@@ -13,11 +13,10 @@ import {
   deliveryConfirmationTemplate,
   refundConfirmationTemplate,
 } from "../../lib/email-templates";
+import { getSiteUrl } from "../../lib/config";
 import { z } from "zod";
 
 const router: IRouter = Router();
-
-const SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
 
 router.get("/admin/email-log", async (req, res): Promise<void> => {
   const template = typeof req.query.template === "string" ? req.query.template : undefined;
@@ -67,11 +66,13 @@ router.post("/admin/newsletter/broadcast", async (req, res): Promise<void> => {
   const BATCH_SIZE = 50;
   let sent = 0;
 
+  const siteUrl = await getSiteUrl();
+
   async function processBatch(batch: typeof subscribers) {
     await Promise.allSettled(
       batch.map((sub) => {
-        const unsubscribeUrl = `${SITE_URL}/newsletter/unsubscribe?token=${sub.token}`;
-        const tpl = marketingBroadcastTemplate({ subject, bodyHtml, bodyText, unsubscribeUrl });
+        const unsubscribeUrl = `${siteUrl}/newsletter/unsubscribe?token=${sub.token}`;
+        const tpl = marketingBroadcastTemplate({ subject, bodyHtml, bodyText, unsubscribeUrl, siteUrl });
         return sendEmail({ ...tpl, to: sub.email, template: "marketing-broadcast", marketing: true });
       })
     );
@@ -113,17 +114,21 @@ router.patch("/admin/orders/:orderNumber/status", async (req, res): Promise<void
   if (status === "shipped") {
     updates.shippedAt = new Date();
     if (trackingNumber) updates.trackingNumber = trackingNumber;
+    const siteUrl = await getSiteUrl();
     const tpl = shippingUpdateTemplate({
       customerName: order.customerName,
       orderNumber: order.orderNumber,
       trackingNumber,
+      siteUrl,
     });
     fireAndForget(sendEmail({ ...tpl, to: order.email, template: "shipping-update" }));
   } else if (status === "delivered") {
     updates.deliveredAt = new Date();
+    const siteUrl = await getSiteUrl();
     const tpl = deliveryConfirmationTemplate({
       customerName: order.customerName,
       orderNumber: order.orderNumber,
+      siteUrl,
     });
     fireAndForget(sendEmail({ ...tpl, to: order.email, template: "delivery-confirmation" }));
   } else if (status === "refunded") {
