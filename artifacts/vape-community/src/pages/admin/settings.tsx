@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Info } from "lucide-react";
+import { Info, Mail } from "lucide-react";
 
 function EffectiveHint({ value, isDefault }: { value: string; isDefault: boolean }) {
   return (
@@ -174,6 +174,60 @@ export default function AdminSettings() {
                 </Button>
               </form>
             )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-mono flex items-center gap-2">
+              <Mail className="h-4 w-4" /> Email Addresses
+            </CardTitle>
+            <CardDescription>
+              The five addresses used by the platform and their roles. All are set as
+              environment variables so Resend uses them explicitly.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <dl className="space-y-3 text-sm">
+              {[
+                {
+                  addr: "support@cloudvape.store",
+                  role: "Transactional",
+                  desc: "Order confirmations, shipping updates, support replies, supplier alerts.",
+                },
+                {
+                  addr: "hello@cloudvape.store",
+                  role: "Marketing",
+                  desc: "Newsletter broadcasts and promotional emails.",
+                },
+                {
+                  addr: "noreply@cloudvape.store",
+                  role: "No-reply",
+                  desc: "Newsletter subscription confirmations and other automated emails that should not be replied to.",
+                },
+                {
+                  addr: "admin@cloudvape.store",
+                  role: "Admin alerts",
+                  desc: "Fallback address for internal admin notifications (e.g. supplier sync failures).",
+                },
+                {
+                  addr: "support@cloudvape.store",
+                  role: "Reply-To",
+                  desc: "Shown as the reply-to address on marketing emails so replies reach the support inbox.",
+                },
+              ].map(({ addr, role, desc }) => (
+                <div key={role} className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <code className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded text-foreground">
+                      {addr}
+                    </code>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground border border-border/50 rounded px-1.5 py-0.5">
+                      {role}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground pl-1">{desc}</p>
+                </div>
+              ))}
+            </dl>
           </CardContent>
         </Card>
       </div>

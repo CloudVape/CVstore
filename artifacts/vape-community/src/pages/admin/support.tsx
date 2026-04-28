@@ -183,7 +183,7 @@ export default function AdminSupport() {
         <div>
           <p className="text-sm font-semibold text-orange-600 mb-1">Action required before the inbox goes live</p>
           <p className="text-sm text-muted-foreground">
-            Emails to <code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">support@vapevault.com</code> won't
+            Emails to <code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">support@cloudvape.store</code> won't
             create tickets until you configure two things:
           </p>
           <ol className="mt-2 space-y-1 text-sm text-muted-foreground list-decimal ml-4">
@@ -194,14 +194,14 @@ export default function AdminSupport() {
             <li>
               <strong>Webhook URL:</strong> In Resend's inbound routing settings, set the webhook to{" "}
               <code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">
-                https://vapevault.com/api/support/inbound-email
+                https://cloudvape.store/api/support/inbound-email
               </code>{" "}
               and set the <code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">X-Webhook-Secret</code> header
               to match the <code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">SUPPORT_WEBHOOK_SECRET</code>{" "}
               environment variable.
             </li>
             <li>
-              <strong>Confirm your support address:</strong> Verify the exact address (e.g. support@vapevault.com) matches
+              <strong>Confirm your support address:</strong> Verify the exact address (e.g. support@cloudvape.store) matches
               what's configured in Resend before going live.
             </li>
           </ol>

@@ -6,6 +6,8 @@ import { logger } from "./logger";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_TRANSACTIONAL = process.env.FROM_EMAIL_TRANSACTIONAL ?? "CloudVape <support@cloudvape.store>";
 const FROM_MARKETING = process.env.FROM_EMAIL_MARKETING ?? "CloudVape <hello@cloudvape.store>";
+const FROM_NOREPLY = process.env.FROM_EMAIL_NOREPLY ?? "CloudVape <noreply@cloudvape.store>";
+const REPLY_TO = process.env.REPLY_TO_EMAIL ?? undefined;
 
 const MAX_RETRIES = 3;
 const RETRY_BASE_MS = 1000;
@@ -39,6 +41,7 @@ export interface SendEmailOptions {
   text: string;
   template: EmailTemplate;
   marketing?: boolean;
+  noreply?: boolean;
 }
 
 async function sleep(ms: number): Promise<void> {
@@ -65,6 +68,7 @@ async function sendWithRetry(
   subject: string,
   html: string,
   text: string,
+  replyTo?: string,
 ): Promise<string | null> {
   let lastError: Error | null = null;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -72,7 +76,14 @@ async function sendWithRetry(
       await sleep(RETRY_BASE_MS * Math.pow(2, attempt - 1));
     }
     try {
-      const { data, error } = await resend!.emails.send({ from, to, subject, html, text });
+      const { data, error } = await resend!.emails.send({
+        from,
+        to,
+        subject,
+        html,
+        text,
+        ...(replyTo ? { reply_to: replyTo } : {}),
+      });
       if (error) throw new Error(error.message ?? "Resend API error");
       return data?.id ?? null;
     } catch (err: unknown) {
@@ -84,7 +95,7 @@ async function sendWithRetry(
 }
 
 export async function sendEmail(opts: SendEmailOptions): Promise<void> {
-  const from = opts.marketing ? FROM_MARKETING : FROM_TRANSACTIONAL;
+  const from = opts.marketing ? FROM_MARKETING : opts.noreply ? FROM_NOREPLY : FROM_TRANSACTIONAL;
 
   const suppressed = await isSuppressed(opts.to);
   if (suppressed) {
@@ -119,7 +130,8 @@ export async function sendEmail(opts: SendEmailOptions): Promise<void> {
   }
 
   try {
-    const messageId = await sendWithRetry(from, opts.to, opts.subject, opts.html, opts.text);
+    const replyTo = opts.marketing ? REPLY_TO : undefined;
+    const messageId = await sendWithRetry(from, opts.to, opts.subject, opts.html, opts.text, replyTo);
     await db
       .update(emailLogTable)
       .set({ status: "sent", providerMessageId: messageId, updatedAt: new Date() })

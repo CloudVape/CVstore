@@ -42,3 +42,8 @@ channel = "stable-25_05"
 
 [userenv.shared]
 VITE_CLERK_PUBLISHABLE_KEY = "pk_test_cHJvLXdhcnRob2ctNTEuY2xlcmsuYWNjb3VudHMuZGV2JA"
+FROM_EMAIL_TRANSACTIONAL = "CloudVape <support@cloudvape.store>"
+FROM_EMAIL_MARKETING = "CloudVape <hello@cloudvape.store>"
+FROM_EMAIL_NOREPLY = "CloudVape <noreply@cloudvape.store>"
+ADMIN_EMAIL = "admin@cloudvape.store"
+REPLY_TO_EMAIL = "support@cloudvape.store"

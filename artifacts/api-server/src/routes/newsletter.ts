@@ -39,7 +39,7 @@ router.post("/newsletter/subscribe", async (req, res): Promise<void> => {
     }
     const confirmUrl = `${SITE_URL}/newsletter/confirm?token=${sub.token}`;
     const tpl = newsletterConfirmTemplate({ confirmUrl });
-    fireAndForget(sendEmail({ ...tpl, to: email, template: "newsletter-confirm" }));
+    fireAndForget(sendEmail({ ...tpl, to: email, template: "newsletter-confirm", noreply: true }));
     res.json({ message: "Confirmation email resent" });
     return;
   }
@@ -49,7 +49,7 @@ router.post("/newsletter/subscribe", async (req, res): Promise<void> => {
 
   const confirmUrl = `${SITE_URL}/newsletter/confirm?token=${token}`;
   const tpl = newsletterConfirmTemplate({ confirmUrl });
-  fireAndForget(sendEmail({ ...tpl, to: email, template: "newsletter-confirm" }));
+  fireAndForget(sendEmail({ ...tpl, to: email, template: "newsletter-confirm", noreply: true }));
 
   res.status(201).json({ message: "Check your email to confirm your subscription" });
 });
