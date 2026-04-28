@@ -29,7 +29,8 @@ export type EmailTemplate =
   | "marketing-broadcast"
   | "newsletter-confirm"
   | "support-ticket-confirmation"
-  | "support-reply";
+  | "support-reply"
+  | "supplier-sync-failure";
 
 export interface SendEmailOptions {
   to: string;

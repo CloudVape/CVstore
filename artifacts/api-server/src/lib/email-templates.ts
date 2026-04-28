@@ -372,6 +372,44 @@ export function ticketReplyTemplate(opts: {
   return { subject, html, text };
 }
 
+export function supplierSyncFailureTemplate(opts: {
+  supplierName: string;
+  errorMessage: string;
+  importHistoryUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `[CloudVape] Scheduled supplier sync failed — ${opts.supplierName}`;
+  const escaped = opts.errorMessage
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+  const html = baseTemplate({
+    preheader: `The scheduled import for supplier "${opts.supplierName}" failed. Action may be required.`,
+    content: `
+      ${h1("Supplier Sync Failed")}
+      ${p(`The scheduled import for <strong style="color:${TEXT};">${opts.supplierName}</strong> encountered an error and did not complete.`)}
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0;background:#0f0f11;border-radius:8px;border:1px solid #3f1a1a;padding:16px;">
+        <tr>
+          <td style="color:#71717a;font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;padding-bottom:8px;">Supplier</td>
+          <td style="color:#f4f4f5;font-size:14px;font-family:monospace;text-align:right;padding-bottom:8px;">${opts.supplierName}</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="color:#71717a;font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;padding-top:8px;padding-bottom:4px;">Error</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="color:#fca5a5;font-size:13px;font-family:monospace;line-height:1.6;word-break:break-word;">${escaped}</td>
+        </tr>
+      </table>
+      ${p("Please check the supplier's feed URL or data format and fix the issue before the next scheduled run.")}
+      ${button(opts.importHistoryUrl, "View Import History")}
+      ${divider()}
+      ${p(`This is an automated alert from the CloudVape admin system.`, `color:${MUTED};font-size:13px;`)}
+    `,
+  });
+  const text = `[CloudVape] Scheduled supplier sync failed — ${opts.supplierName}\n\nThe scheduled import for "${opts.supplierName}" encountered an error and did not complete.\n\nError: ${opts.errorMessage}\n\nView Import History: ${opts.importHistoryUrl}\n\nPlease fix the supplier's feed URL or data format before the next scheduled run.\n\nCloudVape Admin`;
+  return { subject, html, text };
+}
+
 export function marketingBroadcastTemplate(opts: {
   subject: string;
   bodyHtml: string;

@@ -4,6 +4,18 @@ import { logger } from "../lib/logger";
 import { fetchFeedFromUrl } from "../lib/fetch-feed";
 import { parseCsv, bufferToCsvText } from "../lib/csv";
 import { executeImportRun } from "../lib/import-engine";
+import { sendEmail, fireAndForget } from "../lib/email";
+import { supplierSyncFailureTemplate } from "../lib/email-templates";
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@cloudvape.store";
+const ADMIN_SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
+
+if (!process.env.ADMIN_EMAIL) {
+  logger.warn(
+    { defaultAdminEmail: ADMIN_EMAIL },
+    "supplier-sync: ADMIN_EMAIL env var is not set — sync failure alerts will be sent to the hardcoded default address",
+  );
+}
 
 const CHECK_INTERVAL_MS = 60_000;
 
@@ -159,6 +171,17 @@ async function runScheduledSuppliers(): Promise<void> {
         logger.error(
           { supplierId: s.id, name: s.name, err },
           "supplier-sync: scheduled import failed",
+        );
+
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        const importHistoryUrl = `${ADMIN_SITE_URL}/admin/suppliers/${s.id}?tab=history`;
+        const { subject, html, text } = supplierSyncFailureTemplate({
+          supplierName: s.name,
+          errorMessage,
+          importHistoryUrl,
+        });
+        fireAndForget(
+          sendEmail({ to: ADMIN_EMAIL, subject, html, text, template: "supplier-sync-failure" }),
         );
       } finally {
         runningSuppliers.delete(s.id);
