@@ -101,6 +101,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<void> {
   if (suppressed) {
     await db.insert(emailLogTable).values({
       recipient: opts.to,
+      fromAddress: from,
       template: opts.template,
       subject: opts.subject,
       status: "suppressed",
@@ -114,6 +115,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<void> {
     .insert(emailLogTable)
     .values({
       recipient: opts.to,
+      fromAddress: from,
       template: opts.template,
       subject: opts.subject,
       status: "pending",

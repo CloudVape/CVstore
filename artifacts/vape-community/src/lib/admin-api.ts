@@ -88,6 +88,7 @@ async function asJson<T>(resp: Response): Promise<T> {
 export type EmailLogEntry = {
   id: number;
   recipient: string;
+  fromAddress: string | null;
   template: string;
   subject: string;
   status: string;

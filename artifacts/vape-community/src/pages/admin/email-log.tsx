@@ -101,6 +101,7 @@ export default function AdminEmailLog() {
                   <th className="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Recipient</th>
                   <th className="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground hidden sm:table-cell">Template</th>
                   <th className="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground hidden md:table-cell">Subject</th>
+                  <th className="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground hidden lg:table-cell">From</th>
                   <th className="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Status</th>
                   <th className="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground hidden lg:table-cell">Time</th>
                 </tr>
@@ -111,6 +112,9 @@ export default function AdminEmailLog() {
                     <td className="px-4 py-2.5 font-mono text-xs text-foreground">{entry.recipient}</td>
                     <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground hidden sm:table-cell">{entry.template}</td>
                     <td className="px-4 py-2.5 text-xs text-foreground max-w-[200px] truncate hidden md:table-cell" title={entry.subject}>{entry.subject}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground hidden lg:table-cell">
+                      {entry.fromAddress ?? "—"}
+                    </td>
                     <td className="px-4 py-2.5">
                       <StatusBadge status={entry.status} />
                       {entry.error && (
