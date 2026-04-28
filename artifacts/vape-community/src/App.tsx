@@ -303,6 +303,20 @@ function ClerkProviderWithRoutes() {
       afterSignOutUrl={`${basePath}/`}
       routerPush={(to) => setLocation(stripBase(to))}
       routerReplace={(to) => setLocation(stripBase(to), { replace: true })}
+      localization={{
+        signIn: {
+          start: {
+            title: "Sign in to CloudVape",
+            subtitle: "Welcome back! Please sign in to continue.",
+          },
+        },
+        signUp: {
+          start: {
+            title: "Create your CloudVape account",
+            subtitle: "Welcome! Please fill in the details to get started.",
+          },
+        },
+      }}
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryCacheInvalidator />
