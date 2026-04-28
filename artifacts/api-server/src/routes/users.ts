@@ -5,6 +5,9 @@ import { GetUserParams } from "@workspace/api-zod";
 import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod/v4";
 import crypto from "crypto";
+import { sendEmail, fireAndForget } from "../lib/email";
+import { welcomeTemplate } from "../lib/email-templates";
+import { getSiteUrl } from "../lib/config";
 
 const router: IRouter = Router();
 
@@ -107,6 +110,15 @@ router.get("/users/me", async (req, res): Promise<void> => {
             emailVerified: true,
           })
           .returning();
+
+        if (primaryEmail) {
+          fireAndForget(
+            getSiteUrl().then((siteUrl) => {
+              const { subject, html, text } = welcomeTemplate({ username, siteUrl });
+              return sendEmail({ to: primaryEmail, subject, html, text, template: "welcome" });
+            }),
+          );
+        }
       }
     }
 
