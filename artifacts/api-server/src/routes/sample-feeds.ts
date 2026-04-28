@@ -1,5 +1,6 @@
 import path from "path";
 import { Router } from "express";
+import { requireAdmin } from "../middlewares/admin";
 
 const router = Router();
 
@@ -12,7 +13,7 @@ const ALLOWED_FILES = new Set([
   "example-shopify-export.json",
 ]);
 
-router.get("/sample-feeds/:filename", (req, res) => {
+router.get("/sample-feeds/:filename", requireAdmin, (req, res) => {
   const { filename } = req.params;
 
   if (!ALLOWED_FILES.has(filename)) {
