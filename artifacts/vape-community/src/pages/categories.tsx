@@ -17,7 +17,6 @@ import { useSeo } from "@/lib/seo";
 type CategoryStyle = {
   Icon: LucideIcon;
   iconGlow: string;
-  ring: string;
   glow: string;
   accentText: string;
   badgeBg: string;
@@ -29,7 +28,6 @@ const STYLES: Record<string, CategoryStyle> = {
   "hardware-reviews": {
     Icon: Cpu,
     iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]",
-    ring: "ring-cyan-400/30 group-hover:ring-cyan-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(34,211,238,0.45)]",
     accentText: "group-hover:text-cyan-300",
     badgeBg: "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30",
@@ -39,7 +37,6 @@ const STYLES: Record<string, CategoryStyle> = {
   "e-liquid-talk": {
     Icon: Droplets,
     iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.8)]",
-    ring: "ring-pink-400/30 group-hover:ring-pink-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(236,72,153,0.45)]",
     accentText: "group-hover:text-pink-300",
     badgeBg: "bg-pink-500/10 text-pink-300 border border-pink-500/30",
@@ -49,7 +46,6 @@ const STYLES: Record<string, CategoryStyle> = {
   "cloud-chasing": {
     Icon: Wind,
     iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.8)]",
-    ring: "ring-sky-400/30 group-hover:ring-sky-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(56,189,248,0.45)]",
     accentText: "group-hover:text-sky-300",
     badgeBg: "bg-sky-500/10 text-sky-300 border border-sky-500/30",
@@ -59,7 +55,6 @@ const STYLES: Record<string, CategoryStyle> = {
   "beginner-help": {
     Icon: LifeBuoy,
     iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.8)]",
-    ring: "ring-amber-400/30 group-hover:ring-amber-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(251,191,36,0.45)]",
     accentText: "group-hover:text-amber-300",
     badgeBg: "bg-amber-500/10 text-amber-300 border border-amber-500/30",
@@ -69,7 +64,6 @@ const STYLES: Record<string, CategoryStyle> = {
   "industry-news": {
     Icon: Newspaper,
     iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(167,139,250,0.8)]",
-    ring: "ring-violet-400/30 group-hover:ring-violet-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(167,139,250,0.45)]",
     accentText: "group-hover:text-violet-300",
     badgeBg: "bg-violet-500/10 text-violet-300 border border-violet-500/30",
@@ -79,7 +73,6 @@ const STYLES: Record<string, CategoryStyle> = {
   "diy-coil-building": {
     Icon: Wrench,
     iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(251,113,133,0.8)]",
-    ring: "ring-rose-400/30 group-hover:ring-rose-400/60",
     glow: "group-hover:shadow-[0_0_40px_-8px_rgba(251,113,133,0.45)]",
     accentText: "group-hover:text-rose-300",
     badgeBg: "bg-rose-500/10 text-rose-300 border border-rose-500/30",
@@ -91,7 +84,6 @@ const STYLES: Record<string, CategoryStyle> = {
 const FALLBACK_STYLE: CategoryStyle = {
   Icon: MessagesSquare,
   iconGlow: "group-hover:drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]",
-  ring: "ring-primary/30 group-hover:ring-primary/60",
   glow: "group-hover:shadow-[0_0_40px_-8px_rgba(34,211,238,0.45)]",
   accentText: "group-hover:text-primary",
   badgeBg: "bg-primary/10 text-primary border border-primary/30",
