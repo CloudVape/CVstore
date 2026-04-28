@@ -92,7 +92,7 @@ const clerkAppearance = {
     formFieldSuccessText: "text-[hsl(140_60%_38%)]",
     alertText: "text-[hsl(240_12%_10%)]",
     logoBox: "flex justify-center mb-2",
-    logoImage: "h-14",
+    logoImage: "h-20",
     socialButtonsBlockButton: "border border-[hsl(240_10%_88%)] hover:bg-[hsl(220_25%_95%)]",
     formButtonPrimary: "bg-[hsl(190_90%_36%)] hover:bg-[hsl(190_90%_30%)] text-white font-mono uppercase tracking-wider rounded-full shadow-[0_0_20px_hsl(190_90%_36%/0.4)]",
     formFieldInput: "border-[hsl(240_10%_88%)] bg-white text-[hsl(240_12%_10%)]",
