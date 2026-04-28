@@ -186,7 +186,7 @@ function parseJsonFeed(buf: Buffer, maxRows?: number): ParsedFeed {
 function parseXmlFeed(buf: Buffer, maxRows?: number): ParsedFeed {
   const parser = new XMLParser({
     ignoreAttributes: false,
-    attributeNamePrefix: "@_",
+    attributeNamePrefix: "",
     isArray: (_name, _jpath, isLeafNode, isAttribute) => !isLeafNode && !isAttribute,
     parseTagValue: true,
     parseAttributeValue: false,
