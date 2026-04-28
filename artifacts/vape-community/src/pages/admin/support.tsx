@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Bot, User, Shield, CheckCircle, RefreshCw, AlertTriangle } from "lucide-react";
+import { MessageSquare, Bot, User, Shield, CheckCircle, RefreshCw, AlertTriangle, FlaskConical } from "lucide-react";
 
 const BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
 
@@ -171,6 +171,19 @@ export default function AdminSupport() {
     onError: (e: Error) => toast({ title: "Error", description: e.message || "Failed to queue AI retry", variant: "destructive" }),
   });
 
+  const testInboundMutation = useMutation({
+    mutationFn: () =>
+      apiPost("/admin/support/test-inbound").then((r) => r.json() as Promise<{ ticketId: number }>),
+    onSuccess: (data) => {
+      toast({
+        title: "Test email sent",
+        description: `Processed as ticket #${data.ticketId}. The AI auto-reply will run shortly — refresh to see it.`,
+      });
+      qc.invalidateQueries({ queryKey: ["admin-support-tickets"] });
+    },
+    onError: (e: Error) => toast({ title: "Error", description: e.message || "Failed to send test email", variant: "destructive" }),
+  });
+
   function openTicket(id: number) {
     setSelectedId(id);
     setReplyBody(""); setDraftEdit(""); setReplyMode("none");
@@ -229,6 +242,16 @@ export default function AdminSupport() {
               <SelectItem value="resolved">Resolved</SelectItem>
             </SelectContent>
           </Select>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 font-mono text-xs"
+            onClick={() => testInboundMutation.mutate()}
+            disabled={testInboundMutation.isPending}
+          >
+            <FlaskConical className="h-3.5 w-3.5" />
+            {testInboundMutation.isPending ? "Sending…" : "Send Test Email"}
+          </Button>
           <Button variant="outline" size="sm" className="gap-1.5 font-mono text-xs" onClick={() => refetch()}>
             <RefreshCw className="h-3.5 w-3.5" />
             Refresh

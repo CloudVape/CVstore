@@ -5,6 +5,7 @@ import { db, supportTicketsTable, supportMessagesTable } from "@workspace/db";
 import { sendEmail, fireAndForget } from "../../lib/email";
 import { ticketReplyTemplate } from "../../lib/email-templates";
 import { runAiAutoReply } from "../support";
+import { logger } from "../../lib/logger";
 
 const router: IRouter = Router();
 
@@ -95,6 +96,58 @@ router.post("/admin/support/tickets/:id/retry-ai", async (req, res): Promise<voi
 
   res.json({ ok: true, message: "AI retry queued" });
   fireAndForget(runAiAutoReply(id));
+});
+
+router.post("/admin/support/test-inbound", async (req, res): Promise<void> => {
+  try {
+    // Use a unique per-click token so each test run creates a fresh ticket
+    // rather than appending to an existing open ticket for the same sender.
+    const token = Date.now().toString(36);
+    const testPayload = {
+      type: "email.received",
+      created_at: new Date().toISOString(),
+      data: {
+        from: `Test User (Inbound Email) <test-inbound+${token}@example.com>`,
+        to: ["support@cloudvape.store"],
+        subject: "Question about my order",
+        text:
+          "Hi, I just placed an order and wanted to check if it has shipped yet. " +
+          "My order number is #TEST-001. Also, do you offer free shipping on orders over $50? " +
+          "Thanks for your help!",
+      },
+    };
+
+    // Call the actual /support/inbound-email endpoint on this same server so
+    // the full webhook path — payload parsing, secret gate, ticket routing,
+    // and AI auto-reply — is exercised end-to-end.
+    const port = process.env.PORT ?? "8080";
+    const secret = process.env.SUPPORT_WEBHOOK_SECRET;
+    const secretQs = secret ? `?secret=${encodeURIComponent(secret)}` : "";
+    const inboundUrl = `http://localhost:${port}/api/support/inbound-email${secretQs}`;
+
+    const inboundRes = await fetch(inboundUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(testPayload),
+    });
+
+    const rawText = await inboundRes.text();
+    let inboundBody: Record<string, unknown> = {};
+    try { inboundBody = JSON.parse(rawText); } catch { /* non-JSON response */ }
+
+    if (!inboundRes.ok) {
+      const msg = typeof inboundBody.error === "string" ? inboundBody.error : rawText || `Inbound endpoint returned ${inboundRes.status}`;
+      res.status(inboundRes.status).json({ error: msg });
+      return;
+    }
+
+    const ticketId = inboundBody.ticketId as number;
+    logger.info({ ticketId }, "Admin triggered test inbound email");
+    res.json({ ok: true, ticketId });
+  } catch (err) {
+    logger.error({ err }, "test-inbound failed");
+    res.status(500).json({ error: "Failed to send test email" });
+  }
 });
 
 export default router;

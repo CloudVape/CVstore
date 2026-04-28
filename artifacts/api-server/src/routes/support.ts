@@ -74,6 +74,71 @@ router.post("/support/tickets", async (req, res): Promise<void> => {
 const WEBHOOK_SECRET = process.env.SUPPORT_WEBHOOK_SECRET;
 const IS_PROD = process.env.NODE_ENV === "production";
 
+/**
+ * Parse and process a raw inbound-email payload (Resend webhook format or flat).
+ * Exported so the admin test endpoint can exercise the same logic.
+ */
+async function processInboundEmailPayload(rawBody: Record<string, unknown>): Promise<{ ticketId: number }> {
+  // Resend inbound email webhook wraps payload under a "data" key:
+  // { type: "email.received", created_at: "...", data: { from, to, subject, html, text, ... } }
+  // Fall back to reading fields from the top level for direct/testing calls.
+  const payload = (rawBody.type === "email.received" && rawBody.data && typeof rawBody.data === "object")
+    ? (rawBody.data as Record<string, unknown>)
+    : rawBody;
+
+  const from = typeof payload.from === "string" ? payload.from : undefined;
+  const fromName = typeof payload.fromName === "string" ? payload.fromName : undefined;
+  const subject = typeof payload.subject === "string" ? payload.subject : undefined;
+  const text = typeof payload.text === "string" ? payload.text : undefined;
+  const html = typeof payload.html === "string" ? payload.html : undefined;
+
+  if (!from || (!text && !html)) {
+    throw Object.assign(new Error("Missing required fields: from, text or html"), { statusCode: 400 });
+  }
+
+  const parsedFrom = parseEmailAddress(from.trim());
+  const customerEmail = parsedFrom.email;
+  const customerName = fromName?.trim() || parsedFrom.name || customerEmail.split("@")[0];
+  const body = (text || html || "").trim();
+
+  let ticketId: number;
+
+  const ticketIdMatch = /\[#(\d+)\]/.exec(subject ?? "");
+  if (ticketIdMatch) {
+    const existingId = parseInt(ticketIdMatch[1], 10);
+    const [existing] = await db
+      .select()
+      .from(supportTicketsTable)
+      .where(eq(supportTicketsTable.id, existingId));
+    if (existing) {
+      ticketId = existing.id;
+      await db.insert(supportMessagesTable).values({ ticketId, authorType: "customer", body });
+      await db.update(supportTicketsTable)
+        .set({ status: "open", updatedAt: new Date() })
+        .where(eq(supportTicketsTable.id, ticketId));
+    } else {
+      ticketId = await createNewTicket(customerEmail, customerName, body);
+    }
+  } else {
+    const [recent] = await db
+      .select()
+      .from(supportTicketsTable)
+      .where(and(eq(supportTicketsTable.customerEmail, customerEmail), eq(supportTicketsTable.status, "open")))
+      .orderBy(desc(supportTicketsTable.createdAt))
+      .limit(1);
+
+    if (recent) {
+      ticketId = recent.id;
+      await db.insert(supportMessagesTable).values({ ticketId, authorType: "customer", body });
+    } else {
+      ticketId = await createNewTicket(customerEmail, customerName, body);
+    }
+  }
+
+  fireAndForget(runAiAutoReply(ticketId));
+  return { ticketId };
+}
+
 router.post("/support/inbound-email", async (req, res): Promise<void> => {
   if (!WEBHOOK_SECRET && IS_PROD) {
     logger.error("SUPPORT_WEBHOOK_SECRET env var is not set — inbound-email endpoint is disabled in production");
@@ -100,68 +165,14 @@ router.post("/support/inbound-email", async (req, res): Promise<void> => {
   }
 
   try {
-    const rawBody = req.body as Record<string, unknown>;
-
-    // Resend inbound email webhook wraps payload under a "data" key:
-    // { type: "email.received", created_at: "...", data: { from, to, subject, html, text, ... } }
-    // Fall back to reading fields from the top level for direct/testing calls.
-    const payload = (rawBody.type === "email.received" && rawBody.data && typeof rawBody.data === "object")
-      ? (rawBody.data as Record<string, unknown>)
-      : rawBody;
-
-    const from = typeof payload.from === "string" ? payload.from : undefined;
-    const fromName = typeof payload.fromName === "string" ? payload.fromName : undefined;
-    const subject = typeof payload.subject === "string" ? payload.subject : undefined;
-    const text = typeof payload.text === "string" ? payload.text : undefined;
-    const html = typeof payload.html === "string" ? payload.html : undefined;
-
-    if (!from || (!text && !html)) {
-      res.status(400).json({ error: "Missing required fields: from, text or html" });
+    const result = await processInboundEmailPayload(req.body as Record<string, unknown>);
+    res.json(result);
+  } catch (err) {
+    const statusCode = (err as { statusCode?: number }).statusCode;
+    if (statusCode === 400) {
+      res.status(400).json({ error: (err as Error).message });
       return;
     }
-
-    const parsedFrom = parseEmailAddress(from.trim());
-    const customerEmail = parsedFrom.email;
-    const customerName = fromName?.trim() || parsedFrom.name || customerEmail.split("@")[0];
-    const body = (text || html || "").trim();
-
-    let ticketId: number;
-
-    const ticketIdMatch = /\[#(\d+)\]/.exec(subject ?? "");
-    if (ticketIdMatch) {
-      const existingId = parseInt(ticketIdMatch[1], 10);
-      const [existing] = await db
-        .select()
-        .from(supportTicketsTable)
-        .where(eq(supportTicketsTable.id, existingId));
-      if (existing) {
-        ticketId = existing.id;
-        await db.insert(supportMessagesTable).values({ ticketId, authorType: "customer", body });
-        await db.update(supportTicketsTable)
-          .set({ status: "open", updatedAt: new Date() })
-          .where(eq(supportTicketsTable.id, ticketId));
-      } else {
-        ticketId = await createNewTicket(customerEmail, customerName, body);
-      }
-    } else {
-      const [recent] = await db
-        .select()
-        .from(supportTicketsTable)
-        .where(and(eq(supportTicketsTable.customerEmail, customerEmail), eq(supportTicketsTable.status, "open")))
-        .orderBy(desc(supportTicketsTable.createdAt))
-        .limit(1);
-
-      if (recent) {
-        ticketId = recent.id;
-        await db.insert(supportMessagesTable).values({ ticketId, authorType: "customer", body });
-      } else {
-        ticketId = await createNewTicket(customerEmail, customerName, body);
-      }
-    }
-
-    fireAndForget(runAiAutoReply(ticketId));
-    res.json({ ticketId });
-  } catch (err) {
     req.log?.error?.({ err }, "inbound email processing failed");
     res.status(500).json({ error: "Inbound email processing failed" });
   }
@@ -288,5 +299,5 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-export { runAiAutoReply };
+export { runAiAutoReply, processInboundEmailPayload };
 export default router;
