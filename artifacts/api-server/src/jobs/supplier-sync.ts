@@ -6,9 +6,7 @@ import { parseCsv, bufferToCsvText } from "../lib/csv";
 import { executeImportRun } from "../lib/import-engine";
 import { sendEmail, fireAndForget } from "../lib/email";
 import { supplierSyncFailureTemplate } from "../lib/email-templates";
-import { ADMIN_EMAIL_FALLBACK } from "../lib/config";
-
-const ADMIN_SITE_URL = process.env.SITE_URL ?? "https://cloudvape.store";
+import { ADMIN_EMAIL_FALLBACK, SITE_URL_FALLBACK } from "../lib/config";
 
 async function getAdminAlertEmail(): Promise<string> {
   try {
@@ -22,6 +20,20 @@ async function getAdminAlertEmail(): Promise<string> {
     logger.warn({ err }, "supplier-sync: failed to read alert_email from settings — using fallback");
   }
   return ADMIN_EMAIL_FALLBACK;
+}
+
+async function getSiteUrl(): Promise<string> {
+  try {
+    const [row] = await db
+      .select()
+      .from(settingsTable)
+      .where(eq(settingsTable.key, "site_url"))
+      .limit(1);
+    if (row?.value) return row.value;
+  } catch (err) {
+    logger.warn({ err }, "supplier-sync: failed to read site_url from settings — using fallback");
+  }
+  return SITE_URL_FALLBACK;
 }
 
 const CHECK_INTERVAL_MS = 60_000;
@@ -187,7 +199,8 @@ async function runScheduledSuppliers(): Promise<void> {
 
         if (alertCooledDown) {
           const errorMessage = err instanceof Error ? err.message : String(err);
-          const importHistoryUrl = `${ADMIN_SITE_URL}/admin/suppliers/${s.id}?tab=history`;
+          const siteUrl = await getSiteUrl();
+          const importHistoryUrl = `${siteUrl}/admin/suppliers/${s.id}?tab=history`;
           const { subject, html, text } = supplierSyncFailureTemplate({
             supplierName: s.name,
             errorMessage,

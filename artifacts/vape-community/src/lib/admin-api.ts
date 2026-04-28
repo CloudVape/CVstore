@@ -329,6 +329,9 @@ export const adminApi = {
     alertEmail?: string;
     alertEmailEffective: string;
     alertEmailIsDefault: boolean;
+    siteUrl?: string;
+    siteUrlEffective: string;
+    siteUrlIsDefault: boolean;
   }> {
     const r = await fetch(`${BASE}/admin/settings`, {
       headers: authHeaders(token),
@@ -338,18 +341,21 @@ export const adminApi = {
       alertEmail: typeof data["alert_email"] === "string" ? data["alert_email"] : undefined,
       alertEmailEffective: typeof data["alert_email_effective"] === "string" ? data["alert_email_effective"] : "",
       alertEmailIsDefault: data["alert_email_is_default"] === true,
+      siteUrl: typeof data["site_url"] === "string" ? data["site_url"] : undefined,
+      siteUrlEffective: typeof data["site_url_effective"] === "string" ? data["site_url_effective"] : "",
+      siteUrlIsDefault: data["site_url_is_default"] === true,
     };
   },
 
   async updateSettings(
     token: string,
-    body: { alertEmail: string },
-  ): Promise<{ alertEmail: string }> {
+    body: { alertEmail?: string; siteUrl?: string },
+  ): Promise<{ alertEmail?: string; siteUrl?: string }> {
     const r = await fetch(`${BASE}/admin/settings`, {
       method: "PUT",
       headers: { ...authHeaders(token), "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    return asJson<{ alertEmail: string }>(r);
+    return asJson<{ alertEmail?: string; siteUrl?: string }>(r);
   },
 };
