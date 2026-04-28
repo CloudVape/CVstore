@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useListPosts, useListCategories, useListUsers } from "@workspace/api-client-react";
 import { Link, useSearch } from "wouter";
-import { PostCard } from "@/components/post-card";
+import { PostCard, PostCardSkeleton } from "@/components/post-card";
 import { Button } from "@/components/ui/button";
 import { Filter, Search, PlusCircle, MessageSquare, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -88,9 +88,7 @@ export default function Forum() {
           {/* Posts List */}
           <div className="space-y-4">
             {postsLoading ? (
-              <div className="py-20 text-center text-muted-foreground font-mono border border-dashed border-border/40 rounded-xl">
-                <span className="animate-pulse">Loading posts...</span>
-              </div>
+              Array.from({ length: 6 }).map((_, i) => <PostCardSkeleton key={i} />)
             ) : filteredPosts && filteredPosts.length > 0 ? (
               filteredPosts.map(post => (
                 <PostCard key={post.id} post={post} />

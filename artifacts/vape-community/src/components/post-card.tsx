@@ -5,6 +5,36 @@ import { Post } from "@workspace/api-client-react/src/generated/api.schemas";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function PostCardSkeleton() {
+  return (
+    <Card className="overflow-hidden border-border/40 bg-card/50 shadow-sm">
+      <CardHeader className="p-6 pb-3 space-y-2">
+        <Skeleton className="h-4 w-24 rounded-full" />
+        <Skeleton className="h-5 w-full" />
+        <Skeleton className="h-5 w-4/5" />
+      </CardHeader>
+      <CardContent className="p-6 pt-0 pb-4 space-y-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </CardContent>
+      <CardFooter className="p-6 pt-0 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="h-5 w-5 rounded-full" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+          <Skeleton className="h-3 w-24" />
+        </div>
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-3 w-8" />
+          <Skeleton className="h-3 w-8" />
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
 
 interface PostCardProps {
   post: Post;
