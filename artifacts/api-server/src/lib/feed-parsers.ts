@@ -208,6 +208,13 @@ function parseShopifyFeed(buf: Buffer, maxRows?: number): ParsedFeed {
         : [data]
   ) as ShopifyProduct[];
 
+  // Pre-count total rows (products × variants) before applying maxRows cap.
+  let totalRows = 0;
+  for (const product of products) {
+    const variantCount = product.variants && product.variants.length > 0 ? product.variants.length : 1;
+    totalRows += variantCount;
+  }
+
   const expanded: Record<string, string>[] = [];
 
   for (const product of products) {
@@ -242,8 +249,6 @@ function parseShopifyFeed(buf: Buffer, maxRows?: number): ParsedFeed {
     }
     if (maxRows && expanded.length >= maxRows) break;
   }
-
-  const totalRows = expanded.length;
 
   const headerSet = new Set<string>();
   for (const row of expanded) {

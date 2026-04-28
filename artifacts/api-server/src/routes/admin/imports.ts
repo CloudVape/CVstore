@@ -45,6 +45,27 @@ class HttpError extends Error {
   }
 }
 
+/**
+ * Get a raw byte buffer from the request body, regardless of content-type.
+ *
+ * For text/csv and xlsx uploads the `rawBody()` middleware runs first and
+ * `req.body` is already a Buffer.
+ *
+ * For application/json uploads the global `express.json()` middleware runs
+ * first (before route handlers) and parses the body into an object, but its
+ * `verify` function stores the untouched bytes on `req.rawBody`. We fall back
+ * to that here so JSON/Shopify file uploads work correctly.
+ */
+function getBodyBuffer(req: import("express").Request): Buffer | null {
+  if (Buffer.isBuffer(req.body) && (req.body as Buffer).length > 0) {
+    return req.body as Buffer;
+  }
+  if (req.rawBody && req.rawBody.length > 0) {
+    return req.rawBody;
+  }
+  return null;
+}
+
 function resolveFormat(raw: unknown, fallback: FeedFormat = "csv"): FeedFormat {
   if (typeof raw === "string" && (FEED_FORMATS as string[]).includes(raw)) {
     return raw as FeedFormat;
@@ -131,11 +152,12 @@ router.post(
       let buf: Buffer | null = null;
       if (url) {
         buf = await fetchFeedFromUrl(url);
-      } else if (Buffer.isBuffer(req.body) && req.body.length > 0) {
-        buf = req.body;
       } else {
-        res.status(400).json({ error: "Provide a feed file body or ?url= parameter" });
-        return;
+        buf = getBodyBuffer(req);
+        if (!buf) {
+          res.status(400).json({ error: "Provide a feed file body or ?url= parameter" });
+          return;
+        }
       }
 
       const { headers, rows, totalRows } = parseFeed(buf, format, { maxRows: MAX_PREVIEW_ROWS });
@@ -187,7 +209,13 @@ router.post(
       let sourceUrl: string | null = null;
       let saveMapping = false;
 
-      const isFileBody = Buffer.isBuffer(req.body) && req.body.length > 0;
+      // File uploads always supply ?supplierId= as a query param.
+      // URL runs supply { supplierId, source: "url" } in a JSON body with no query params.
+      // Using this distinction (rather than Buffer.isBuffer) ensures JSON file uploads work
+      // even after express.json() has already parsed req.body into an object.
+      const hasQuerySupplierId = typeof req.query.supplierId === "string";
+      const bodyBuf = getBodyBuffer(req);
+      const isFileBody = hasQuerySupplierId && bodyBuf !== null;
 
       if (isFileBody) {
         supplierId = Number(req.query.supplierId);
@@ -195,7 +223,7 @@ router.post(
           res.status(400).json({ error: "Missing/invalid supplierId" });
           return;
         }
-        buf = req.body;
+        buf = bodyBuf;
         if (typeof req.query.mapping === "string") {
           try {
             mappingOverride = JSON.parse(req.query.mapping) as SupplierColumnMapping;
