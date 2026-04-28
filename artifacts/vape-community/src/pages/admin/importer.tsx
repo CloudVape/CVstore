@@ -4,6 +4,7 @@ import { useLocation, useSearch } from "wouter";
 import { useAuth } from "@/lib/auth";
 import {
   adminApi,
+  type FeedFormat,
   type PreviewResponse,
   type RunResult,
   type Supplier,
@@ -49,13 +50,14 @@ function autoMap(
         n === target ||
         n === target.replace(/cents$/, "") ||
         n === target.replace(/cents$/, "price") ||
-        (target === "externalsku" && (n === "sku" || n === "id" || n === "productid")) ||
+        (target === "externalsku" && (n === "sku" || n === "id" || n === "productid" || n === "variantssku")) ||
         (target === "categoryslug" && n === "category") ||
-        (target === "imageurl" && (n === "image" || n === "imageurl" || n === "img")) ||
-        (target === "stockcount" && (n === "stock" || n === "qty" || n === "quantity" || n === "inventory")) ||
-        (target === "pricecents" && n === "price") ||
-        (target === "comparepricecents" && (n === "compareprice" || n === "msrp" || n === "rrp")) ||
+        (target === "imageurl" && (n === "image" || n === "imageurl" || n === "img" || n === "imagessrc")) ||
+        (target === "stockcount" && (n === "stock" || n === "qty" || n === "quantity" || n === "inventory" || n === "variantsinventoryquantity")) ||
+        (target === "pricecents" && (n === "price" || n === "variantsprice")) ||
+        (target === "comparepricecents" && (n === "compareprice" || n === "msrp" || n === "rrp" || n === "variantscompareatprice")) ||
         (target === "shortdescription" && (n === "shortdescription" || n === "subtitle" || n === "tagline")) ||
+        (target === "description" && (n === "description" || n === "bodyhtml")) ||
         (target === "nicotinestrength" && (n === "nicotine" || n === "nic")) ||
         (target === "vgpgratio" && (n === "vgpg" || n === "ratio"))
       );
@@ -67,6 +69,20 @@ function autoMap(
   }
   return map;
 }
+
+const FEED_FORMAT_LABELS: Record<FeedFormat, string> = {
+  csv: "CSV / Excel",
+  json: "JSON",
+  xml: "XML",
+  shopify: "Shopify",
+};
+
+const FEED_FORMAT_ACCEPT: Record<FeedFormat, string> = {
+  csv: ".csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  json: ".json,application/json",
+  xml: ".xml,application/xml,text/xml",
+  shopify: ".json,application/json",
+};
 
 export default function AdminImporterPage() {
   const { user, getToken } = useAuth();
@@ -97,6 +113,8 @@ export default function AdminImporterPage() {
 
   const supplier: Supplier | undefined = suppliers.find((s) => s.id === supplierId);
 
+  const feedFormat: FeedFormat = supplier?.feedFormat ?? "csv";
+
   const [tab, setTab] = useState<"upload" | "url">("upload");
   useEffect(() => {
     if (supplier) setTab(supplier.sourceType === "csv-url" ? "url" : "upload");
@@ -123,11 +141,12 @@ export default function AdminImporterPage() {
 
   function fileContentType(file: File): string {
     const name = file.name.toLowerCase();
-    if (name.endsWith(".xlsx")) {
-      return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    }
+    if (name.endsWith(".xlsx")) return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     if (name.endsWith(".xls")) return "application/vnd.ms-excel";
-    return file.type || "text/csv";
+    if (name.endsWith(".json")) return "application/json";
+    if (name.endsWith(".xml")) return "application/xml";
+    if (name.endsWith(".csv")) return "text/csv";
+    return file.type || "application/octet-stream";
   }
 
   async function handlePreview() {
@@ -139,8 +158,8 @@ export default function AdminImporterPage() {
     try {
       const result =
         tab === "upload"
-          ? await adminApi.previewFile(token, feedFile!, fileContentType(feedFile!))
-          : await adminApi.previewUrl(token, feedUrl);
+          ? await adminApi.previewFile(token, feedFile!, fileContentType(feedFile!), feedFormat)
+          : await adminApi.previewUrl(token, feedUrl, feedFormat);
       setPreview(result);
       const seed = supplier?.columnMapping && Object.keys(supplier.columnMapping).length > 0
         ? supplier.columnMapping
@@ -188,6 +207,7 @@ export default function AdminImporterPage() {
               contentType: fileContentType(feedFile!),
               mapping: cleanMapping,
               saveMapping,
+              format: feedFormat,
             })
           : await adminApi.runWithUrl(token, {
               supplierId,
@@ -255,11 +275,20 @@ export default function AdminImporterPage() {
           <h2 className="text-lg font-mono font-bold uppercase tracking-wider">
             2. Provide feed
           </h2>
+          {supplier && (
+            <p className="text-xs text-muted-foreground font-mono">
+              Format:{" "}
+              <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase tracking-wider">
+                {FEED_FORMAT_LABELS[feedFormat]}
+              </span>
+              {" "}— change this in the supplier settings.
+            </p>
+          )}
           <Tabs value={tab} onValueChange={(v) => setTab(v as "upload" | "url")}>
             <TabsList>
               <TabsTrigger value="upload">
                 <CloudUpload className="h-4 w-4 mr-1" />
-                Upload CSV
+                Upload file
               </TabsTrigger>
               <TabsTrigger value="url">
                 <LinkIcon className="h-4 w-4 mr-1" />
@@ -267,11 +296,11 @@ export default function AdminImporterPage() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="upload" className="space-y-3 pt-4">
-              <Label htmlFor="csv-file">CSV or Excel file (max 10 MB)</Label>
+              <Label htmlFor="feed-file">Feed file (max 10 MB)</Label>
               <Input
-                id="csv-file"
+                id="feed-file"
                 type="file"
-                accept=".csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                accept={FEED_FORMAT_ACCEPT[feedFormat]}
                 onChange={handleFileChange}
               />
               {feedFile && (
@@ -282,13 +311,13 @@ export default function AdminImporterPage() {
               )}
             </TabsContent>
             <TabsContent value="url" className="space-y-3 pt-4">
-              <Label htmlFor="csv-url">Feed URL</Label>
+              <Label htmlFor="feed-url">Feed URL</Label>
               <Input
-                id="csv-url"
+                id="feed-url"
                 type="url"
                 value={feedUrl}
                 onChange={(e) => setFeedUrl(e.target.value)}
-                placeholder="https://supplier.example.com/feed.csv"
+                placeholder="https://supplier.example.com/feed.json"
               />
               <p className="text-xs text-muted-foreground">
                 The server will fetch this URL when previewing or running the import.

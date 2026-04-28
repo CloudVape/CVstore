@@ -99,8 +99,10 @@ export default function AdminRunsPage() {
                       <span className="text-muted-foreground italic">system</span>
                     )}
                   </td>
-                  <td className="p-3 text-xs">
-                    {r.source === "csv-url" ? "URL" : "Upload"}
+                  <td className="p-3 text-xs font-mono uppercase tracking-wider">
+                    {r.source.endsWith("-url") ? "URL" : "Upload"}
+                    {" · "}
+                    {r.source.split("-")[0] ?? "csv"}
                   </td>
                   <td className="p-3">
                     <StatusBadge status={r.status} errored={r.erroredCount} />

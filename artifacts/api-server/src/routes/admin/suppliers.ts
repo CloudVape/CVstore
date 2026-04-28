@@ -17,6 +17,7 @@ const ScheduleSchema = z
 const SupplierBody = z.object({
   name: z.string().trim().min(1).max(200),
   sourceType: z.enum(["csv-upload", "csv-url"]),
+  feedFormat: z.enum(["csv", "json", "xml", "shopify"]).optional(),
   sourceUrl: z.string().trim().url().max(2000).nullable().optional(),
   columnMapping: z.record(z.string(), z.string()).optional(),
   schedule: ScheduleSchema.optional(),
@@ -56,6 +57,7 @@ router.post("/admin/suppliers", async (req, res): Promise<void> => {
     .values({
       name: data.name,
       sourceType: data.sourceType,
+      feedFormat: data.feedFormat ?? "csv",
       sourceUrl: data.sourceUrl ?? null,
       columnMapping: (data.columnMapping ?? {}) as SupplierColumnMapping,
       schedule: (data.schedule ?? null) as SupplierSchedule | null,
@@ -79,6 +81,7 @@ router.put("/admin/suppliers/:id", async (req, res): Promise<void> => {
   const patch: Record<string, unknown> = {};
   if (data.name !== undefined) patch.name = data.name;
   if (data.sourceType !== undefined) patch.sourceType = data.sourceType;
+  if (data.feedFormat !== undefined) patch.feedFormat = data.feedFormat;
   if (data.sourceUrl !== undefined) patch.sourceUrl = data.sourceUrl ?? null;
   if (data.columnMapping !== undefined) patch.columnMapping = data.columnMapping;
   if (data.schedule !== undefined) patch.schedule = data.schedule ?? null;

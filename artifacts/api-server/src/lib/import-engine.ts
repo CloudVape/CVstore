@@ -309,7 +309,7 @@ export async function runImport({
 export async function executeImportRun(opts: {
   supplierId: number;
   triggeredByUserId: number | null;
-  source: "csv-upload" | "csv-url";
+  source: string;
   sourceUrl: string | null;
   mapping: SupplierColumnMapping;
   rows: Record<string, string>[];

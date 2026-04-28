@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { adminApi, type Supplier } from "@/lib/admin-api";
+import { adminApi, type Supplier, type FeedFormat } from "@/lib/admin-api";
 import { AdminShell } from "./admin-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -127,6 +127,13 @@ function ScheduleForm({
   );
 }
 
+const FEED_FORMAT_LABELS: Record<FeedFormat, string> = {
+  csv: "CSV / Excel",
+  json: "JSON array",
+  xml: "XML feed",
+  shopify: "Shopify export",
+};
+
 function SupplierForm({
   initial,
   onSubmit,
@@ -135,7 +142,7 @@ function SupplierForm({
 }: {
   initial?: Supplier;
   onSubmit: (
-    body: Pick<Supplier, "name" | "sourceType" | "sourceUrl">,
+    body: Pick<Supplier, "name" | "sourceType" | "feedFormat" | "sourceUrl">,
   ) => void;
   onCancel: () => void;
   submitting: boolean;
@@ -143,6 +150,9 @@ function SupplierForm({
   const [name, setName] = useState(initial?.name ?? "");
   const [sourceType, setSourceType] = useState<Supplier["sourceType"]>(
     initial?.sourceType ?? "csv-upload",
+  );
+  const [feedFormat, setFeedFormat] = useState<FeedFormat>(
+    initial?.feedFormat ?? "csv",
   );
   const [sourceUrl, setSourceUrl] = useState(initial?.sourceUrl ?? "");
 
@@ -154,6 +164,7 @@ function SupplierForm({
         onSubmit({
           name: name.trim(),
           sourceType,
+          feedFormat,
           sourceUrl:
             sourceType === "csv-url" && sourceUrl.trim() ? sourceUrl.trim() : null,
         });
@@ -171,7 +182,25 @@ function SupplierForm({
         />
       </div>
       <div className="space-y-2">
-        <Label>Feed source</Label>
+        <Label>Feed format</Label>
+        <Select
+          value={feedFormat}
+          onValueChange={(v) => setFeedFormat(v as FeedFormat)}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {(Object.keys(FEED_FORMAT_LABELS) as FeedFormat[]).map((fmt) => (
+              <SelectItem key={fmt} value={fmt}>
+                {FEED_FORMAT_LABELS[fmt]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <Label>Feed delivery</Label>
         <Select
           value={sourceType}
           onValueChange={(v) => setSourceType(v as Supplier["sourceType"])}
@@ -180,8 +209,8 @@ function SupplierForm({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="csv-upload">CSV file upload</SelectItem>
-            <SelectItem value="csv-url">CSV from URL</SelectItem>
+            <SelectItem value="csv-upload">File upload</SelectItem>
+            <SelectItem value="csv-url">From URL</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -193,7 +222,7 @@ function SupplierForm({
             type="url"
             value={sourceUrl}
             onChange={(e) => setSourceUrl(e.target.value)}
-            placeholder="https://supplier.example.com/feed.csv"
+            placeholder="https://supplier.example.com/feed.json"
           />
         </div>
       )}
@@ -224,7 +253,7 @@ export default function AdminSuppliersPage() {
   });
 
   const createMut = useMutation({
-    mutationFn: async (body: Pick<Supplier, "name" | "sourceType" | "sourceUrl">) => {
+    mutationFn: async (body: Pick<Supplier, "name" | "sourceType" | "feedFormat" | "sourceUrl">) => {
       const token = await getToken();
       return adminApi.createSupplier(token!, body);
     },
@@ -321,9 +350,14 @@ export default function AdminSuppliersPage() {
                 <tr key={s.id} className="border-t border-border">
                   <td className="p-3 font-medium">{s.name}</td>
                   <td className="p-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-xs font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-muted">
                       {s.sourceType === "csv-url" ? "URL" : "Upload"}
                     </span>
+                    <span className="text-xs font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary">
+                      {FEED_FORMAT_LABELS[s.feedFormat ?? "csv"]}
+                    </span>
+                    </div>
                     {s.sourceUrl && (
                       <a
                         href={s.sourceUrl}

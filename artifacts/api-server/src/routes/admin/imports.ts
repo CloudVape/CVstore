@@ -7,17 +7,20 @@ import {
   importRunsTable,
   usersTable,
   type SupplierColumnMapping,
+  type FeedFormat,
 } from "@workspace/db";
-import { parseCsv, bufferToCsvText, type CsvRow } from "../../lib/csv";
+import { parseFeed } from "../../lib/feed-parsers";
 import { executeImportRun, IMPORTABLE_FIELDS } from "../../lib/import-engine";
 import type { RequestWithAdmin } from "../../middlewares/admin";
 import { assertPublicHttpUrl, UrlSafetyError } from "../../lib/url-safety";
 
 const router: IRouter = Router();
 
-const MAX_CSV_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_FEED_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_PREVIEW_ROWS = 20;
 const MAX_REDIRECTS = 5;
+
+const FEED_FORMATS: FeedFormat[] = ["csv", "json", "xml", "shopify"];
 
 const RAW_BODY_TYPES = [
   "text/csv",
@@ -26,6 +29,9 @@ const RAW_BODY_TYPES = [
   "application/vnd.ms-excel",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "application/octet-stream",
+  "application/json",
+  "application/xml",
+  "text/xml",
 ];
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -37,6 +43,13 @@ class HttpError extends Error {
   ) {
     super(message);
   }
+}
+
+function resolveFormat(raw: unknown, fallback: FeedFormat = "csv"): FeedFormat {
+  if (typeof raw === "string" && (FEED_FORMATS as string[]).includes(raw)) {
+    return raw as FeedFormat;
+  }
+  return fallback;
 }
 
 /**
@@ -90,11 +103,11 @@ async function fetchFeedFromUrl(rawUrl: string): Promise<Buffer> {
     }
 
     const len = resp.headers.get("content-length");
-    if (len && Number(len) > MAX_CSV_BYTES) {
+    if (len && Number(len) > MAX_FEED_BYTES) {
       throw new HttpError(413, "Feed exceeds 10MB limit");
     }
     const ab = await resp.arrayBuffer();
-    if (ab.byteLength > MAX_CSV_BYTES) {
+    if (ab.byteLength > MAX_FEED_BYTES) {
       throw new HttpError(413, "Feed exceeds 10MB limit");
     }
     return Buffer.from(ab);
@@ -104,32 +117,28 @@ async function fetchFeedFromUrl(rawUrl: string): Promise<Buffer> {
 
 // ─── /admin/imports/preview ──────────────────────────────────────────────────
 // Two ways to invoke:
-//   POST /admin/imports/preview          (Content-Type: text/csv|xlsx) — body
-//   POST /admin/imports/preview?url=…    (no body) — server fetches the URL
+//   POST /admin/imports/preview?format=csv|json|xml|shopify   (body = raw bytes)
+//   POST /admin/imports/preview?url=…&format=…               (server fetches URL)
 
 router.post(
   "/admin/imports/preview",
-  rawBody({ type: RAW_BODY_TYPES, limit: MAX_CSV_BYTES }),
+  rawBody({ type: RAW_BODY_TYPES, limit: MAX_FEED_BYTES }),
   async (req, res): Promise<void> => {
     try {
       const url = typeof req.query.url === "string" ? req.query.url : "";
-      let csvText = "";
+      const format = resolveFormat(req.query.format);
+
+      let buf: Buffer | null = null;
       if (url) {
-        const buf = await fetchFeedFromUrl(url);
-        csvText = bufferToCsvText(buf);
+        buf = await fetchFeedFromUrl(url);
       } else if (Buffer.isBuffer(req.body) && req.body.length > 0) {
-        csvText = bufferToCsvText(req.body);
+        buf = req.body;
       } else {
-        res.status(400).json({ error: "Provide CSV/XLSX body or ?url= parameter" });
+        res.status(400).json({ error: "Provide a feed file body or ?url= parameter" });
         return;
       }
 
-      const { headers, rows } = parseCsv(csvText, { maxRows: MAX_PREVIEW_ROWS });
-      // Approximate total row count via newline count of the converted text.
-      const totalRows = Math.max(
-        0,
-        csvText.split(/\r\n|\n|\r/).filter((l) => l.trim() !== "").length - 1,
-      );
+      const { headers, rows, totalRows } = parseFeed(buf, format, { maxRows: MAX_PREVIEW_ROWS });
       res.json({
         headers,
         sample: rows,
@@ -149,13 +158,12 @@ router.post(
 );
 
 // ─── /admin/imports/run ──────────────────────────────────────────────────────
-// Accepts CSV/XLSX body OR a configured supplier URL.
+// Accepts any supported feed body OR a configured supplier URL.
 //   POST /admin/imports/run  (application/json)
-//     { supplierId, source: "url" }
+//     { supplierId, source: "url", mapping?, saveMapping? }
 // or
-//   POST /admin/imports/run?supplierId=…&saveMapping=true   (text/csv | xlsx)
-//     binary body
-// In both cases, the saved mapping override may be passed as ?mapping= JSON.
+//   POST /admin/imports/run?supplierId=…&format=…&saveMapping=true
+//     binary body  (format defaults to supplier.feedFormat)
 
 const RunBodySchema = z.object({
   supplierId: z.number().int().positive(),
@@ -168,14 +176,14 @@ router.post(
   "/admin/imports/run",
   rawBody({
     type: RAW_BODY_TYPES,
-    limit: MAX_CSV_BYTES,
+    limit: MAX_FEED_BYTES,
   }),
   async (req, res): Promise<void> => {
     try {
       let supplierId = 0;
-      let csvText = "";
+      let buf: Buffer | null = null;
       let mappingOverride: SupplierColumnMapping | undefined;
-      let source: "csv-upload" | "csv-url" = "csv-upload";
+      let sourceLabel = "upload";
       let sourceUrl: string | null = null;
       let saveMapping = false;
 
@@ -187,7 +195,7 @@ router.post(
           res.status(400).json({ error: "Missing/invalid supplierId" });
           return;
         }
-        csvText = bufferToCsvText(req.body);
+        buf = req.body;
         if (typeof req.query.mapping === "string") {
           try {
             mappingOverride = JSON.parse(req.query.mapping) as SupplierColumnMapping;
@@ -197,7 +205,7 @@ router.post(
           }
         }
         if (req.query.saveMapping === "true") saveMapping = true;
-        source = "csv-upload";
+        sourceLabel = "upload";
       } else {
         // JSON body — must include source: "url"
         const parsed = RunBodySchema.safeParse(req.body);
@@ -208,7 +216,7 @@ router.post(
         supplierId = parsed.data.supplierId;
         mappingOverride = parsed.data.mapping;
         saveMapping = parsed.data.saveMapping ?? false;
-        source = "csv-url";
+        sourceLabel = "url";
       }
 
       // Resolve supplier
@@ -221,13 +229,18 @@ router.post(
         return;
       }
 
+      const supplierFormat: FeedFormat = resolveFormat(supplier.feedFormat);
+
+      // For file uploads, ?format= overrides the supplier's saved feedFormat
+      const format: FeedFormat =
+        isFileBody ? resolveFormat(req.query.format, supplierFormat) : supplierFormat;
+
       if (!isFileBody) {
         if (!supplier.sourceUrl) {
           res.status(400).json({ error: "Supplier has no source URL configured" });
           return;
         }
-        const buf = await fetchFeedFromUrl(supplier.sourceUrl);
-        csvText = bufferToCsvText(buf);
+        buf = await fetchFeedFromUrl(supplier.sourceUrl);
         sourceUrl = supplier.sourceUrl;
       }
 
@@ -245,8 +258,9 @@ router.post(
           .where(eq(suppliersTable.id, supplierId));
       }
 
-      const { rows } = parseCsv(csvText);
+      const { rows } = parseFeed(buf!, format);
 
+      const source = `${format}-${sourceLabel}`;
       const userId = (req as RequestWithAdmin).adminUser?.id ?? null;
       const { runId, result } = await executeImportRun({
         supplierId,
@@ -254,7 +268,7 @@ router.post(
         source,
         sourceUrl,
         mapping,
-        rows: rows as CsvRow[],
+        rows,
       });
 
       res.json({

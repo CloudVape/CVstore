@@ -21,10 +21,13 @@ export type SupplierSchedule = {
   notes?: string | null;
 };
 
+export type FeedFormat = "csv" | "json" | "xml" | "shopify";
+
 export const suppliersTable = pgTable("suppliers", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   sourceType: text("source_type").notNull(), // 'csv-upload' | 'csv-url'
+  feedFormat: text("feed_format").notNull().default("csv"), // FeedFormat
   sourceUrl: text("source_url"),
   columnMapping: jsonb("column_mapping").$type<SupplierColumnMapping>().notNull().default({}),
   schedule: jsonb("schedule").$type<SupplierSchedule | null>(),

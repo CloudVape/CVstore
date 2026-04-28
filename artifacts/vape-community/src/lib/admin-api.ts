@@ -5,10 +5,13 @@
 // the server verifies it with `getAuth(req)` and checks the `isAdmin` flag
 // on the resolved DB user.
 
+export type FeedFormat = "csv" | "json" | "xml" | "shopify";
+
 export type Supplier = {
   id: number;
   name: string;
   sourceType: "csv-upload" | "csv-url";
+  feedFormat: FeedFormat;
   sourceUrl: string | null;
   columnMapping: Record<string, string>;
   schedule: {
@@ -26,7 +29,7 @@ export type ImportRunSummary = {
   id: number;
   supplierId: number;
   supplierName: string | null;
-  source: "csv-upload" | "csv-url";
+  source: string;
   sourceUrl: string | null;
   status: "running" | "completed" | "failed";
   startedAt: string;
@@ -163,50 +166,26 @@ export const adminApi = {
     }
   },
 
-  async previewCsv(token: string, csvText: string): Promise<PreviewResponse> {
-    const r = await fetch(`${BASE}/admin/imports/preview`, {
-      method: "POST",
-      headers: { ...authHeaders(token), "Content-Type": "text/csv" },
-      body: csvText,
-    });
-    return asJson<PreviewResponse>(r);
-  },
-  async previewUrl(token: string, url: string): Promise<PreviewResponse> {
+  async previewUrl(token: string, url: string, format?: FeedFormat): Promise<PreviewResponse> {
+    const params = new URLSearchParams({ url });
+    if (format) params.set("format", format);
     const r = await fetch(
-      `${BASE}/admin/imports/preview?url=${encodeURIComponent(url)}`,
+      `${BASE}/admin/imports/preview?${params.toString()}`,
       { method: "POST", headers: authHeaders(token) },
     );
     return asJson<PreviewResponse>(r);
-  },
-
-  async runWithCsv(
-    token: string,
-    args: {
-      supplierId: number;
-      csvText: string;
-      mapping: Record<string, string>;
-      saveMapping?: boolean;
-    },
-  ): Promise<RunResult> {
-    const params = new URLSearchParams({
-      supplierId: String(args.supplierId),
-      mapping: JSON.stringify(args.mapping),
-    });
-    if (args.saveMapping) params.set("saveMapping", "true");
-    const r = await fetch(`${BASE}/admin/imports/run?${params.toString()}`, {
-      method: "POST",
-      headers: { ...authHeaders(token), "Content-Type": "text/csv" },
-      body: args.csvText,
-    });
-    return asJson<RunResult>(r);
   },
 
   async previewFile(
     token: string,
     file: File | Blob,
     contentType: string,
+    format?: FeedFormat,
   ): Promise<PreviewResponse> {
-    const r = await fetch(`${BASE}/admin/imports/preview`, {
+    const params = new URLSearchParams();
+    if (format) params.set("format", format);
+    const qs = params.toString() ? `?${params.toString()}` : "";
+    const r = await fetch(`${BASE}/admin/imports/preview${qs}`, {
       method: "POST",
       headers: { ...authHeaders(token), "Content-Type": contentType },
       body: file,
@@ -221,6 +200,7 @@ export const adminApi = {
       contentType: string;
       mapping: Record<string, string>;
       saveMapping?: boolean;
+      format?: FeedFormat;
     },
   ): Promise<RunResult> {
     const params = new URLSearchParams({
@@ -228,6 +208,7 @@ export const adminApi = {
       mapping: JSON.stringify(args.mapping),
     });
     if (args.saveMapping) params.set("saveMapping", "true");
+    if (args.format) params.set("format", args.format);
     const r = await fetch(`${BASE}/admin/imports/run?${params.toString()}`, {
       method: "POST",
       headers: { ...authHeaders(token), "Content-Type": args.contentType },

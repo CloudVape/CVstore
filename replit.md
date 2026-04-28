@@ -73,10 +73,16 @@ A vape SHOP first (e-commerce), with a community forum secondary.
   `users.isAdmin === true`. The session token is rotated on every login
   and only returned to the user it belongs to (login/signup responses).
   Public user endpoints intentionally omit `isAdmin` and `sessionToken`.
-- Format-agnostic CSV pipeline: `lib/csv.ts` (RFC4180-ish parser) feeds
-  `lib/import-engine.ts`. Engine upserts on `(supplierId, externalSku)`.
-- CSV input arrives either as a `text/csv` request body (file upload) or
-  fetched server-side from a saved supplier `sourceUrl`.
+- Multi-format import pipeline: `lib/feed-parsers.ts` dispatches to per-format
+  parsers (CSV/XLSX, JSON array, XML, Shopify product export JSON).
+  All formats produce flat `Record<string,string>[]` consumed by `lib/import-engine.ts`.
+  Engine upserts on `(supplierId, externalSku)`.
+- `suppliers.feedFormat` column stores the format per supplier: `"csv"|"json"|"xml"|"shopify"`.
+  Existing rows default to `"csv"`.
+- `XML` parsing via `fast-xml-parser` (installed in `@workspace/api-server`).
+- Shopify format expands each product × variant into one row; prefix mapping: `variants.sku`, `variants.price`, `images.src`, etc.
+- Feed input arrives as raw body (file upload) with `?format=` query param, or
+  fetched server-side from `supplier.sourceUrl` using `supplier.feedFormat`.
 - "Automatic sync" is a UI placeholder — schedule intent is persisted on
   `suppliers.schedule` but no scheduler runs.
 - To grant admin: update `users.is_admin = true` in SQL, or run
