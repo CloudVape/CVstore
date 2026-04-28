@@ -11,6 +11,7 @@ import {
 } from "@workspace/db";
 import { sendEmail, fireAndForget } from "../lib/email";
 import { ticketConfirmationTemplate, ticketReplyTemplate } from "../lib/email-templates";
+import { getSiteUrl } from "../lib/config";
 import { logger } from "../lib/logger";
 
 /** Parse an RFC 5321 address that may arrive as "Name <addr>" or plain "addr". */
@@ -55,10 +56,12 @@ router.post("/support/tickets", async (req, res): Promise<void> => {
       body: message,
     });
 
+    const siteUrl = await getSiteUrl();
     const tpl = ticketConfirmationTemplate({
       customerName,
       ticketId: ticket.id,
       category: CATEGORY_LABELS[category] ?? category,
+      siteUrl,
     });
     fireAndForget(sendEmail({ ...tpl, to: customerEmail, template: "support-ticket-confirmation" }));
 
@@ -280,7 +283,8 @@ Respond with a JSON object containing:
 
     if (confident) {
       await db.insert(supportMessagesTable).values({ ticketId, authorType: "ai", body: reply });
-      const tpl = ticketReplyTemplate({ customerName: ticket.customerName, ticketId: ticket.id, replyBody: reply });
+      const siteUrl = await getSiteUrl();
+      const tpl = ticketReplyTemplate({ customerName: ticket.customerName, ticketId: ticket.id, replyBody: reply, siteUrl });
       await sendEmail({ ...tpl, to: ticket.customerEmail, template: "support-reply" });
     }
   } catch (err) {

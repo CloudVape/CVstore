@@ -270,9 +270,11 @@ export function refundConfirmationTemplate(opts: {
   customerName: string;
   orderNumber: string;
   totalCents: number;
+  siteUrl?: string;
 }): { subject: string; html: string; text: string } {
   const subject = `Refund processed for order ${opts.orderNumber}`;
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: `Your refund of £${(opts.totalCents / 100).toFixed(2)} for order ${opts.orderNumber} has been processed.`,
     content: `
       ${h1("Refund Processed")}
@@ -337,9 +339,11 @@ export function ticketConfirmationTemplate(opts: {
   customerName: string;
   ticketId: number;
   category: string;
+  siteUrl?: string;
 }): { subject: string; html: string; text: string } {
   const subject = `[#${opts.ticketId}] We received your message — CloudVape Support`;
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: `Ticket #${opts.ticketId} confirmed — we'll reply to this email thread.`,
     content: `
       ${h1("We've Got Your Message")}
@@ -366,6 +370,7 @@ export function ticketReplyTemplate(opts: {
   customerName: string;
   ticketId: number;
   replyBody: string;
+  siteUrl?: string;
 }): { subject: string; html: string; text: string } {
   const subject = `[#${opts.ticketId}] Reply from CloudVape Support`;
   const escaped = opts.replyBody
@@ -375,6 +380,7 @@ export function ticketReplyTemplate(opts: {
     .replace(/"/g, "&quot;");
   const safeBody = escaped.replace(/\n/g, "<br/>");
   const html = baseTemplate({
+    siteUrl: opts.siteUrl,
     preheader: `New reply on your CloudVape support ticket #${opts.ticketId}.`,
     content: `
       ${h1("Reply from CloudVape Support")}

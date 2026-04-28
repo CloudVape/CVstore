@@ -149,10 +149,12 @@ router.patch("/admin/orders/:orderNumber/status", async (req, res): Promise<void
     fireAndForget(sendEmail({ ...tpl, to: order.email, template: "delivery-confirmation" }));
   } else if (status === "refunded") {
     updates.refundedAt = new Date();
+    const siteUrl = await getSiteUrl();
     const tpl = refundConfirmationTemplate({
       customerName: order.customerName,
       orderNumber: order.orderNumber,
       totalCents: order.totalCents,
+      siteUrl,
     });
     fireAndForget(sendEmail({ ...tpl, to: order.email, template: "refund-confirmation" }));
   }

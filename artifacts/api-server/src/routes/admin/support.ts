@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 import { db, supportTicketsTable, supportMessagesTable } from "@workspace/db";
 import { sendEmail, fireAndForget } from "../../lib/email";
 import { ticketReplyTemplate } from "../../lib/email-templates";
+import { getSiteUrl } from "../../lib/config";
 import { runAiAutoReply } from "../support";
 import { logger } from "../../lib/logger";
 
@@ -48,7 +49,8 @@ router.post("/admin/support/tickets/:id/reply", async (req, res): Promise<void> 
     .set({ status: "awaiting_customer", aiDraft: null, updatedAt: new Date() })
     .where(eq(supportTicketsTable.id, id));
 
-  const tpl = ticketReplyTemplate({ customerName: ticket.customerName, ticketId: id, replyBody: parsed.data.body });
+  const siteUrl = await getSiteUrl();
+  const tpl = ticketReplyTemplate({ customerName: ticket.customerName, ticketId: id, replyBody: parsed.data.body, siteUrl });
   fireAndForget(sendEmail({ ...tpl, to: ticket.customerEmail, template: "support-reply" }));
 
   res.json({ ok: true });
@@ -68,7 +70,8 @@ router.post("/admin/support/tickets/:id/send-draft", async (req, res): Promise<v
     .set({ status: "awaiting_customer", aiDraft: null, aiConfident: null, updatedAt: new Date() })
     .where(eq(supportTicketsTable.id, id));
 
-  const tpl = ticketReplyTemplate({ customerName: ticket.customerName, ticketId: id, replyBody: parsed.data.body });
+  const siteUrl = await getSiteUrl();
+  const tpl = ticketReplyTemplate({ customerName: ticket.customerName, ticketId: id, replyBody: parsed.data.body, siteUrl });
   fireAndForget(sendEmail({ ...tpl, to: ticket.customerEmail, template: "support-reply" }));
 
   res.json({ ok: true });
