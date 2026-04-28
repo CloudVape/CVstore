@@ -79,6 +79,15 @@ const FEED_FORMAT_LABELS: Record<FeedFormat, string> = {
   shopify: "Shopify",
 };
 
+const API_BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
+
+const SAMPLE_FEED_FILES: { label: string; filename: string }[] = [
+  { label: "CSV", filename: "example-supplier.csv" },
+  { label: "JSON", filename: "example-supplier.json" },
+  { label: "XML", filename: "example-supplier.xml" },
+  { label: "Shopify", filename: "example-shopify-export.json" },
+];
+
 const FEED_FORMAT_ACCEPT: Record<FeedFormat, string> = {
   csv: ".csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   json: ".json,application/json",
@@ -286,6 +295,20 @@ export default function AdminImporterPage() {
               {" "}— change this in the supplier settings.
             </p>
           )}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span className="text-xs text-muted-foreground">Sample files:</span>
+            {SAMPLE_FEED_FILES.map(({ label, filename }) => (
+              <a
+                key={filename}
+                href={`${API_BASE}/sample-feeds/${filename}`}
+                download={filename}
+                className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+              >
+                <Download className="h-3 w-3" />
+                {label}
+              </a>
+            ))}
+          </div>
           <Tabs value={tab} onValueChange={(v) => setTab(v as "upload" | "url")}>
             <TabsList>
               <TabsTrigger value="upload">

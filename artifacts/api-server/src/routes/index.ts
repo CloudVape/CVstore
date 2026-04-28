@@ -14,6 +14,7 @@ import emailWebhooksRouter from "./email-webhooks";
 import helpRouter from "./help";
 import supportRouter from "./support";
 import adminRouter from "./admin";
+import sampleFeedsRouter from "./sample-feeds";
 
 const router: IRouter = Router();
 
@@ -32,5 +33,6 @@ router.use(emailWebhooksRouter);
 router.use(helpRouter);
 router.use(supportRouter);
 router.use(adminRouter);
+router.use(sampleFeedsRouter);
 
 export default router;
