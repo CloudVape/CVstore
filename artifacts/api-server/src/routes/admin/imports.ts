@@ -1,5 +1,5 @@
 import { Router, type IRouter, raw as rawBody } from "express";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, isNull, isNotNull, and } from "drizzle-orm";
 import { z } from "zod";
 import {
   db,
@@ -246,6 +246,17 @@ router.post(
 
 router.get("/admin/import-runs", async (req, res): Promise<void> => {
   const supplierId = req.query.supplierId ? Number(req.query.supplierId) : undefined;
+  const triggerType =
+    req.query.triggerType === "manual" || req.query.triggerType === "scheduled"
+      ? req.query.triggerType
+      : undefined;
+
+  const conditions = [
+    supplierId !== undefined ? eq(importRunsTable.supplierId, supplierId) : undefined,
+    triggerType === "manual" ? isNotNull(importRunsTable.triggeredByUserId) : undefined,
+    triggerType === "scheduled" ? isNull(importRunsTable.triggeredByUserId) : undefined,
+  ].filter(Boolean) as Parameters<typeof and>;
+
   const baseQuery = db
     .select({
       run: importRunsTable,
@@ -258,9 +269,10 @@ router.get("/admin/import-runs", async (req, res): Promise<void> => {
     .orderBy(desc(importRunsTable.startedAt))
     .limit(100);
 
-  const rows = supplierId
-    ? await baseQuery.where(eq(importRunsTable.supplierId, supplierId))
-    : await baseQuery;
+  const rows =
+    conditions.length > 0
+      ? await baseQuery.where(and(...conditions))
+      : await baseQuery;
 
   res.json(
     rows.map(({ run, supplierName, triggeredByUsername }) => ({

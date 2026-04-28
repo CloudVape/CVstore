@@ -40,21 +40,22 @@ export default function AdminRunsPage() {
   const [supplierFilter, setSupplierFilter] = useState<number | "all">("all");
 
   const { data: runs = [], isLoading } = useQuery({
-    queryKey: ["admin", "import-runs"],
+    queryKey: ["admin", "import-runs", triggerFilter, supplierFilter],
     enabled: !!user,
-    queryFn: async () => { const token = await getToken(); return adminApi.listRuns(token!); },
+    queryFn: async () => {
+      const token = await getToken();
+      return adminApi.listRuns(token!, {
+        supplierId: supplierFilter !== "all" ? supplierFilter : undefined,
+        triggerType: triggerFilter !== "all" ? triggerFilter : undefined,
+      });
+    },
   });
 
   const suppliers = Array.from(
     new Map(runs.map((r) => [r.supplierId, r.supplierName ?? `#${r.supplierId}`])).entries()
   ).sort((a, b) => a[1].localeCompare(b[1]));
 
-  const filteredRuns = runs.filter((r) => {
-    if (triggerFilter === "scheduled" && r.triggeredByUserId !== null) return false;
-    if (triggerFilter === "manual" && r.triggeredByUserId === null) return false;
-    if (supplierFilter !== "all" && r.supplierId !== supplierFilter) return false;
-    return true;
-  });
+  const filteredRuns = runs;
 
   const handleDownloadErrors = async (runId: number) => {
     const token = await getToken();
@@ -124,7 +125,9 @@ export default function AdminRunsPage() {
         <p className="text-muted-foreground text-sm">Loading…</p>
       ) : filteredRuns.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
-          {runs.length === 0 ? "No import runs yet." : "No runs match the selected filter."}
+          {triggerFilter === "all" && supplierFilter === "all"
+            ? "No import runs yet."
+            : "No runs match the selected filter."}
         </div>
       ) : (
         <div className="rounded-lg border border-border overflow-hidden">

@@ -240,8 +240,14 @@ export const adminApi = {
     return asJson<RunResult>(r);
   },
 
-  async listRuns(token: string, supplierId?: number): Promise<ImportRunSummary[]> {
-    const qs = supplierId ? `?supplierId=${supplierId}` : "";
+  async listRuns(
+    token: string,
+    opts?: { supplierId?: number; triggerType?: "manual" | "scheduled" },
+  ): Promise<ImportRunSummary[]> {
+    const params = new URLSearchParams();
+    if (opts?.supplierId) params.set("supplierId", String(opts.supplierId));
+    if (opts?.triggerType) params.set("triggerType", opts.triggerType);
+    const qs = params.toString() ? `?${params.toString()}` : "";
     const r = await fetch(`${BASE}/admin/import-runs${qs}`, {
       headers: authHeaders(token),
     });
