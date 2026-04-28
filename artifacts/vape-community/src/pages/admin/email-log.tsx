@@ -7,6 +7,12 @@ import { Mail, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
+const FROM_ADDRESSES = [
+  "CloudVape <support@cloudvape.store>",
+  "CloudVape <hello@cloudvape.store>",
+  "CloudVape <noreply@cloudvape.store>",
+];
+
 const TEMPLATES = [
   "welcome",
   "order-confirmation",
@@ -40,14 +46,16 @@ export default function AdminEmailLog() {
   const { user, getToken } = useAuth();
   const [templateFilter, setTemplateFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [fromFilter, setFromFilter] = useState("all");
 
   const { data: entries = [], isLoading, refetch } = useQuery({
-    queryKey: ["admin-email-log", templateFilter, statusFilter],
+    queryKey: ["admin-email-log", templateFilter, statusFilter, fromFilter],
     queryFn: async () => {
       const token = await getToken();
       return adminApi.listEmailLog(token!, {
         template: templateFilter === "all" ? undefined : templateFilter,
         status: statusFilter === "all" ? undefined : statusFilter,
+        fromAddress: fromFilter === "all" ? undefined : fromFilter,
       });
     },
     enabled: !!user,
@@ -77,6 +85,17 @@ export default function AdminEmailLog() {
                 <SelectItem value="all">All statuses</SelectItem>
                 {STATUSES.map((s) => (
                   <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={fromFilter} onValueChange={setFromFilter}>
+              <SelectTrigger className="w-52 h-8 text-xs font-mono">
+                <SelectValue placeholder="All senders" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All senders</SelectItem>
+                {FROM_ADDRESSES.map((addr) => (
+                  <SelectItem key={addr} value={addr}>{addr}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

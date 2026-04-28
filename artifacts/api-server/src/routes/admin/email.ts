@@ -21,11 +21,17 @@ const router: IRouter = Router();
 router.get("/admin/email-log", async (req, res): Promise<void> => {
   const template = typeof req.query.template === "string" ? req.query.template : undefined;
   const status = typeof req.query.status === "string" ? req.query.status : undefined;
+  const fromAddress = typeof req.query.fromAddress === "string" ? req.query.fromAddress : undefined;
   const limit = Math.min(Number(req.query.limit ?? 100), 500);
 
+  const conditions = [
+    ...(template ? [eq(emailLogTable.template, template)] : []),
+    ...(status ? [eq(emailLogTable.status, status)] : []),
+    ...(fromAddress ? [eq(emailLogTable.fromAddress, fromAddress)] : []),
+  ];
+
   let query = db.select().from(emailLogTable).$dynamic();
-  if (template) query = query.where(eq(emailLogTable.template, template));
-  if (status) query = query.where(eq(emailLogTable.status, status));
+  if (conditions.length > 0) query = query.where(and(...conditions));
 
   const rows = await query.orderBy(desc(emailLogTable.createdAt)).limit(limit);
   res.json(rows);

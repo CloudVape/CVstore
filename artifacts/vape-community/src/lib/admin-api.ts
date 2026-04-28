@@ -290,11 +290,12 @@ export const adminApi = {
 
   async listEmailLog(
     token: string,
-    filters?: { template?: string; status?: string },
+    filters?: { template?: string; status?: string; fromAddress?: string },
   ): Promise<EmailLogEntry[]> {
     const params = new URLSearchParams();
     if (filters?.template) params.set("template", filters.template);
     if (filters?.status) params.set("status", filters.status);
+    if (filters?.fromAddress) params.set("fromAddress", filters.fromAddress);
     const qs = params.toString() ? `?${params}` : "";
     const r = await fetch(`${BASE}/admin/email-log${qs}`, {
       headers: authHeaders(token),
