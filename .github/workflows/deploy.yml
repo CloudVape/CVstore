@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@4a03da89e5c43da56e502f21be36a4b771870680
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -28,9 +28,6 @@ jobs:
 
             echo "--- Installing dependencies ---"
             pnpm install --frozen-lockfile
-
-            echo "--- Building DB lib ---"
-            pnpm --filter @workspace/db run push
 
             echo "--- Building API server ---"
             pnpm --filter @workspace/api-server run build
