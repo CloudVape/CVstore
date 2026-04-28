@@ -31,6 +31,7 @@ export const suppliersTable = pgTable("suppliers", {
   columnMapping: jsonb("column_mapping").$type<SupplierColumnMapping>().notNull().default({}),
   schedule: jsonb("schedule").$type<SupplierSchedule | null>(),
   lastRunAt: timestamp("last_run_at", { withTimezone: true }),
+  lastAlertSentAt: timestamp("last_alert_sent_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

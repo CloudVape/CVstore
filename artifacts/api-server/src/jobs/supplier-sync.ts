@@ -18,6 +18,7 @@ if (!process.env.ADMIN_EMAIL) {
 }
 
 const CHECK_INTERVAL_MS = 60_000;
+const ALERT_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 /**
  * Minimum elapsed time before a supplier is considered "due" again.
@@ -173,16 +174,38 @@ async function runScheduledSuppliers(): Promise<void> {
           "supplier-sync: scheduled import failed",
         );
 
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        const importHistoryUrl = `${ADMIN_SITE_URL}/admin/suppliers/${s.id}?tab=history`;
-        const { subject, html, text } = supplierSyncFailureTemplate({
-          supplierName: s.name,
-          errorMessage,
-          importHistoryUrl,
-        });
-        fireAndForget(
-          sendEmail({ to: ADMIN_EMAIL, subject, html, text, template: "supplier-sync-failure" }),
-        );
+        const now = new Date();
+        const lastAlert = s.lastAlertSentAt ? s.lastAlertSentAt.getTime() : 0;
+        const alertCooledDown = now.getTime() - lastAlert >= ALERT_COOLDOWN_MS;
+
+        if (alertCooledDown) {
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          const importHistoryUrl = `${ADMIN_SITE_URL}/admin/suppliers/${s.id}?tab=history`;
+          const { subject, html, text } = supplierSyncFailureTemplate({
+            supplierName: s.name,
+            errorMessage,
+            importHistoryUrl,
+          });
+          fireAndForget(
+            sendEmail({ to: ADMIN_EMAIL, subject, html, text, template: "supplier-sync-failure" }),
+          );
+          try {
+            await db
+              .update(suppliersTable)
+              .set({ lastAlertSentAt: now })
+              .where(eq(suppliersTable.id, s.id));
+          } catch (dbErr) {
+            logger.error({ supplierId: s.id, dbErr }, "supplier-sync: failed to update lastAlertSentAt");
+          }
+        } else {
+          const cooldownRemainingMin = Math.ceil(
+            (ALERT_COOLDOWN_MS - (now.getTime() - lastAlert)) / 60_000,
+          );
+          logger.info(
+            { supplierId: s.id, name: s.name, cooldownRemainingMin },
+            "supplier-sync: failure alert suppressed — within 24-hour cooldown window",
+          );
+        }
       } finally {
         runningSuppliers.delete(s.id);
       }
