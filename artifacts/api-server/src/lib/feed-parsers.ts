@@ -75,11 +75,66 @@ function flatten(obj: unknown): Record<string, string> {
 const CANDIDATE_KEYS = ["products", "data", "items", "rows", "records", "feed", "catalog", "results"];
 
 /**
+ * Given an object, find the value that looks like a non-empty collection of records
+ * (an array whose elements are objects with scalar values). Returns null if none found.
+ */
+function findNestedRecordArray(obj: Record<string, unknown>): unknown[] | null {
+  let best: unknown[] | null = null;
+  // Prefer well-known collection key names
+  for (const key of CANDIDATE_KEYS) {
+    const val = obj[key];
+    if (Array.isArray(val) && val.length > 0 &&
+        (val as unknown[]).some((v) => v !== null && typeof v === "object" && !Array.isArray(v))) {
+      return val as unknown[];
+    }
+  }
+  // Fall back: any key whose value is an array of objects
+  for (const val of Object.values(obj)) {
+    if (Array.isArray(val) && val.length > 0 &&
+        (val as unknown[]).some((v) => v !== null && typeof v === "object" && !Array.isArray(v))) {
+      if (!best || (val as unknown[]).length > best.length) best = val as unknown[];
+    }
+  }
+  return best;
+}
+
+/**
+ * Given a candidate array, unwrap it if it is a single-element "container" array
+ * (i.e. the XML isArray config wrapped the root container element in an array and
+ * the sole item inside holds the real record collection).
+ *
+ * Examples that get unwrapped:
+ *   [{ product: [{sku:"A"}, {sku:"B"}] }]  →  [{sku:"A"}, {sku:"B"}]
+ * Examples that are left alone:
+ *   [{sku:"A"}, {sku:"B"}]   → unchanged (already records)
+ *   [{sku:"A"}]              → unchanged (single record, no nested collection)
+ */
+function resolveArray(arr: unknown[]): unknown[] {
+  if (arr.length === 1 &&
+      arr[0] !== null &&
+      typeof arr[0] === "object" &&
+      !Array.isArray(arr[0])) {
+    const nested = findNestedRecordArray(arr[0] as Record<string, unknown>);
+    if (nested) return nested;
+  }
+  return arr;
+}
+
+/**
  * Given a parsed JSON/XML value, find the array of records to import.
+ *
+ * When the XML parser uses `isArray` for all non-leaf elements, elements like
+ * `<catalog>` become 1-element wrapper arrays `[{ product: [{...},{...}] }]`.
+ * `resolveArray` is called on every candidate array so these wrappers are
+ * transparently unwrapped before being returned.
+ *
  * Returns an empty array if nothing useful is found.
  */
 function findRecordArray(data: unknown): unknown[] {
-  if (Array.isArray(data)) return data;
+  if (Array.isArray(data)) {
+    return resolveArray(data);
+  }
+
   if (!data || typeof data !== "object") return [];
 
   const obj = data as Record<string, unknown>;
@@ -87,13 +142,13 @@ function findRecordArray(data: unknown): unknown[] {
   // Prefer well-known keys first
   for (const key of CANDIDATE_KEYS) {
     if (Array.isArray(obj[key]) && (obj[key] as unknown[]).length > 0) {
-      return obj[key] as unknown[];
+      return resolveArray(obj[key] as unknown[]);
     }
   }
 
   // Fall back: any key whose value is a non-empty array
   for (const val of Object.values(obj)) {
-    if (Array.isArray(val) && val.length > 0) return val;
+    if (Array.isArray(val) && val.length > 0) return resolveArray(val as unknown[]);
   }
 
   // Nothing found — treat root as a single-record array
