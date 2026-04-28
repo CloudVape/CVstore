@@ -82,8 +82,15 @@ router.post("/support/inbound-email", async (req, res): Promise<void> => {
   }
 
   if (WEBHOOK_SECRET) {
+    // Accept the secret via header (for direct API callers) or query param
+    // (for Resend inbound routing, which doesn't support custom headers —
+    //  configure the webhook URL in Resend as:
+    //    https://yoursite.com/api/support/inbound-email?secret=<SUPPORT_WEBHOOK_SECRET>)
     const provided =
-      req.header("x-webhook-secret") ?? req.header("x-support-secret") ?? "";
+      req.header("x-webhook-secret") ??
+      req.header("x-support-secret") ??
+      (typeof req.query.secret === "string" ? req.query.secret : "") ??
+      "";
     if (!provided || provided !== WEBHOOK_SECRET) {
       res.status(401).json({ error: "Unauthorized: invalid webhook secret" });
       return;
@@ -93,13 +100,20 @@ router.post("/support/inbound-email", async (req, res): Promise<void> => {
   }
 
   try {
-    const { from, fromName, subject, text, html } = req.body as {
-      from?: string;
-      fromName?: string;
-      subject?: string;
-      text?: string;
-      html?: string;
-    };
+    const rawBody = req.body as Record<string, unknown>;
+
+    // Resend inbound email webhook wraps payload under a "data" key:
+    // { type: "email.received", created_at: "...", data: { from, to, subject, html, text, ... } }
+    // Fall back to reading fields from the top level for direct/testing calls.
+    const payload = (rawBody.type === "email.received" && rawBody.data && typeof rawBody.data === "object")
+      ? (rawBody.data as Record<string, unknown>)
+      : rawBody;
+
+    const from = typeof payload.from === "string" ? payload.from : undefined;
+    const fromName = typeof payload.fromName === "string" ? payload.fromName : undefined;
+    const subject = typeof payload.subject === "string" ? payload.subject : undefined;
+    const text = typeof payload.text === "string" ? payload.text : undefined;
+    const html = typeof payload.html === "string" ? payload.html : undefined;
 
     if (!from || (!text && !html)) {
       res.status(400).json({ error: "Missing required fields: from, text or html" });
