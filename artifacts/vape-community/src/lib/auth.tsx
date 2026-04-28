@@ -39,7 +39,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function CurrentUserLoader({ children }: { children: ReactNode }) {
-  const { isSignedIn, userId, getToken } = useClerkAuth();
+  const { isLoaded: clerkLoaded, isSignedIn, userId, getToken } = useClerkAuth();
   const { signOut } = useClerk();
   const queryClient = useQueryClient();
   const prevUserIdRef = useRef<string | null | undefined>(undefined);
@@ -75,7 +75,10 @@ function CurrentUserLoader({ children }: { children: ReactNode }) {
   });
 
   const user: AppUser | null = isSignedIn && dbUser ? dbUser : null;
-  const isLoaded = !isLoading || !isSignedIn;
+  // Only report loaded once Clerk has resolved its session AND, if signed in,
+  // the user profile fetch is also complete. This prevents a flash of "logged
+  // out" state while Clerk is restoring an existing session after a page refresh.
+  const isLoaded = clerkLoaded && (!isSignedIn || !isLoading);
 
   const logout = async () => {
     await signOut();
