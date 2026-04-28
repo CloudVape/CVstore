@@ -325,12 +325,20 @@ export const adminApi = {
     return asJson<AdminOrder>(r);
   },
 
-  async getSettings(token: string): Promise<{ alertEmail?: string }> {
+  async getSettings(token: string): Promise<{
+    alertEmail?: string;
+    alertEmailEffective: string;
+    alertEmailIsDefault: boolean;
+  }> {
     const r = await fetch(`${BASE}/admin/settings`, {
       headers: authHeaders(token),
     });
     const data = await asJson<Record<string, string>>(r);
-    return { alertEmail: data["alert_email"] };
+    return {
+      alertEmail: data["alert_email"],
+      alertEmailEffective: data["alert_email_effective"] ?? "",
+      alertEmailIsDefault: data["alert_email_is_default"] === "true",
+    };
   },
 
   async updateSettings(

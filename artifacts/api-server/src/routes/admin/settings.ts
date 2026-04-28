@@ -5,12 +5,17 @@ import { z } from "zod";
 
 const router: IRouter = Router();
 
+const ADMIN_EMAIL_FALLBACK = process.env.ADMIN_EMAIL ?? "admin@cloudvape.store";
+
 router.get("/admin/settings", async (_req, res): Promise<void> => {
   const rows = await db.select().from(settingsTable);
   const result: Record<string, string> = {};
   for (const row of rows) {
     result[row.key] = row.value;
   }
+  const savedEmail = result["alert_email"];
+  result["alert_email_effective"] = savedEmail ?? ADMIN_EMAIL_FALLBACK;
+  result["alert_email_is_default"] = savedEmail ? "false" : "true";
   res.json(result);
 });
 

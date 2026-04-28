@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Info } from "lucide-react";
 
 export default function AdminSettings() {
   const { getToken } = useAuth();
@@ -82,6 +83,16 @@ export default function AdminSettings() {
                   placeholder="admin@example.com"
                   required
                 />
+                {data && (
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Info className="h-3.5 w-3.5 shrink-0" />
+                    Currently sending to:{" "}
+                    <span className="font-mono">{data.alertEmailEffective}</span>
+                    {data.alertEmailIsDefault && (
+                      <span className="text-muted-foreground/70">(default)</span>
+                    )}
+                  </p>
+                )}
               </div>
               <Button type="submit" disabled={mutation.isPending}>
                 {mutation.isPending ? "Saving…" : "Save"}
