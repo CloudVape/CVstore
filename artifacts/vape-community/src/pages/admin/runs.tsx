@@ -30,15 +30,24 @@ function StatusBadge({
   );
 }
 
+type TriggerFilter = "all" | "scheduled" | "manual";
+
 export default function AdminRunsPage() {
   const { user, getToken } = useAuth();
   const { toast } = useToast();
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [triggerFilter, setTriggerFilter] = useState<TriggerFilter>("all");
 
   const { data: runs = [], isLoading } = useQuery({
     queryKey: ["admin", "import-runs"],
     enabled: !!user,
     queryFn: async () => { const token = await getToken(); return adminApi.listRuns(token!); },
+  });
+
+  const filteredRuns = runs.filter((r) => {
+    if (triggerFilter === "scheduled") return r.triggeredByUserId === null;
+    if (triggerFilter === "manual") return r.triggeredByUserId !== null;
+    return true;
   });
 
   const handleDownloadErrors = async (runId: number) => {
@@ -58,16 +67,40 @@ export default function AdminRunsPage() {
     }
   };
 
+  const filterOptions: { value: TriggerFilter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: "manual", label: "Manual only" },
+    { value: "scheduled", label: "Scheduled only" },
+  ];
+
   return (
     <AdminShell>
-      <h2 className="text-lg font-mono font-bold uppercase tracking-wider mb-4">
-        Recent imports
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-mono font-bold uppercase tracking-wider">
+          Recent imports
+        </h2>
+        <div className="flex items-center gap-1 rounded-md border border-border bg-muted/40 p-0.5">
+          {filterOptions.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setTriggerFilter(opt.value)}
+              className={`px-3 py-1 rounded text-xs font-mono uppercase tracking-wider transition-colors ${
+                triggerFilter === opt.value
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
       {isLoading ? (
         <p className="text-muted-foreground text-sm">Loading…</p>
-      ) : runs.length === 0 ? (
+      ) : filteredRuns.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
-          No import runs yet.
+          {runs.length === 0 ? "No import runs yet." : "No runs match the selected filter."}
         </div>
       ) : (
         <div className="rounded-lg border border-border overflow-hidden">
@@ -88,7 +121,7 @@ export default function AdminRunsPage() {
               </tr>
             </thead>
             <tbody>
-              {runs.map((r) => (
+              {filteredRuns.map((r) => (
                 <tr key={r.id} className="border-t border-border">
                   <td className="p-3 text-xs font-mono whitespace-nowrap">
                     {new Date(r.startedAt).toLocaleString()}
