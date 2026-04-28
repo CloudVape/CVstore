@@ -142,6 +142,11 @@ router.get("/users/me", async (req, res): Promise<void> => {
       .from(usersTable)
       .where(eq(usersTable.clerkId, userId));
 
+    // Track whether this is a genuinely new account (insert) vs. an existing
+    // account being merged in via email match. Welcome email is only sent for
+    // new accounts; merged accounts already received a welcome email previously.
+    let isNewUser = false;
+
     if (!user) {
       const clerkUser = await clerkClient.users.getUser(userId);
       const primaryEmail =
@@ -156,6 +161,8 @@ router.get("/users/me", async (req, res): Promise<void> => {
           .where(eq(usersTable.email, primaryEmail));
 
         if (user) {
+          // Existing account found by email — merge it with the Clerk identity.
+          // isNewUser remains false; no welcome email should be sent.
           [user] = await db
             .update(usersTable)
             .set({ clerkId: userId, emailVerified: true })
@@ -165,6 +172,7 @@ router.get("/users/me", async (req, res): Promise<void> => {
       }
 
       if (!user) {
+        // No existing account found — this is a genuinely new user.
         const baseUsername =
           clerkUser.username ??
           clerkUser.firstName ??
@@ -191,7 +199,11 @@ router.get("/users/me", async (req, res): Promise<void> => {
           })
           .returning();
 
-        if (primaryEmail) {
+        // Mark as new only after a successful insert so the flag reflects
+        // the actual outcome rather than the intent ahead of the DB call.
+        isNewUser = !!user;
+
+        if (isNewUser && primaryEmail) {
           fireAndForget(
             getSiteUrl().then((siteUrl) => {
               const { subject, html, text } = welcomeTemplate({ username, siteUrl });
