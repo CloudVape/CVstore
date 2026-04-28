@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Boxes, History, Upload, Mail, Users, Send, Package, BookOpen, Headphones } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const tabs = [
   { href: "/admin/suppliers", label: "Suppliers", icon: Boxes },
@@ -41,7 +42,30 @@ export function AdminShell({ children }: { children: ReactNode }) {
     }
   }, [user, isLoaded, setLocation, toast]);
 
-  if (!isLoaded || !user || !user.isAdmin) {
+  if (!isLoaded) {
+    return (
+      <div className="container mx-auto max-w-6xl px-4 py-6">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-12" />
+            <Skeleton className="h-7 w-24" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="flex gap-1 mb-6 border-b border-border overflow-x-auto pb-0">
+          {tabs.map((t) => (
+            <Skeleton key={t.href} className="h-9 w-28 rounded-none shrink-0" />
+          ))}
+        </div>
+        <div className="space-y-4 mt-4">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !user.isAdmin) {
     return null;
   }
 
