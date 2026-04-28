@@ -37,6 +37,7 @@ export default function AdminRunsPage() {
   const { toast } = useToast();
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
   const [triggerFilter, setTriggerFilter] = useState<TriggerFilter>("all");
+  const [supplierFilter, setSupplierFilter] = useState<number | "all">("all");
 
   const { data: runs = [], isLoading } = useQuery({
     queryKey: ["admin", "import-runs"],
@@ -44,9 +45,14 @@ export default function AdminRunsPage() {
     queryFn: async () => { const token = await getToken(); return adminApi.listRuns(token!); },
   });
 
+  const suppliers = Array.from(
+    new Map(runs.map((r) => [r.supplierId, r.supplierName ?? `#${r.supplierId}`])).entries()
+  ).sort((a, b) => a[1].localeCompare(b[1]));
+
   const filteredRuns = runs.filter((r) => {
-    if (triggerFilter === "scheduled") return r.triggeredByUserId === null;
-    if (triggerFilter === "manual") return r.triggeredByUserId !== null;
+    if (triggerFilter === "scheduled" && r.triggeredByUserId !== null) return false;
+    if (triggerFilter === "manual" && r.triggeredByUserId === null) return false;
+    if (supplierFilter !== "all" && r.supplierId !== supplierFilter) return false;
     return true;
   });
 
@@ -75,25 +81,43 @@ export default function AdminRunsPage() {
 
   return (
     <AdminShell>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <h2 className="text-lg font-mono font-bold uppercase tracking-wider">
           Recent imports
         </h2>
-        <div className="flex items-center gap-1 rounded-md border border-border bg-muted/40 p-0.5">
-          {filterOptions.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setTriggerFilter(opt.value)}
-              className={`px-3 py-1 rounded text-xs font-mono uppercase tracking-wider transition-colors ${
-                triggerFilter === opt.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+        <div className="flex items-center gap-2 flex-wrap">
+          {suppliers.length > 0 && (
+            <select
+              value={supplierFilter === "all" ? "all" : String(supplierFilter)}
+              onChange={(e) =>
+                setSupplierFilter(e.target.value === "all" ? "all" : Number(e.target.value))
+              }
+              className="h-7 rounded-md border border-border bg-background px-2 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-ring"
             >
-              {opt.label}
-            </button>
-          ))}
+              <option value="all">All suppliers</option>
+              {suppliers.map(([id, name]) => (
+                <option key={id} value={String(id)}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          )}
+          <div className="flex items-center gap-1 rounded-md border border-border bg-muted/40 p-0.5">
+            {filterOptions.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setTriggerFilter(opt.value)}
+                className={`px-3 py-1 rounded text-xs font-mono uppercase tracking-wider transition-colors ${
+                  triggerFilter === opt.value
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       {isLoading ? (
