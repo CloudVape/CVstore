@@ -1,0 +1,52 @@
+Get:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Err:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+  Error writing to file - write (28: No space left on device) [IP: 91.189.91.81 80]
+20% [Working]nano /etc/apache2/sites-available/cloudvape.conf
+20% [Working]<VirtualHost *:80>
+  ServerName cloudvape.store
+  ServerAlias www.cloudvape.store
+
+  ProxyPreserveHost On
+  ProxyPass /api/ http://127.0.0.1:8080/api/
+  ProxyPassReverse /api/ http://127.0.0.1:8080/api/
+
+  ProxyPass / http://127.0.0.1:23439/
+  ProxyPassReverse / http://127.0.0.1:23439/
+20% [Working]a2ensite cloudvape.conf
+a2dissite 000-default.conf
+20% [Working]^Crt apache2
+root@clever-gagarin:/var/www/cloudvape# ^C
+root@clever-gagarin:/var/www/cloudvape# df -h
+mount | grep ' /var\| / '
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs            85M  1.7M   84M   2% /run
+/dev/vda1       8.7G  8.7G     0 100% /
+tmpfs           425M  1.2M  424M   1% /dev/shm
+tmpfs           5.0M   20K  5.0M   1% /run/lock
+/dev/vda16      881M  117M  703M  15% /boot
+/dev/vda15      105M  6.2M   99M   6% /boot/efi
+tmpfs            85M   12K   85M   1% /run/user/0
+/dev/vda1 on / type ext4 (rw,relatime,discard,errors=remount-ro,commit=30)
+root@clever-gagarin:/var/www/cloudvape# cat >/etc/apache2/sites-available/cloudvape.conf <<'EOF'
+<VirtualHost *:80>
+  ServerName cloudvape.store
+  ServerAlias www.cloudvape.store
+
+  ProxyPreserveHost On
+  ProxyPass /api/ http://127.0.0.1:8080/api/
+  ProxyPassReverse /api/ http://127.0.0.1:8080/api/
+
+  ProxyPass / http://127.0.0.1:23439/
+  ProxyPassReverse / http://127.0.0.1:23439/
+</VirtualHost>
+EOF
+
+a2ensite cloudvape.conf
+a2dissite 000-default.conf
+systemctl restart apache2
+cat: write error: No space left on device
+Enabling site cloudvape.
+To activate the new configuration, you need to run:
+  systemctl reload apache2
+mkdir /var/lib/apache2/site/disabled_by_admin: No space left on device at /usr/sbin/a2dissite line 537.
+root@clever-gagarin:/var/www/cloudvape#
