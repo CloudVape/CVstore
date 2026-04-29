@@ -1,0 +1,52 @@
+Fetched 44.6 MB in 7s (6327 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+77 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Site cloudvape already enabled
+Site 000-default already disabled
+root@clever-gagarin:/var/www/cloudvape# ^C
+root@clever-gagarin:/var/www/cloudvape# systemctl restart apache2
+systemctl status apache2 --no-pager
+● apache2.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/apache2.service; disabled; preset: enabled)
+     Active: active (running) since Wed 2026-04-29 22:05:28 UTC; 36ms ago
+       Docs: https://httpd.apache.org/docs/2.4/
+    Process: 214615 ExecStart=/usr/sbin/apachectl start (code=exited, status=0/SUCCESS)
+      Tasks: 8 (limit: 972)
+     Memory: 13.2M (peak: 24.4M)
+        CPU: 93ms
+     CGroup: /system.slice/apache2.service
+             ├─214623 "Passenger core"
+             ├─214638 "PassengerWatchdog (cleaning up...)"
+             ├─214640 /usr/sbin/apache2 -k start
+             ├─214644 /usr/sbin/apache2 -k start
+             └─214646 PassengerAgent watchdog "                                                "
+
+Apr 29 22:05:28 clever-gagarin.212-227-127-152.plesk.page systemd[1]: Starting apache2.service - The Apache HTTP Server...
+Apr 29 22:05:28 clever-gagarin.212-227-127-152.plesk.page systemd[1]: Started apache2.service - The Apache HTTP Server.
+root@clever-gagarin:/var/www/cloudvape# apache2ctl -S
+VirtualHost configuration:
+127.0.0.1:80           plesk-service.localdomain (/etc/apache2/plesk.conf.d/server.conf:140)
+127.0.0.1:443          plesk-service.localdomain (/etc/apache2/plesk.conf.d/server.conf:147)
+212.227.127.152:80     default (/etc/apache2/plesk.conf.d/server.conf:61)
+212.227.127.152:443    default (/etc/apache2/plesk.conf.d/server.conf:98)
+ServerRoot: "/etc/apache2"
+Main DocumentRoot: "/var/www/vhosts/default/htdocs"
+Main ErrorLog: "/var/log/apache2/error.log"
+Mutex fcgid-proctbl: using_defaults
+Mutex ssl-stapling: using_defaults
+Mutex proxy: using_defaults
+Mutex ssl-cache: using_defaults
+Mutex default: dir="/var/run/apache2/" mechanism=default
+Mutex fcgid-pipe: using_defaults
+Mutex watchdog-callback: using_defaults
+Mutex rewrite-map: using_defaults
+Mutex ssl-stapling-refresh: using_defaults
+PidFile: "/var/run/apache2/apache2.pid"
+Define: DUMP_VHOSTS
+Define: DUMP_RUN_CFG
+Define: ENABLE_USR_LIB_CGI_BIN
+User: name="www-data" id=33
+Group: name="www-data" id=33
+root@clever-gagarin:/var/www/cloudvape#
