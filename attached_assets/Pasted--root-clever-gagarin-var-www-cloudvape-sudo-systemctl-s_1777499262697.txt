@@ -1,0 +1,25 @@
+
+root@clever-gagarin:/var/www/cloudvape# sudo systemctl stop apache2
+sudo systemctl disable apache2
+Synchronizing state of apache2.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install disable apache2
+Removed "/etc/systemd/system/multi-user.target.wants/apache2.service".
+root@clever-gagarin:/var/www/cloudvape# sudo systemctl status apache2 --no-pager
+sudo ufw status
+○ apache2.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/apache2.service; disabled; preset: enabled)
+     Active: inactive (dead)
+       Docs: https://httpd.apache.org/docs/2.4/
+
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Killing process 70525 (apache2) with signal SIGKILL.
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Killing process 70507 (PassengerAgent) with signal SIGKILL.
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Failed to kill control group /system.slice/apache2.service, ignoring: Invalid argument
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Deactivated successfully.
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Unit process 70492 (PassengerAgent) remains running after unit stopped.
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Unit process 70523 (apache2) remains running after unit stopped.
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Unit process 70525 (apache2) remains running after unit stopped.
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Unit process 70507 (PassengerAgent) remains running after unit stopped.
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: Stopped apache2.service - The Apache HTTP Server.
+Apr 29 21:46:53 clever-gagarin.212-227-127-152.plesk.page systemd[1]: apache2.service: Consumed 9.806s CPU time, 32.7M memory peak, 20.3M memory swap peak.
+Status: inactive
+root@clever-gagarin:/var/www/cloudvape#
