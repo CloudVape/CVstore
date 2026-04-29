@@ -1,0 +1,53 @@
+root@clever-gagarin:~# cd /var/www/cloudvape
+git pull origin main
+remote: Enumerating objects: 34, done.
+remote: Counting objects: 100% (34/34), done.
+remote: Compressing objects: 100% (12/12), done.
+remote: Total 31 (delta 23), reused 27 (delta 19), pack-reused 0 (from 0)
+Unpacking objects: 100% (31/31), 456.21 KiB | 9.12 MiB/s, done.
+From https://github.com/CloudVape/CVstore
+ * branch            main       -> FETCH_HEAD
+   e5a7da8..4f054b4  main       -> origin/main
+Updating e5a7da8..4f054b4
+Fast-forward
+ .replit                                                                                          |   1 +
+ attached_assets/Pasted--root-clever-gagarin-root-clever-gagarin-https-github-c_1777411290940.txt |  72 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ attached_assets/image_1777410661655.png                                                          | Bin 0 -> 33359 bytes
+ attached_assets/image_1777410799781.png                                                          | Bin 0 -> 173519 bytes
+ attached_assets/image_1777411445783.png                                                          | Bin 0 -> 61338 bytes
+ attached_assets/image_1777411685973.png                                                          | Bin 0 -> 49398 bytes
+ attached_assets/image_1777411837061.png                                                          | Bin 0 -> 57755 bytes
+ attached_assets/image_1777413450014.png                                                          | Bin 0 -> 153557 bytes
+ 8 files changed, 73 insertions(+)
+ create mode 100644 attached_assets/Pasted--root-clever-gagarin-root-clever-gagarin-https-github-c_1777411290940.txt
+ create mode 100644 attached_assets/image_1777410661655.png
+ create mode 100644 attached_assets/image_1777410799781.png
+ create mode 100644 attached_assets/image_1777411445783.png
+ create mode 100644 attached_assets/image_1777411685973.png
+ create mode 100644 attached_assets/image_1777411837061.png
+ create mode 100644 attached_assets/image_1777413450014.png
+root@clever-gagarin:/var/www/cloudvape# ^C
+root@clever-gagarin:/var/www/cloudvape# cd /var/www/cloudvape
+pnpm install --frozen-lockfile
+Scope: all 10 workspace projects
+Lockfile is up to date, resolution step is skipped
+Packages: +574
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Downloading react-icons@5.6.0: 22.42 MB/22.42 MB, done
+Progress: resolved 574, reused 501, downloaded 73, added 574, done
+node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild: Running postinstall script, done in 205ms
+
+devDependencies:
++ prettier 3.8.1
++ typescript 5.9.3
+
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+└─ Done in 13ms
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: @clerk/shared@3.47.5, @clerk/shared@4.8.5.                        │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 11.7s using pnpm v10.33.2
+root@clever-gagarin:/var/www/cloudvape#
