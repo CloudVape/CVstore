@@ -1,0 +1,56 @@
+curl -I http://127.0.0.1:23439/
+HTTP/1.1 200 OK
+Date: Wed, 29 Apr 2026 22:08:41 GMT
+Server: Apache
+Last-Modified: Thu, 12 Mar 2026 12:08:07 GMT
+ETag: "259-64cd29af737c0"
+Accept-Ranges: bytes
+Content-Length: 601
+Vary: Accept-Encoding
+X-Powered-By: PleskLin
+Content-Type: text/html
+
+curl: (7) Failed to connect to 127.0.0.1 port 8080 after 0 ms: Couldn't connect to server
+curl: (7) Failed to connect to 127.0.0.1 port 23439 after 0 ms: Couldn't connect to server
+root@clever-gagarin:/var/www/cloudvape# ^C
+root@clever-gagarin:/var/www/cloudvape# cd /var/www/cloudvape
+pm2 list
+pm2 restart cloudvape-api
+pm2 restart cloudvape-web
+curl -I http://127.0.0.1:8080/
+curl -I http://127.0.0.1:23439/
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+Use --update-env to update environment variables
+[PM2][ERROR] Process or Namespace cloudvape-api not found
+Use --update-env to update environment variables
+[PM2][ERROR] Process or Namespace cloudvape-web not found
+curl: (7) Failed to connect to 127.0.0.1 port 8080 after 0 ms: Couldn't connect to server
+curl: (7) Failed to connect to 127.0.0.1 port 23439 after 0 ms: Couldn't connect to server
+root@clever-gagarin:/var/www/cloudvape# cd /var/www/cloudvape
+pm2 start "pnpm --filter @workspace/api-server run dev" --name cloudvape-api
+pm2 start "pnpm --filter @workspace/vape-community run dev" --name cloudvape-web
+pm2 save
+[PM2] Starting /usr/bin/bash in fork_mode (1 instance)
+[PM2] Done.
+┌────┬──────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name             │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼──────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ cloudvape-api    │ default     │ N/A     │ fork    │ 218501   │ 0s     │ 0    │ online    │ 0%       │ 1.8mb    │ root     │ disabled │
+└────┴──────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2] Starting /usr/bin/bash in fork_mode (1 instance)
+[PM2] Done.
+┌────┬──────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name             │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼──────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ cloudvape-api    │ default     │ N/A     │ fork    │ 218501   │ 0s     │ 0    │ online    │ 0%       │ 1.8mb    │ root     │ disabled │
+│ 1  │ cloudvape-web    │ default     │ N/A     │ fork    │ 218534   │ 0s     │ 0    │ online    │ 0%       │ 1.8mb    │ root     │ disabled │
+└────┴──────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+root@clever-gagarin:/var/www/cloudvape# curl -I http://127.0.0.1:8080/
+curl -I http://127.0.0.1:23439/
+curl: (7) Failed to connect to 127.0.0.1 port 8080 after 0 ms: Couldn't connect to server
+curl: (7) Failed to connect to 127.0.0.1 port 23439 after 3 ms: Couldn't connect to server
+root@clever-gagarin:/var/www/cloudvape#
