@@ -1,0 +1,80 @@
+
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs            85M  1.7M   84M   2% /run
+/dev/vda1       8.7G  8.7G     0 100% /
+tmpfs           425M  1.2M  424M   1% /dev/shm
+tmpfs           5.0M   20K  5.0M   1% /run/lock
+/dev/vda16      881M  117M  703M  15% /boot
+/dev/vda15      105M  6.2M   99M   6% /boot/efi
+tmpfs            85M   12K   85M   1% /run/user/0
+root@clever-gagarin:~# ^C
+root@clever-gagarin:~# sudo rm -f /var/log/*.gz /var/log/*.[0-9] /var/cache/apt/archives/*
+root@clever-gagarin:~# sudo rm -f /opt/drweb/bases/bases.tar.gz
+root@clever-gagarin:~# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs            85M  3.8M   82M   5% /run
+/dev/vda1       8.7G  8.7G     0 100% /
+tmpfs           425M  1.2M  424M   1% /dev/shm
+tmpfs           5.0M   20K  5.0M   1% /run/lock
+/dev/vda16      881M  117M  703M  15% /boot
+/dev/vda15      105M  6.2M   99M   6% /boot/efi
+tmpfs            85M   12K   85M   1% /run/user/0
+root@clever-gagarin:~# ^C
+root@clever-gagarin:~# sudo rm -rf /var/cache/apt/*
+root@clever-gagarin:~# sudo rm -rf /var/lib/apt/lists/*
+root@clever-gagarin:~# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs            85M  1.7M   84M   2% /run
+/dev/vda1       8.7G  8.3G  352M  97% /
+tmpfs           425M  1.2M  424M   1% /dev/shm
+tmpfs           5.0M   20K  5.0M   1% /run/lock
+/dev/vda16      881M  117M  703M  15% /boot
+/dev/vda15      105M  6.2M   99M   6% /boot/efi
+tmpfs            85M   12K   85M   1% /run/user/0
+root@clever-gagarin:~# ^C
+root@clever-gagarin:~# curl -fsSL https://get.pnpm.io/install.sh | sh -
+==> Downloading pnpm binaries 10.33.2
+ WARN  using --force I sure hope you know what you are doing
+Copying pnpm CLI from /tmp/tmp.tolkrvcUxq/pnpm to /root/.local/share/pnpm/.tools/pnpm-exe/10.33.2/pnpm
+Appended new lines to /root/.bashrc
+
+Next configuration changes were made:
+export PNPM_HOME="/root/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+To start using pnpm, run:
+source /root/.bashrc
+root@clever-gagarin:~# ^C
+root@clever-gagarin:~# source /root/.bashrc
+root@clever-gagarin:~# cd /var/www/cloudvape
+git pull origin main
+remote: Enumerating objects: 34, done.
+remote: Counting objects: 100% (34/34), done.
+remote: Compressing objects: 100% (12/12), done.
+remote: Total 31 (delta 23), reused 27 (delta 19), pack-reused 0 (from 0)
+Unpacking objects: 100% (31/31), 456.21 KiB | 9.12 MiB/s, done.
+From https://github.com/CloudVape/CVstore
+ * branch            main       -> FETCH_HEAD
+   e5a7da8..4f054b4  main       -> origin/main
+Updating e5a7da8..4f054b4
+Fast-forward
+ .replit                                                                                          |   1 +
+ attached_assets/Pasted--root-clever-gagarin-root-clever-gagarin-https-github-c_1777411290940.txt |  72 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ attached_assets/image_1777410661655.png                                                          | Bin 0 -> 33359 bytes
+ attached_assets/image_1777410799781.png                                                          | Bin 0 -> 173519 bytes
+ attached_assets/image_1777411445783.png                                                          | Bin 0 -> 61338 bytes
+ attached_assets/image_1777411685973.png                                                          | Bin 0 -> 49398 bytes
+ attached_assets/image_1777411837061.png                                                          | Bin 0 -> 57755 bytes
+ attached_assets/image_1777413450014.png                                                          | Bin 0 -> 153557 bytes
+ 8 files changed, 73 insertions(+)
+ create mode 100644 attached_assets/Pasted--root-clever-gagarin-root-clever-gagarin-https-github-c_1777411290940.txt
+ create mode 100644 attached_assets/image_1777410661655.png
+ create mode 100644 attached_assets/image_1777410799781.png
+ create mode 100644 attached_assets/image_1777411445783.png
+ create mode 100644 attached_assets/image_1777411685973.png
+ create mode 100644 attached_assets/image_1777411837061.png
+ create mode 100644 attached_assets/image_1777413450014.png
+root@clever-gagarin:/var/www/cloudvape#
