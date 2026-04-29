@@ -4,8 +4,18 @@ import { useListProducts, useListProductCategories } from "@workspace/api-client
 import { ProductCard, ProductCardSkeleton } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Cpu, Droplets, Wind, LifeBuoy, Newspaper, Wrench, MessagesSquare, type LucideIcon } from "lucide-react";
 import { useSeo, JsonLd, breadcrumbJsonLd } from "@/lib/seo";
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  mods: Cpu,
+  pods: Wind,
+  tanks: Wrench,
+  "e-liquids": Droplets,
+  coils: MessagesSquare,
+  disposables: Newspaper,
+  accessories: LifeBuoy,
+};
 
 export default function Shop() {
   const search = useSearch();
@@ -124,7 +134,9 @@ export default function Shop() {
             >
               All
             </button>
-            {categories?.map((c) => (
+            {categories?.map((c) => {
+              const Icon = CATEGORY_ICONS[c.slug] ?? MessagesSquare;
+              return (
               <button
                 key={c.id}
                 onClick={() => setSelectedCategoryId(c.id === selectedCategoryId ? undefined : c.id)}
@@ -134,11 +146,12 @@ export default function Shop() {
                     : "text-muted-foreground hover:bg-card hover:text-foreground border border-transparent"
                 }`}
               >
-                <span>{c.iconEmoji}</span>
+                <Icon className="h-4 w-4 shrink-0" />
                 <span>{c.name}</span>
                 <span className="ml-auto text-[10px] opacity-60">{c.productCount}</span>
               </button>
-            ))}
+              );
+            })}
           </div>
           <div className="border-t border-border/40 pt-4 space-y-2">
             <div className="text-sm font-mono uppercase tracking-wider text-muted-foreground">Quick Filters</div>
