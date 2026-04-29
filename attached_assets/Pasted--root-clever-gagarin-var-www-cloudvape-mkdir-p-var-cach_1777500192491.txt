@@ -1,0 +1,97 @@
+
+root@clever-gagarin:/var/www/cloudvape# mkdir -p /var/cache/apt/archives/partial
+apt update
+mkdir: cannot create directory ‘/var/cache/apt/archives/partial’: No space left on device
+Get:1 http://autoinstall.plesk.com/WATCHDOG_3.1.0 noble InRelease [4390 B]
+Get:2 http://autoinstall.plesk.com/pool/PSA_18.0.76_18805 noble InRelease [6764 B]
+Get:3 http://autoinstall.plesk.com/PHP83_17 noble InRelease [4009 B]
+Get:4 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Ign:4 http://security.ubuntu.com/ubuntu noble-security InRelease
+Get:5 https://autoinstall.plesk.com/DRWEB_6.0.2.9.1 noble InRelease [4386 B]
+Get:6 https://autoinstall.plesk.com/RUBY_1.5.0 noble InRelease [4382 B]
+Get:7 http://autoinstall.plesk.com/WATCHDOG_3.1.0 noble/all amd64 Packages [627 B]
+Get:8 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:9 http://autoinstall.plesk.com/pool/PSA_18.0.76_18805 noble/extras amd64 Packages [11.0 kB]
+Get:10 http://autoinstall.plesk.com/PHP83_17 noble/all amd64 Packages [9170 B]
+Get:11 https://autoinstall.plesk.com/DRWEB_6.0.2.9.1 noble/all amd64 Packages [2279 B]
+Get:12 https://autoinstall.plesk.com/RUBY_1.5.0 noble/all amd64 Packages [3468 B]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Ign:13 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Err:8 http://archive.ubuntu.com/ubuntu noble InRelease
+  Splitting up /var/lib/apt/lists/partial/archive.ubuntu.com_ubuntu_dists_noble_InRelease into data and signature failed
+Get:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:4 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:15 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1624 kB]
+Get:16 http://security.ubuntu.com/ubuntu noble-security/main Translation-en [259 kB]
+Get:17 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [21.8 kB]
+Get:18 http://security.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [11.0 kB]
+Get:19 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1182 kB]
+Get:20 http://security.ubuntu.com/ubuntu noble-security/universe Translation-en [227 kB]
+Ign:15 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+Ign:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Get:21 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [74.2 kB]
+Get:22 http://security.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [23.1 kB]
+Ign:16 http://security.ubuntu.com/ubuntu noble-security/main Translation-en
+Get:23 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2844 kB]
+Get:24 http://security.ubuntu.com/ubuntu noble-security/restricted Translation-en [666 kB]
+Get:25 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+Get:26 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 c-n-f Metadata [544 B]
+Get:27 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [28.8 kB]
+Get:28 http://security.ubuntu.com/ubuntu noble-security/multiverse Translation-en [7172 B]
+Get:29 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [208 B]
+Get:30 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 c-n-f Metadata [396 B]
+Ign:19 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages
+Get:15 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1985 kB]
+Ign:20 http://security.ubuntu.com/ubuntu noble-security/universe Translation-en
+Ign:15 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+Ign:21 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components
+Ign:22 http://security.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata
+Ign:23 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages
+Get:16 http://security.ubuntu.com/ubuntu noble-security/main Translation-en [377 kB]
+Ign:24 http://security.ubuntu.com/ubuntu noble-security/restricted Translation-en
+Get:16 http://security.ubuntu.com/ubuntu noble-security/main Translation-en [377 kB]
+Get:16 http://security.ubuntu.com/ubuntu noble-security/main Translation-en [377 kB]
+Get:16 http://security.ubuntu.com/ubuntu noble-security/main Translation-en [377 kB]
+Ign:27 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages
+Ign:28 http://security.ubuntu.com/ubuntu noble-security/multiverse Translation-en
+Ign:16 http://security.ubuntu.com/ubuntu noble-security/main Translation-en
+Ign:19 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages
+Get:20 http://security.ubuntu.com/ubuntu noble-security/universe Translation-en [318 kB]
+Ign:20 http://security.ubuntu.com/ubuntu noble-security/universe Translation-en
+Get:23 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3491 kB]
+Ign:23 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages
+Get:24 http://security.ubuntu.com/ubuntu noble-security/restricted Translation-en [776 kB]
+Ign:24 http://security.ubuntu.com/ubuntu noble-security/restricted Translation-en
+Get:27 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [34.2 kB]
+Ign:27 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages
+Get:28 http://security.ubuntu.com/ubuntu noble-security/multiverse Translation-en [7866 B]
+Ign:28 http://security.ubuntu.com/ubuntu noble-security/multiverse Translation-en
+Ign:19 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Ign:13 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Get:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Ign:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Ign:13 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Get:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Ign:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Err:13 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+  Error writing to file - write (28: No space left on device) [IP: 91.189.91.81 80]
+0% [Working]                                                                                                                                                       81.5 kB/s 3min 3snGet:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Err:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+  Error writing to file - write (28: No space left on device) [IP: 91.189.91.81 80]
+20% [Working]nano /etc/apache2/sites-available/cloudvape.conf
+20% [Working]<VirtualHost *:80>
+  ServerName cloudvape.store
+  ServerAlias www.cloudvape.store
+
+  ProxyPreserveHost On
+  ProxyPass /api/ http://127.0.0.1:8080/api/
+  ProxyPassReverse /api/ http://127.0.0.1:8080/api/
+
+  ProxyPass / http://127.0.0.1:23439/
+  ProxyPassReverse / http://127.0.0.1:23439/
+20% [Working]a2ensite cloudvape.conf
+a2dissite 000-default.conf
+20% [Working]^Crt apache2
