@@ -1,0 +1,24 @@
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       8.7G  8.7G     0 100% /
+65M     /var/log/journal
+9.1M    /var/log/plesk
+4.7M    /var/log/sysstat
+4.6M    /var/log/btmp
+3.2M    /var/log/auth.log
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# journalctl --vacuum-size=10M
+apt-get clean
+du -sh /var/www/vhosts/app.cloudvape.store/httpdocs/node_modules 2>/dev/null
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000000bdc7f-0006509f7b2de76a.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000000c1a36-0006509f7daf2ed4.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000000c692b-0006509f893d3be0.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000000c9007-000650a4064aa6f9.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-0000000000290fd2-000650b2f40a41c0.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000002949c1-000650b2f6c7dad8.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-000000000029ff47-000650b3650e4136.journal (8.0M).
+Vacuuming done, freed 56.0M of archived journals from /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6.
+Vacuuming done, freed 0B of archived journals from /run/log/journal.
+Vacuuming done, freed 0B of archived journals from /var/log/journal.
+Vacuuming done, freed 0B of archived journals from /run/log/journal/c995817be0fc4bee8f9fad1f030fcab6.
+503M    /var/www/vhosts/app.cloudvape.store/httpdocs/node_modules
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
