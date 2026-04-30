@@ -1,0 +1,161 @@
+ep -r "4173" /etc/apache2/sites-enabled/
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# grep -r "4173" /etc/apache2/
+ls /var/www/vhosts/system/app.cloudvape.store/conf/
+/etc/apache2/sites-available/cloudvape.conf:  ProxyPass / http://127.0.0.1:4173/
+/etc/apache2/sites-available/cloudvape.conf:  ProxyPassReverse / http://127.0.0.1:4173/
+httpd.conf  httpd.include  last_httpd.conf
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cat /etc/apache2/sites-available/cloudvape.conf
+cat /var/www/vhosts/system/app.cloudvape.store/conf/httpd.conf
+<VirtualHost *:80>
+  ServerName cloudvape.store
+  ServerAlias www.cloudvape.store
+
+  ProxyPreserveHost On
+  ProxyPass /api/ http://127.0.0.1:8080/api/
+  ProxyPassReverse /api/ http://127.0.0.1:8080/api/
+
+  ProxyPass / http://127.0.0.1:4173/
+  ProxyPassReverse / http://127.0.0.1:4173/
+</VirtualHost>
+#ATTENTION!
+#
+#DO NOT MODIFY THIS FILE BECAUSE IT WAS GENERATED AUTOMATICALLY,
+#SO ALL YOUR CHANGES WILL BE LOST THE NEXT TIME THE FILE IS GENERATED.
+#IF YOU REQUIRE TO APPLY CUSTOM MODIFICATIONS, PERFORM THEM IN THE FOLLOWING FILES:
+#/var/www/vhosts/system/app.cloudvape.store/conf/vhost.conf
+#/var/www/vhosts/system/app.cloudvape.store/conf/vhost_ssl.conf
+<IfModule mod_ssl.c>
+
+        <VirtualHost 212.227.127.152:443 >
+                ServerName "app.cloudvape.store"
+                ServerAlias "www.app.cloudvape.store"
+                ServerAlias "ipv4.app.cloudvape.store"
+                UseCanonicalName Off
+
+                CustomLog "/var/www/vhosts/system/app.cloudvape.store/logs/access_ssl_log" plesklog
+
+                ErrorLog "/var/www/vhosts/system/app.cloudvape.store/logs/error_log"
+                # mailconfig
+                <IfModule mod_proxy_http.c>
+                        <IfModule mod_rewrite.c>
+                                RewriteEngine On
+                                RewriteCond %{REQUEST_URI} ^/autodiscover/autodiscover\.xml$ [NC,OR]
+                                RewriteCond %{REQUEST_URI} ^(/\.well-known/autoconfig)?/mail/config\-v1\.1\.xml$ [NC,OR]
+                                RewriteCond %{REQUEST_URI} ^/email\.mobileconfig$ [NC]
+                                RewriteRule ^(.*)$ "http://127.0.0.1:8880/mailconfig/" [P,QSA,L,E=REQUEST_URI:%{REQUEST_URI},E=HOST:%{HTTP_HOST}]
+                        </IfModule>
+                        <Proxy "http://127.0.0.1:8880/mailconfig/">
+                                RequestHeader set X-Host "%{HOST}e"
+                                RequestHeader set X-Request-URI "%{REQUEST_URI}e"
+                        </Proxy>
+                </IfModule>
+                # mailconfig
+
+                DocumentRoot "/var/www/vhosts/app.cloudvape.store/httpdocs"
+                <IfModule mod_suexec.c>
+                        SuexecUserGroup "app.cloudvape.store_no1vec9zicm" "psacln"
+                </IfModule>
+
+                <IfModule mod_userdir.c>
+                        UserDir "/var/www/vhosts/app.cloudvape.store/web_users/*"
+                </IfModule>
+
+                <IfModule mod_sysenv.c>
+                        SetSysEnv PP_VHOST_ID "7f300493-968a-4cce-915f-e50020f1bc14"
+                </IfModule>
+
+                SSLEngine on
+                SSLVerifyClient none
+                SSLCertificateFile "/opt/psa/var/certificates/scfe6019kmd9ns157VYffo"
+
+                <Directory "/var/www/vhosts/app.cloudvape.store/httpdocs">
+
+                        <IfModule mod_fcgid.c>
+                                <Files ~ (\.fcgi$)>
+                                        SetHandler fcgid-script
+                                        Options +ExecCGI
+                                </Files>
+                        </IfModule>
+                        <IfModule mod_proxy_fcgi.c>
+                                <Files ~ (\.php$)>
+                                        SetHandler "proxy:unix:/var/www/vhosts/system/app.cloudvape.store/php-fpm.sock|fcgi://127.0.0.1:9000"
+                                </Files>
+                        </IfModule>
+
+                        SSLRequireSSL
+
+                        Options -Includes -ExecCGI
+
+                </Directory>
+
+                <Directory "/var/www/vhosts/system/app.cloudvape.store/statistics">
+                        AuthType Basic
+                        AuthName "Domain statistics"
+                        AuthUserFile "/var/www/vhosts/system/app.cloudvape.store/pd/d..httpdocs@plesk-stat"
+                        require valid-user
+                </Directory>
+
+                Alias "/error_docs" "/var/www/vhosts/app.cloudvape.store/error_docs"
+                ErrorDocument "400" "/error_docs/bad_request.html"
+                ErrorDocument "401" "/error_docs/unauthorized.html"
+                ErrorDocument "403" "/error_docs/forbidden.html"
+                ErrorDocument "404" "/error_docs/not_found.html"
+                ErrorDocument "500" "/error_docs/internal_server_error.html"
+                ErrorDocument "405" "/error_docs/method_not_allowed.html"
+                ErrorDocument "406" "/error_docs/not_acceptable.html"
+                ErrorDocument "407" "/error_docs/proxy_authentication_required.html"
+                ErrorDocument "412" "/error_docs/precondition_failed.html"
+                ErrorDocument "414" "/error_docs/request_uri_too_long.html"
+                ErrorDocument "415" "/error_docs/unsupported_media_type.html"
+                ErrorDocument "501" "/error_docs/not_implemented.html"
+                ErrorDocument "502" "/error_docs/bad_gateway.html"
+                ErrorDocument "503" "/error_docs/maintenance.html"
+
+                DirectoryIndex "index.html" "index.cgi" "index.pl" "index.php" "index.xhtml" "index.htm" "index.shtml"
+
+                <Directory "/var/www/vhosts/app.cloudvape.store">
+                        Options -FollowSymLinks
+                        AllowOverride AuthConfig FileInfo Indexes Limit Options=Indexes,SymLinksIfOwnerMatch,MultiViews,ExecCGI,Includes,IncludesNOEXEC
+                </Directory>
+
+                <IfModule mod_headers.c>
+                </IfModule>
+
+        </VirtualHost>
+
+</IfModule>
+
+<VirtualHost 212.227.127.152:80 >
+        ServerName "app.cloudvape.store"
+        ServerAlias "www.app.cloudvape.store"
+        ServerAlias "ipv4.app.cloudvape.store"
+        UseCanonicalName Off
+
+        CustomLog "/var/www/vhosts/system/app.cloudvape.store/logs/access_log" plesklog
+
+        ErrorLog "/var/www/vhosts/system/app.cloudvape.store/logs/error_log"
+        # mailconfig
+        <IfModule mod_proxy_http.c>
+                <IfModule mod_rewrite.c>
+                        RewriteEngine On
+                        RewriteCond %{REQUEST_URI} ^/autodiscover/autodiscover\.xml$ [NC,OR]
+                        RewriteCond %{REQUEST_URI} ^(/\.well-known/autoconfig)?/mail/config\-v1\.1\.xml$ [NC,OR]
+                        RewriteCond %{REQUEST_URI} ^/email\.mobileconfig$ [NC]
+                        RewriteRule ^(.*)$ "http://127.0.0.1:8880/mailconfig/" [P,QSA,L,E=REQUEST_URI:%{REQUEST_URI},E=HOST:%{HTTP_HOST}]
+                </IfModule>
+                <Proxy "http://127.0.0.1:8880/mailconfig/">
+                        RequestHeader set X-Host "%{HOST}e"
+                        RequestHeader set X-Request-URI "%{REQUEST_URI}e"
+                </Proxy>
+        </IfModule>
+        # mailconfig
+
+        <IfModule mod_rewrite.c>
+                RewriteEngine On
+                RewriteCond %{HTTPS} off
+                RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,QSA]
+        </IfModule>
+</VirtualHost>
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
