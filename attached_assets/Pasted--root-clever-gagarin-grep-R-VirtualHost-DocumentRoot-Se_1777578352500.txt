@@ -1,0 +1,59 @@
+
+root@clever-gagarin:~# grep -R "VirtualHost\|DocumentRoot\|ServerName" /etc/apache2 /etc/httpd 2>/dev/null
+/etc/apache2/sites-enabled/cloudvape.conf:<VirtualHost *:80>
+/etc/apache2/sites-enabled/cloudvape.conf:  ServerName cloudvape.store
+/etc/apache2/sites-enabled/cloudvape.conf:</VirtualHost>
+/etc/apache2/sites-available/cloudvape.conf:<VirtualHost *:80>
+/etc/apache2/sites-available/cloudvape.conf:  ServerName cloudvape.store
+/etc/apache2/sites-available/cloudvape.conf:</VirtualHost>
+/etc/apache2/sites-available/000-default.conf:<VirtualHost *:80>
+/etc/apache2/sites-available/000-default.conf:  # The ServerName directive sets the request scheme, hostname and port that
+/etc/apache2/sites-available/000-default.conf:  # redirection URLs. In the context of virtual hosts, the ServerName
+/etc/apache2/sites-available/000-default.conf:  #ServerName www.example.com
+/etc/apache2/sites-available/000-default.conf:  DocumentRoot /var/www/html
+/etc/apache2/sites-available/000-default.conf:</VirtualHost>
+/etc/apache2/sites-available/default-ssl.conf:<VirtualHost *:443>
+/etc/apache2/sites-available/default-ssl.conf:  DocumentRoot /var/www/html
+/etc/apache2/sites-available/default-ssl.conf:</VirtualHost>
+/etc/apache2/conf-available/localized-error-pages.conf:# even on a per-VirtualHost basis.  If you include the Alias in the global server
+/etc/apache2/conf-available/other-vhosts-access-log.conf:# Define an access log for VirtualHosts that don't define their own logfile
+/etc/apache2/conf-enabled/localized-error-pages.conf:# even on a per-VirtualHost basis.  If you include the Alias in the global server
+/etc/apache2/conf-enabled/other-vhosts-access-log.conf:# Define an access log for VirtualHosts that don't define their own logfile
+/etc/apache2/ports.conf:# have to change the VirtualHost statement in
+/etc/apache2/apache2.conf:# If you do not specify an ErrorLog directive within a <VirtualHost>
+/etc/apache2/apache2.conf:# logged here.  If you *do* define an error logfile for a <VirtualHost>
+/etc/apache2/plesk.conf.d/server.conf.bak:ServerName "infallible-newton.85-215-174-66.plesk.page"
+/etc/apache2/plesk.conf.d/server.conf.bak:DocumentRoot "/var/www/vhosts/default/htdocs"
+/etc/apache2/plesk.conf.d/server.conf.bak:<VirtualHost "212.227.127.152:80">
+/etc/apache2/plesk.conf.d/server.conf.bak:      ServerName "default"
+/etc/apache2/plesk.conf.d/server.conf.bak:      DocumentRoot "/var/www/vhosts/default/htdocs"
+/etc/apache2/plesk.conf.d/server.conf.bak:</VirtualHost>
+/etc/apache2/plesk.conf.d/server.conf.bak:      <VirtualHost 212.227.127.152:443>
+/etc/apache2/plesk.conf.d/server.conf.bak:              ServerName "default"
+/etc/apache2/plesk.conf.d/server.conf.bak:      </VirtualHost>
+/etc/apache2/plesk.conf.d/server.conf.bak:<VirtualHost "127.0.0.1:80">
+/etc/apache2/plesk.conf.d/server.conf.bak:      ServerName "plesk-service.localdomain"
+/etc/apache2/plesk.conf.d/server.conf.bak:      DocumentRoot "/usr/share/plesk-service.localdomain"
+/etc/apache2/plesk.conf.d/server.conf.bak:</VirtualHost>
+/etc/apache2/plesk.conf.d/server.conf.bak:<VirtualHost "127.0.0.1:443">
+/etc/apache2/plesk.conf.d/server.conf.bak:      ServerName "plesk-service.localdomain"
+/etc/apache2/plesk.conf.d/server.conf.bak:      DocumentRoot "/usr/share/plesk-service.localdomain"
+/etc/apache2/plesk.conf.d/server.conf.bak:</VirtualHost>
+/etc/apache2/plesk.conf.d/server.conf:ServerName "infallible-newton.85-215-174-66.plesk.page"
+/etc/apache2/plesk.conf.d/server.conf:DocumentRoot "/var/www/vhosts/default/htdocs"
+/etc/apache2/plesk.conf.d/server.conf:<VirtualHost "212.227.127.152:80">
+/etc/apache2/plesk.conf.d/server.conf:  ServerName "default"
+/etc/apache2/plesk.conf.d/server.conf:  DocumentRoot "/var/www/vhosts/default/htdocs"
+/etc/apache2/plesk.conf.d/server.conf:</VirtualHost>
+/etc/apache2/plesk.conf.d/server.conf:  <VirtualHost 212.227.127.152:443>
+/etc/apache2/plesk.conf.d/server.conf:          ServerName "default"
+/etc/apache2/plesk.conf.d/server.conf:  </VirtualHost>
+/etc/apache2/plesk.conf.d/server.conf:<VirtualHost "127.0.0.1:80">
+/etc/apache2/plesk.conf.d/server.conf:  ServerName "plesk-service.localdomain"
+/etc/apache2/plesk.conf.d/server.conf:  DocumentRoot "/usr/share/plesk-service.localdomain"
+/etc/apache2/plesk.conf.d/server.conf:</VirtualHost>
+/etc/apache2/plesk.conf.d/server.conf:<VirtualHost "127.0.0.1:443">
+/etc/apache2/plesk.conf.d/server.conf:  ServerName "plesk-service.localdomain"
+/etc/apache2/plesk.conf.d/server.conf:  DocumentRoot "/usr/share/plesk-service.localdomain"
+/etc/apache2/plesk.conf.d/server.conf:</VirtualHost>
+root@clever-gagarin:~#
