@@ -1,0 +1,44 @@
+
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cd /var/www/vhosts/app.cloudvape.store/httpdocs
+PORT=3000 BASE_PATH=/ VITE_CLERK_PUBLISHABLE_KEY=pk_test_c3R1bm5pbmctbXVsZS00OS5jbGVyay5hY2NvdW50cy5kZXYk VITE_CLERK_PROXY_URL=https://app.cloudvape.store/api/__clerk pnpm --filter @workspace/vape-community run build
+
+> @workspace/vape-community@0.0.0 build /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community
+> vite build --config vite.config.ts
+
+vite v7.3.2 building client environment for production...
+src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/label.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/avatar.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/select.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+✓ 2274 modules transformed.
+dist/public/index.html                   4.36 kB │ gzip:   1.39 kB
+dist/public/assets/index-VCpoA8bz.css  176.29 kB │ gzip:  25.13 kB
+dist/public/assets/index-XEPxV41W.js   803.20 kB │ gzip: 225.48 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 12.20s
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cd /var/www/vhosts/app.cloudvape.store/httpdocs && PORT=3000 BASE_PATH=/ VITE_CLERK_PUBLISHABLE_KEY=pk_test_c3R1bm5pbmctbXVsZS00OS5jbGVyay5hY2NvdW50cy5kZXYk VITE_CLERK_PROXY_URL=https://app.cloudvape.store/api/__clerk pnpm --filter @workspace/vape-community run build
+
+> @workspace/vape-community@0.0.0 build /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community
+> vite build --config vite.config.ts
+
+vite v7.3.2 building client environment for production...
+src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/avatar.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/select.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/label.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+✓ 2274 modules transformed.
+dist/public/index.html                   4.36 kB │ gzip:   1.39 kB
+dist/public/assets/index-VCpoA8bz.css  176.29 kB │ gzip:  25.13 kB
+dist/public/assets/index-XEPxV41W.js   803.20 kB │ gzip: 225.48 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 11.43s
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
