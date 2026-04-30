@@ -1,0 +1,39 @@
+
+<Directory /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community/dist/public>
+    AllowOverride All
+    Require all granted
+    Options -Indexes
+    FallbackResource /index.html
+</Directory>
+
+ProxyRequests Off
+ProxyPass /api http://127.0.0.1:8080/api
+ProxyPassReverse /api http://127.0.0.1:8080/api
+EOF
+
+service apache2 reload
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# curl -s -o /dev/null -w "%{http_code}" http://localhost/
+503root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# tail -20 /var/log/apache2/error.log
+[Thu Apr 30 20:33:57.511559 2026] [log_config:warn] [pid 1211403:tid 125968404395712] (28)No space left on device: [client 90.202.75.0:58633] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/admin/server/tools
+[Thu Apr 30 20:33:57.535822 2026] [log_config:warn] [pid 1211403:tid 125968421181120] (28)No space left on device: [client 90.202.75.0:64511] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log
+[Thu Apr 30 20:33:57.542074 2026] [log_config:warn] [pid 1211403:tid 125968396003008] (28)No space left on device: [client 90.202.75.0:52726] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/smb/web/view
+[Thu Apr 30 20:33:57.626482 2026] [log_config:warn] [pid 1211403:tid 125968370824896] (28)No space left on device: [client 90.202.75.0:52726] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/smb/web/view
+[Thu Apr 30 20:33:57.645371 2026] [log_config:warn] [pid 1211403:tid 125968362432192] (28)No space left on device: [client 90.202.75.0:52726] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/smb/web/view
+[Thu Apr 30 20:33:57.700737 2026] [log_config:warn] [pid 1211403:tid 125968387610304] (28)No space left on device: [client 90.202.75.0:56147] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/smb/web/view
+[Thu Apr 30 20:33:59.302233 2026] [log_config:warn] [pid 1211403:tid 125968587822784] (28)No space left on device: [client 90.202.75.0:52726] AH00646: Error writing to /var/log/apa[Thu Apr 30 21:39:43.734416 2026] [mpm_event:notice] [pid 1201111:tid 125968641656704] AH00493: SIGUSR1 received.  Doing graceful restart
+
+[Thu Apr 30 21:39:46.855393 2026] [ssl:warn] [pid 1201111:tid 125968641656704] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Thu Apr 30 21:39:46.856294 2026] [ssl:warn] [pid 1201111:tid 125968641656704] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Thu Apr 30 21:39:46.856554 2026] [mpm_event:notice] [pid 1201111:tid 125968641656704] AH00489: Apache/2.4.58 (Ubuntu) mod_fcgid/2.3.9 Phusion_Passenger/6.1.1 OpenSSL/3.0.13 configured -- resuming normal operations
+[Thu Apr 30 21:39:46.856567 2026] [core:notice] [pid 1201111:tid 125968641656704] AH00094: Command line: '/usr/sbin/apache2'
+[Thu Apr 30 22:13:52.247688 2026] [mpm_event:notice] [pid 1201111:tid 125968641656704] AH00493: SIGUSR1 received.  Doing graceful restart
+
+[Thu Apr 30 22:13:55.446775 2026] [ssl:warn] [pid 1201111:tid 125968641656704] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Thu Apr 30 22:13:55.447658 2026] [ssl:warn] [pid 1201111:tid 125968641656704] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Thu Apr 30 22:13:55.448064 2026] [mpm_event:notice] [pid 1201111:tid 125968641656704] AH00489: Apache/2.4.58 (Ubuntu) mod_fcgid/2.3.9 Phusion_Passenger/6.1.1 OpenSSL/3.0.13 configured -- resuming normal operations
+[Thu Apr 30 22:13:55.448077 2026] [core:notice] [pid 1201111:tid 125968641656704] AH00094: Command line: '/usr/sbin/apache2'
+[Thu Apr 30 22:14:19.597379 2026] [proxy:error] [pid 1247326:tid 125968610195136] (111)Connection refused: AH00957: http: attempt to connect to 127.0.0.1:4173 (127.0.0.1:4173) failed
+[Thu Apr 30 22:14:19.597416 2026] [proxy_http:error] [pid 1247326:tid 125968610195136] [client ::1:52298] AH01114: HTTP: failed to make connection to backend: 127.0.0.1
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
