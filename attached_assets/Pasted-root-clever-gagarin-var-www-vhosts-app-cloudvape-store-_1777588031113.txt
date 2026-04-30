@@ -1,0 +1,611 @@
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# npm install -g pm2
+
+changed 134 packages in 8s
+
+13 packages are looking for funding
+  run `npm fund` for details
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# pnpm --filter @workspace/api-server run build
+
+> @workspace/api-server@0.0.0 build /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server
+> node ./build.mjs
+
+
+  dist/index.mjs                       5.5mb ⚠️
+  dist/pino-worker.mjs               153.4kb
+  dist/pino-file.mjs                 142.1kb
+  dist/pino-pretty.mjs               114.6kb
+  dist/thread-stream-worker.mjs        7.3kb
+  dist/index.mjs.map                  10.3mb
+  dist/pino-worker.mjs.map           256.9kb
+  dist/pino-file.mjs.map             229.1kb
+  dist/pino-pretty.mjs.map           203.9kb
+  dist/thread-stream-worker.mjs.map   12.0kb
+
+⚡ Done in 1899ms
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# apt-get install -y postgresql postgresql-contrib
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package postgresql
+E: Unable to locate package postgresql-contrib
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# sudo -u postgres psql -c "CREATE DATABASE cloudvape;"
+sudo -u postgres psql -c "CREATE USER cloudvape WITH PASSWORD 'changeme123';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE cloudvape TO cloudvape;"
+sudo -u postgres psql -c "ALTER DATABASE cloudvape OWNER TO cloudvape;"
+sudo: unknown user postgres
+sudo: error initializing audit plugin sudoers_audit
+sudo: unknown user postgres
+sudo: error initializing audit plugin sudoers_audit
+sudo: unknown user postgres
+sudo: error initializing audit plugin sudoers_audit
+sudo: unknown user postgres
+sudo: error initializing audit plugin sudoers_audit
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# apt-get update && apt-get install -y wget gnupg lsb-release
+wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+apt-get update && apt-get install -y postgresql
+Get:1 http://autoinstall.plesk.com/WATCHDOG_3.1.0 noble InRelease [4390 B]
+Get:2 http://autoinstall.plesk.com/pool/PSA_18.0.76_18805 noble InRelease [6764 B]
+Get:3 http://autoinstall.plesk.com/PHP83_17 noble InRelease [4009 B]
+Get:4 https://autoinstall.plesk.com/DRWEB_6.0.2.9.1 noble InRelease [4386 B]
+Get:5 https://autoinstall.plesk.com/RUBY_1.5.0 noble InRelease [4382 B]
+Get:6 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:7 http://autoinstall.plesk.com/WATCHDOG_3.1.0 noble/all amd64 Packages [627 B]
+Get:8 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:9 http://autoinstall.plesk.com/pool/PSA_18.0.76_18805 noble/extras amd64 Packages [11.0 kB]
+Get:10 http://autoinstall.plesk.com/PHP83_17 noble/all amd64 Packages [9170 B]
+Get:11 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:12 https://autoinstall.plesk.com/DRWEB_6.0.2.9.1 noble/all amd64 Packages [2279 B]
+Get:13 https://autoinstall.plesk.com/RUBY_1.5.0 noble/all amd64 Packages [3468 B]
+Get:14 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:15 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1625 kB]
+Get:16 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1401 kB]
+Get:17 http://security.ubuntu.com/ubuntu noble-security/main Translation-en [259 kB]
+Get:18 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [21.9 kB]
+Get:19 http://security.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [11.0 kB]
+Get:20 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1182 kB]
+Get:21 http://archive.ubuntu.com/ubuntu noble/main Translation-en [513 kB]
+Get:22 http://security.ubuntu.com/ubuntu noble-security/universe Translation-en [227 kB]
+Get:23 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [74.2 kB]
+Get:24 http://security.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [23.1 kB]
+Get:25 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2844 kB]
+Get:26 http://archive.ubuntu.com/ubuntu noble/main amd64 Components [464 kB]
+Get:27 http://security.ubuntu.com/ubuntu noble-security/restricted Translation-en [666 kB]
+Get:28 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+Get:29 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 c-n-f Metadata [544 B]
+Get:30 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [28.8 kB]
+Get:31 http://security.ubuntu.com/ubuntu noble-security/multiverse Translation-en [7172 B]
+Get:32 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [208 B]
+Get:33 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 c-n-f Metadata [396 B]
+Get:34 http://archive.ubuntu.com/ubuntu noble/main amd64 c-n-f Metadata [30.5 kB]
+Get:35 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [15.0 MB]
+Get:36 http://archive.ubuntu.com/ubuntu noble/universe Translation-en [5982 kB]
+Get:37 http://archive.ubuntu.com/ubuntu noble/universe amd64 Components [3871 kB]
+Get:38 http://archive.ubuntu.com/ubuntu noble/universe amd64 c-n-f Metadata [301 kB]
+Get:39 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [93.9 kB]
+Get:40 http://archive.ubuntu.com/ubuntu noble/restricted Translation-en [18.7 kB]
+Get:41 http://archive.ubuntu.com/ubuntu noble/restricted amd64 c-n-f Metadata [416 B]
+Get:42 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [269 kB]
+Get:43 http://archive.ubuntu.com/ubuntu noble/multiverse Translation-en [118 kB]
+Get:44 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Components [35.0 kB]
+Get:45 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 c-n-f Metadata [8328 B]
+Get:46 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1946 kB]
+Get:47 http://archive.ubuntu.com/ubuntu noble-updates/main Translation-en [348 kB]
+Get:48 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [177 kB]
+Get:49 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [17.1 kB]
+Get:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1685 kB]
+Get:51 http://archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [324 kB]
+Get:52 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [386 kB]
+Get:53 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 c-n-f Metadata [34.5 kB]
+Get:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3095 kB]
+Get:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [715 kB]
+Get:56 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+Get:57 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 c-n-f Metadata [480 B]
+Get:58 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [44.4 kB]
+Get:59 http://archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [10.2 kB]
+Get:60 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Get:61 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 c-n-f Metadata [656 B]
+Get:62 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [40.6 kB]
+Get:63 http://archive.ubuntu.com/ubuntu noble-backports/main Translation-en [9172 B]
+Get:64 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7368 B]
+Get:65 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 c-n-f Metadata [368 B]
+Get:66 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [30.6 kB]
+Get:67 http://archive.ubuntu.com/ubuntu noble-backports/universe Translation-en [18.2 kB]
+Get:68 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [10.5 kB]
+Get:69 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 c-n-f Metadata [1484 B]
+Get:70 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [212 B]
+Get:71 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 c-n-f Metadata [116 B]
+Get:72 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Packages [748 B]
+Get:73 http://archive.ubuntu.com/ubuntu noble-backports/multiverse Translation-en [340 B]
+Get:74 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+Get:75 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 c-n-f Metadata [116 B]
+Err:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+  Write error - write (28: No space left on device)
+Ign:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages
+Ign:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en
+Get:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2142 kB]
+Ign:69 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 c-n-f Metadata
+Ign:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+Ign:71 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 c-n-f Metadata
+Ign:72 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Packages
+Ign:73 http://archive.ubuntu.com/ubuntu noble-backports/multiverse Translation-en
+Ign:75 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 c-n-f Metadata
+Get:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3788 kB]
+Ign:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages
+Get:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [828 kB]
+Ign:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en
+Ign:69 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 c-n-f Metadata
+Ign:71 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 c-n-f Metadata
+Get:72 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Packages [671 B]
+Ign:72 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Packages
+Get:73 http://archive.ubuntu.com/ubuntu noble-backports/multiverse Translation-en [274 B]
+Ign:73 http://archive.ubuntu.com/ubuntu noble-backports/multiverse Translation-en
+Ign:75 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 c-n-f Metadata
+Get:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2142 kB]
+Ign:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+Err:69 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 c-n-f Metadata
+  Write error - write (28: No space left on device)
+Ign:71 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 c-n-f Metadata
+Get:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3788 kB]
+Ign:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages
+Ign:75 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 c-n-f Metadata
+Get:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [828 kB]
+Ign:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en
+Get:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2142 kB]
+Ign:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+Get:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3788 kB]
+Ign:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages
+Get:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [828 kB]
+Ign:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en
+Get:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2142 kB]
+Ign:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+Get:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2142 kB]
+Ign:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+Get:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3788 kB]
+Ign:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages
+Ign:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+Get:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3788 kB]
+Ign:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages
+Get:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [828 kB]
+Ign:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en
+Err:50 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+  Error writing to file - write (28: No space left on device) [IP: 91.189.91.81 80]
+Ign:54 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages
+Get:55 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [828 kB]
+Fetched 44.7 MB in 18s (2483 kB/s)
+Reading package lists... Error!
+E: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/noble-updates/universe/binary-amd64/Packages  Error writing to file - write (28: No space left on device) [IP: 91.189.91.81 80]
+E: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/noble-backports/universe/cnf/Commands-amd64  Write error - write (28: No space left on device)
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+E: Write error - write (28: No space left on device)
+E: IO Error saving source cache
+E: The package lists or status file could not be parsed or opened.
+mktemp: failed to create directory via template ‘/tmp/apt-key-gpghome.XXXXXXXXXX’: No space left on device
+-bash: echo: write error: No space left on device
+Hit:1 http://autoinstall.plesk.com/WATCHDOG_3.1.0 noble InRelease
+Hit:2 http://autoinstall.plesk.com/pool/PSA_18.0.76_18805 noble InRelease
+Hit:3 http://autoinstall.plesk.com/PHP83_17 noble InRelease
+Err:1 http://autoinstall.plesk.com/WATCHDOG_3.1.0 noble InRelease
+  Splitting up /var/lib/apt/lists/autoinstall.plesk.com_WATCHDOG%5f3.1.0_dists_noble_InRelease into data and signature failed
+Err:2 http://autoinstall.plesk.com/pool/PSA_18.0.76_18805 noble InRelease
+  Splitting up /var/lib/apt/lists/autoinstall.plesk.com_pool_PSA%5f18.0.76%5f18805_dists_noble_InRelease into data and signature failed
+Err:3 http://autoinstall.plesk.com/PHP83_17 noble InRelease
+  Splitting up /var/lib/apt/lists/autoinstall.plesk.com_PHP83%5f17_dists_noble_InRelease into data and signature failed
+Hit:4 https://autoinstall.plesk.com/DRWEB_6.0.2.9.1 noble InRelease
+Err:4 https://autoinstall.plesk.com/DRWEB_6.0.2.9.1 noble InRelease
+  Splitting up /var/lib/apt/lists/autoinstall.plesk.com_DRWEB%5f6.0.2.9.1_dists_noble_InRelease into data and signature failed
+Hit:5 https://autoinstall.plesk.com/RUBY_1.5.0 noble InRelease
+Err:5 https://autoinstall.plesk.com/RUBY_1.5.0 noble InRelease
+  Splitting up /var/lib/apt/lists/autoinstall.plesk.com_RUBY%5f1.5.0_dists_noble_InRelease into data and signature failed
+Hit:6 http://archive.ubuntu.com/ubuntu noble InRelease
+Err:6 http://archive.ubuntu.com/ubuntu noble InRelease
+  Splitting up /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble_InRelease into data and signature failed
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Err:7 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+  Splitting up /var/lib/apt/lists/partial/archive.ubuntu.com_ubuntu_dists_noble-updates_InRelease into data and signature failed
+Get:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Ign:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Get:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Ign:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Get:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Ign:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Get:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Err:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+  Error writing to file - write (28: No space left on device) [IP: 91.189.92.24 80]
+Hit:9 http://security.ubuntu.com/ubuntu noble-security InRelease
+Err:9 http://security.ubuntu.com/ubuntu noble-security InRelease
+  Splitting up /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_noble-security_InRelease into data and signature failed
+Reading package lists... Error!
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://autoinstall.plesk.com/WATCHDOG_3.1.0 noble InRelease: Splitting up /var/lib/apt/lists/autoinstall.plesk.com_WATCHDOG%5f3.1.0_dists_noble_InRelease into data and signature failed
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://autoinstall.plesk.com/pool/PSA_18.0.76_18805 noble InRelease: Splitting up /var/lib/apt/lists/autoinstall.plesk.com_pool_PSA%5f18.0.76%5f18805_dists_noble_InRelease into data and signature failed
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://autoinstall.plesk.com/PHP83_17 noble InRelease: Splitting up /var/lib/apt/lists/autoinstall.plesk.com_PHP83%5f17_dists_noble_InRelease into data and signature failed
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: https://autoinstall.plesk.com/DRWEB_6.0.2.9.1 noble InRelease: Splitting up /var/lib/apt/lists/autoinstall.plesk.com_DRWEB%5f6.0.2.9.1_dists_noble_InRelease into data and signature failed
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: https://autoinstall.plesk.com/RUBY_1.5.0 noble InRelease: Splitting up /var/lib/apt/lists/autoinstall.plesk.com_RUBY%5f1.5.0_dists_noble_InRelease into data and signature failed
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://archive.ubuntu.com/ubuntu noble InRelease: Splitting up /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble_InRelease into data and signature failed
+W: GPG error: http://archive.ubuntu.com/ubuntu noble-updates InRelease: Splitting up /var/lib/apt/lists/partial/archive.ubuntu.com_ubuntu_dists_noble-updates_InRelease into data and signature failed
+E: The repository 'http://archive.ubuntu.com/ubuntu noble-updates InRelease' is not signed.
+N: Updating from such a repository can't be done securely, and is therefore disabled by default.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://security.ubuntu.com/ubuntu noble-security InRelease: Splitting up /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_noble-security_InRelease into data and signature failed
+E: Write error - write (28: No space left on device)
+E: IO Error saving source cache
+E: The package lists or status file could not be parsed or opened.
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# df -h /
+du -sh /var/log/* 2>/dev/null | sort -rh | head -5
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       8.7G  8.7G     0 100% /
+65M     /var/log/journal
+9.1M    /var/log/plesk
+4.7M    /var/log/sysstat
+4.6M    /var/log/btmp
+3.2M    /var/log/auth.log
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# journalctl --vacuum-size=10M
+apt-get clean
+du -sh /var/www/vhosts/app.cloudvape.store/httpdocs/node_modules 2>/dev/null
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000000bdc7f-0006509f7b2de76a.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000000c1a36-0006509f7daf2ed4.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000000c692b-0006509f893d3be0.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000000c9007-000650a4064aa6f9.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-0000000000290fd2-000650b2f40a41c0.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-00000000002949c1-000650b2f6c7dad8.journal (8.0M).
+Deleted archived journal /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6/system@2aa31e8a33ee48c4987fc1b8b9b69c2e-000000000029ff47-000650b3650e4136.journal (8.0M).
+Vacuuming done, freed 56.0M of archived journals from /var/log/journal/c995817be0fc4bee8f9fad1f030fcab6.
+Vacuuming done, freed 0B of archived journals from /run/log/journal.
+Vacuuming done, freed 0B of archived journals from /var/log/journal.
+Vacuuming done, freed 0B of archived journals from /run/log/journal/c995817be0fc4bee8f9fad1f030fcab6.
+503M    /var/www/vhosts/app.cloudvape.store/httpdocs/node_modules
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# du -sh /var/www/vhosts/* 2>/dev/null | sort -rh | head -10
+du -sh /var/lib/mysql 2>/dev/null
+du -sh /var/cache/apt
+538M    /var/www/vhosts/app.cloudvape.store
+41M     /var/www/vhosts/chroot
+80K     /var/www/vhosts/system
+20K     /var/www/vhosts/default
+211M    /var/lib/mysql
+12K     /var/cache/apt
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# du -sh /* 2>/dev/null | sort -rh | head -10
+3.7G    /usr
+1.6G    /swapfile
+1.6G    /opt
+1.1G    /var
+637M    /root
+123M    /boot
+12M     /etc
+5.2M    /tmp
+1.7M    /run
+1.2M    /dev
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# du -sh /root/* 2>/dev/null | sort -rh | head -10
+1.9M    /root/parallels
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cat > /var/www/vhosts/app.cloudvape.store/httpdocs/.env << 'EOF'
+DATABASE_URL=postgresql://neondb_owner:npg_HsrlfOk3mA4d@ep-dawn-credit-abq15x3p.eu-west-2.aws.neon.tech/neondb?sslmode=require
+PORT=8080
+NODE_ENV=production
+EOF
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cd /var/www/vhosts/app.cloudvape.store/httpdocs
+pm2 start artifacts/api-server/dist/index.mjs --name cloudvape-api --env production -- --port 8080
+pm2 save
+[PM2] Starting /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/dist/index.mjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬──────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name             │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼──────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ cloudvape-api    │ default     │ 0.0.0   │ fork    │ 1246902  │ 0s     │ 0    │ online    │ 0%       │ 43.4mb   │ root     │ disabled │
+└────┴──────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# pm2 status
+curl -s http://localhost:8080/api/healthz
+┌────┬──────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name             │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼──────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ cloudvape-api    │ default     │ 0.0.0   │ fork    │ 1246902  │ 28s    │ 0    │ online    │ 0%       │ 183.8mb  │ root     │ disabled │
+└────┴──────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cat > /var/www/vhosts/system/app.cloudvape.store/conf/httpd.include << 'EOF'
+DocumentRoot /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community/dist/public
+
+<Directory /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community/dist/public>
+    AllowOverride All
+    Require all granted
+    Options -Indexes
+    FallbackResource /index.html
+</Directory>
+
+ProxyRequests Off
+ProxyPass /api http://127.0.0.1:8080/api
+ProxyPassReverse /api http://127.0.0.1:8080/api
+EOF
+
+service apache2 reload
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# curl -s -o /dev/null -w "%{http_code}" http://localhost/
+503root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# tail -20 /var/log/apache2/error.log
+[Thu Apr 30 20:33:57.511559 2026] [log_config:warn] [pid 1211403:tid 125968404395712] (28)No space left on device: [client 90.202.75.0:58633] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/admin/server/tools
+[Thu Apr 30 20:33:57.535822 2026] [log_config:warn] [pid 1211403:tid 125968421181120] (28)No space left on device: [client 90.202.75.0:64511] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log
+[Thu Apr 30 20:33:57.542074 2026] [log_config:warn] [pid 1211403:tid 125968396003008] (28)No space left on device: [client 90.202.75.0:52726] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/smb/web/view
+[Thu Apr 30 20:33:57.626482 2026] [log_config:warn] [pid 1211403:tid 125968370824896] (28)No space left on device: [client 90.202.75.0:52726] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/smb/web/view
+[Thu Apr 30 20:33:57.645371 2026] [log_config:warn] [pid 1211403:tid 125968362432192] (28)No space left on device: [client 90.202.75.0:52726] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/smb/web/view
+[Thu Apr 30 20:33:57.700737 2026] [log_config:warn] [pid 1211403:tid 125968387610304] (28)No space left on device: [client 90.202.75.0:56147] AH00646: Error writing to /var/log/apache2/other_vhosts_access.log, referer: https://212.227.127.152/smb/web/view
+[Thu Apr 30 20:33:59.302233 2026] [log_config:warn] [pid 1211403:tid 125968587822784] (28)No space left on device: [client 90.202.75.0:52726] AH00646: Error writing to /var/log/apa[Thu Apr 30 21:39:43.734416 2026] [mpm_event:notice] [pid 1201111:tid 125968641656704] AH00493: SIGUSR1 received.  Doing graceful restart
+
+[Thu Apr 30 21:39:46.855393 2026] [ssl:warn] [pid 1201111:tid 125968641656704] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Thu Apr 30 21:39:46.856294 2026] [ssl:warn] [pid 1201111:tid 125968641656704] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Thu Apr 30 21:39:46.856554 2026] [mpm_event:notice] [pid 1201111:tid 125968641656704] AH00489: Apache/2.4.58 (Ubuntu) mod_fcgid/2.3.9 Phusion_Passenger/6.1.1 OpenSSL/3.0.13 configured -- resuming normal operations
+[Thu Apr 30 21:39:46.856567 2026] [core:notice] [pid 1201111:tid 125968641656704] AH00094: Command line: '/usr/sbin/apache2'
+[Thu Apr 30 22:13:52.247688 2026] [mpm_event:notice] [pid 1201111:tid 125968641656704] AH00493: SIGUSR1 received.  Doing graceful restart
+
+[Thu Apr 30 22:13:55.446775 2026] [ssl:warn] [pid 1201111:tid 125968641656704] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Thu Apr 30 22:13:55.447658 2026] [ssl:warn] [pid 1201111:tid 125968641656704] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Thu Apr 30 22:13:55.448064 2026] [mpm_event:notice] [pid 1201111:tid 125968641656704] AH00489: Apache/2.4.58 (Ubuntu) mod_fcgid/2.3.9 Phusion_Passenger/6.1.1 OpenSSL/3.0.13 configured -- resuming normal operations
+[Thu Apr 30 22:13:55.448077 2026] [core:notice] [pid 1201111:tid 125968641656704] AH00094: Command line: '/usr/sbin/apache2'
+[Thu Apr 30 22:14:19.597379 2026] [proxy:error] [pid 1247326:tid 125968610195136] (111)Connection refused: AH00957: http: attempt to connect to 127.0.0.1:4173 (127.0.0.1:4173) failed
+[Thu Apr 30 22:14:19.597416 2026] [proxy_http:error] [pid 1247326:tid 125968610195136] [client ::1:52298] AH01114: HTTP: failed to make connection to backend: 127.0.0.1
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# grep -r "4173" /var/www/vhosts/system/app.cloudvape.store/conf/
+grep -r "4173" /etc/apache2/sites-enabled/
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# grep -r "4173" /etc/apache2/
+ls /var/www/vhosts/system/app.cloudvape.store/conf/
+/etc/apache2/sites-available/cloudvape.conf:  ProxyPass / http://127.0.0.1:4173/
+/etc/apache2/sites-available/cloudvape.conf:  ProxyPassReverse / http://127.0.0.1:4173/
+httpd.conf  httpd.include  last_httpd.conf
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cat /etc/apache2/sites-available/cloudvape.conf
+cat /var/www/vhosts/system/app.cloudvape.store/conf/httpd.conf
+<VirtualHost *:80>
+  ServerName cloudvape.store
+  ServerAlias www.cloudvape.store
+
+  ProxyPreserveHost On
+  ProxyPass /api/ http://127.0.0.1:8080/api/
+  ProxyPassReverse /api/ http://127.0.0.1:8080/api/
+
+  ProxyPass / http://127.0.0.1:4173/
+  ProxyPassReverse / http://127.0.0.1:4173/
+</VirtualHost>
+#ATTENTION!
+#
+#DO NOT MODIFY THIS FILE BECAUSE IT WAS GENERATED AUTOMATICALLY,
+#SO ALL YOUR CHANGES WILL BE LOST THE NEXT TIME THE FILE IS GENERATED.
+#IF YOU REQUIRE TO APPLY CUSTOM MODIFICATIONS, PERFORM THEM IN THE FOLLOWING FILES:
+#/var/www/vhosts/system/app.cloudvape.store/conf/vhost.conf
+#/var/www/vhosts/system/app.cloudvape.store/conf/vhost_ssl.conf
+<IfModule mod_ssl.c>
+
+        <VirtualHost 212.227.127.152:443 >
+                ServerName "app.cloudvape.store"
+                ServerAlias "www.app.cloudvape.store"
+                ServerAlias "ipv4.app.cloudvape.store"
+                UseCanonicalName Off
+
+                CustomLog "/var/www/vhosts/system/app.cloudvape.store/logs/access_ssl_log" plesklog
+
+                ErrorLog "/var/www/vhosts/system/app.cloudvape.store/logs/error_log"
+                # mailconfig
+                <IfModule mod_proxy_http.c>
+                        <IfModule mod_rewrite.c>
+                                RewriteEngine On
+                                RewriteCond %{REQUEST_URI} ^/autodiscover/autodiscover\.xml$ [NC,OR]
+                                RewriteCond %{REQUEST_URI} ^(/\.well-known/autoconfig)?/mail/config\-v1\.1\.xml$ [NC,OR]
+                                RewriteCond %{REQUEST_URI} ^/email\.mobileconfig$ [NC]
+                                RewriteRule ^(.*)$ "http://127.0.0.1:8880/mailconfig/" [P,QSA,L,E=REQUEST_URI:%{REQUEST_URI},E=HOST:%{HTTP_HOST}]
+                        </IfModule>
+                        <Proxy "http://127.0.0.1:8880/mailconfig/">
+                                RequestHeader set X-Host "%{HOST}e"
+                                RequestHeader set X-Request-URI "%{REQUEST_URI}e"
+                        </Proxy>
+                </IfModule>
+                # mailconfig
+
+                DocumentRoot "/var/www/vhosts/app.cloudvape.store/httpdocs"
+                <IfModule mod_suexec.c>
+                        SuexecUserGroup "app.cloudvape.store_no1vec9zicm" "psacln"
+                </IfModule>
+
+                <IfModule mod_userdir.c>
+                        UserDir "/var/www/vhosts/app.cloudvape.store/web_users/*"
+                </IfModule>
+
+                <IfModule mod_sysenv.c>
+                        SetSysEnv PP_VHOST_ID "7f300493-968a-4cce-915f-e50020f1bc14"
+                </IfModule>
+
+                SSLEngine on
+                SSLVerifyClient none
+                SSLCertificateFile "/opt/psa/var/certificates/scfe6019kmd9ns157VYffo"
+
+                <Directory "/var/www/vhosts/app.cloudvape.store/httpdocs">
+
+                        <IfModule mod_fcgid.c>
+                                <Files ~ (\.fcgi$)>
+                                        SetHandler fcgid-script
+                                        Options +ExecCGI
+                                </Files>
+                        </IfModule>
+                        <IfModule mod_proxy_fcgi.c>
+                                <Files ~ (\.php$)>
+                                        SetHandler "proxy:unix:/var/www/vhosts/system/app.cloudvape.store/php-fpm.sock|fcgi://127.0.0.1:9000"
+                                </Files>
+                        </IfModule>
+
+                        SSLRequireSSL
+
+                        Options -Includes -ExecCGI
+
+                </Directory>
+
+                <Directory "/var/www/vhosts/system/app.cloudvape.store/statistics">
+                        AuthType Basic
+                        AuthName "Domain statistics"
+                        AuthUserFile "/var/www/vhosts/system/app.cloudvape.store/pd/d..httpdocs@plesk-stat"
+                        require valid-user
+                </Directory>
+
+                Alias "/error_docs" "/var/www/vhosts/app.cloudvape.store/error_docs"
+                ErrorDocument "400" "/error_docs/bad_request.html"
+                ErrorDocument "401" "/error_docs/unauthorized.html"
+                ErrorDocument "403" "/error_docs/forbidden.html"
+                ErrorDocument "404" "/error_docs/not_found.html"
+                ErrorDocument "500" "/error_docs/internal_server_error.html"
+                ErrorDocument "405" "/error_docs/method_not_allowed.html"
+                ErrorDocument "406" "/error_docs/not_acceptable.html"
+                ErrorDocument "407" "/error_docs/proxy_authentication_required.html"
+                ErrorDocument "412" "/error_docs/precondition_failed.html"
+                ErrorDocument "414" "/error_docs/request_uri_too_long.html"
+                ErrorDocument "415" "/error_docs/unsupported_media_type.html"
+                ErrorDocument "501" "/error_docs/not_implemented.html"
+                ErrorDocument "502" "/error_docs/bad_gateway.html"
+                ErrorDocument "503" "/error_docs/maintenance.html"
+
+                DirectoryIndex "index.html" "index.cgi" "index.pl" "index.php" "index.xhtml" "index.htm" "index.shtml"
+
+                <Directory "/var/www/vhosts/app.cloudvape.store">
+                        Options -FollowSymLinks
+                        AllowOverride AuthConfig FileInfo Indexes Limit Options=Indexes,SymLinksIfOwnerMatch,MultiViews,ExecCGI,Includes,IncludesNOEXEC
+                </Directory>
+
+                <IfModule mod_headers.c>
+                </IfModule>
+
+        </VirtualHost>
+
+</IfModule>
+
+<VirtualHost 212.227.127.152:80 >
+        ServerName "app.cloudvape.store"
+        ServerAlias "www.app.cloudvape.store"
+        ServerAlias "ipv4.app.cloudvape.store"
+        UseCanonicalName Off
+
+        CustomLog "/var/www/vhosts/system/app.cloudvape.store/logs/access_log" plesklog
+
+        ErrorLog "/var/www/vhosts/system/app.cloudvape.store/logs/error_log"
+        # mailconfig
+        <IfModule mod_proxy_http.c>
+                <IfModule mod_rewrite.c>
+                        RewriteEngine On
+                        RewriteCond %{REQUEST_URI} ^/autodiscover/autodiscover\.xml$ [NC,OR]
+                        RewriteCond %{REQUEST_URI} ^(/\.well-known/autoconfig)?/mail/config\-v1\.1\.xml$ [NC,OR]
+                        RewriteCond %{REQUEST_URI} ^/email\.mobileconfig$ [NC]
+                        RewriteRule ^(.*)$ "http://127.0.0.1:8880/mailconfig/" [P,QSA,L,E=REQUEST_URI:%{REQUEST_URI},E=HOST:%{HTTP_HOST}]
+                </IfModule>
+                <Proxy "http://127.0.0.1:8880/mailconfig/">
+                        RequestHeader set X-Host "%{HOST}e"
+                        RequestHeader set X-Request-URI "%{REQUEST_URI}e"
+                </Proxy>
+        </IfModule>
+        # mailconfig
+
+        <IfModule mod_rewrite.c>
+                RewriteEngine On
+                RewriteCond %{HTTPS} off
+                RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,QSA]
+        </IfModule>
+</VirtualHost>
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cat > /var/www/vhosts/system/app.cloudvape.store/conf/vhost_ssl.conf << 'EOF'
+DocumentRoot /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community/dist/public
+
+<Directory /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community/dist/public>
+    AllowOverride All
+    Require all granted
+    Options -Indexes
+    FallbackResource /index.html
+</Directory>
+
+ProxyRequests Off
+ProxyPass /api http://127.0.0.1:8080/api
+ProxyPassReverse /api http://127.0.0.1:8080/api
+EOF
+
+plesk bin websrvmng --reconfigure-vhost app.cloudvape.store
+service apache2 reload
+unknown Plesk command-line utility: "websrvmng"
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# /usr/local/psa/admin/bin/httpdmng --reconfigure-domain app.cloudvape.store
+service apache2 reload
+curl -sk -o /dev/null -w "%{http_code}" https://localhost/
+^C
+000root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
+ProxyRequests Off
+ProxyPass /api http://127.0.0.1:8080/api
+ProxyPassReverse /api http://127.0.0.1:8080/api
+EOF
+
+plesk bin websrvmng --reconfigure-vhost app.cloudvape.store
+service apache2 reload
+unknown Plesk command-line utility: "websrvmng"
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# /usr/local/psa/admin/bin/httpdmng --reconfigure-domain app.cloudvape.store
+service apache2 reload
+curl -sk -o /d^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# /usr/local/psa/admin/bin/httpdmng --reconfigure-domain app.cloudvape.store
+service apache2 reload
+curl -sk -o /dev/null -w "%{http_code}" https://localhost/
+000root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# systemctl status apache2 | head -5
+grep -A5 "app.cloudvape.store" /var/www/vhosts/system/app.cloudvape.store/conf/httpd.conf | head -20
+● apache2.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/apache2.service; disabled; preset: enabled)
+     Active: active (running) since Thu 2026-04-30 20:06:56 UTC; 2h 11min ago
+       Docs: https://httpd.apache.org/docs/2.4/
+    Process: 1249367 ExecReload=/usr/sbin/apachectl graceful (code=exited, status=0/SUCCESS)
+#/var/www/vhosts/system/app.cloudvape.store/conf/vhost.conf
+#/var/www/vhosts/system/app.cloudvape.store/conf/vhost_ssl.conf
+<IfModule mod_ssl.c>
+
+        <VirtualHost 212.227.127.152:443 >
+                ServerName "app.cloudvape.store"
+                ServerAlias "www.app.cloudvape.store"
+                ServerAlias "ipv4.app.cloudvape.store"
+                UseCanonicalName Off
+
+                CustomLog "/var/www/vhosts/system/app.cloudvape.store/logs/access_ssl_log" plesklog
+
+                ErrorLog "/var/www/vhosts/system/app.cloudvape.store/logs/error_log"
+                # mailconfig
+                <IfModule mod_proxy_http.c>
+                        <IfModule mod_rewrite.c>
+                                RewriteEngine On
+                                RewriteCond %{REQUEST_URI} ^/autodiscover/autodiscover\.xml$ [NC,OR]
+--
+                DocumentRoot "/var/www/vhosts/app.cloudvape.store/httpdocs"
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# grep -n "vhost_ssl\|Include" /var/www/vhosts/system/app.cloudvape.store/conf/httpd.conf | head -10
+curl -sk -o /dev/null -w "%{http_code}" -H "Host: app.cloudvape.store" https://212.227.127.152/
+7:#/var/www/vhosts/system/app.cloudvape.store/conf/vhost_ssl.conf
+68:                     Options -Includes -ExecCGI
+97:             Include "/var/www/vhosts/system/app.cloudvape.store/conf/vhost_ssl.conf"
+101:                    AllowOverride AuthConfig FileInfo Indexes Limit Options=Indexes,SymLinksIfOwnerMatch,MultiViews,ExecCGI,Includes,IncludesNOEXEC
+200root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# cd /var/www/vhosts/app.cloudvape.store/httpdocs
+PORT=3000 BASE_PATH=/ VITE_CLERK_PUBLISHABLE_KEY=pk_test_c3R1bm5pbmctbXVsZS00OS5jbGVyay5hY2NvdW50cy5kZXYk VITE_CLERK_PROXY_URL=https://app.cloudvape.store/api/__clerk pnpm --filter @workspace/vape-community run build
+
+> @workspace/vape-community@0.0.0 build /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community
+> vite build --config vite.config.ts
+
+vite v7.3.2 building client environment for production...
+src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/label.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/avatar.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/select.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+✓ 2274 modules transformed.
+dist/public/index.html                   4.36 kB │ gzip:   1.39 kB
+dist/public/assets/index-VCpoA8bz.css  176.29 kB │ gzip:  25.13 kB
+dist/public/assets/index-XEPxV41W.js   803.20 kB │ gzip: 225.48 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 12.20s
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
