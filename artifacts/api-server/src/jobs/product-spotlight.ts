@@ -138,6 +138,7 @@ Return a JSON object with two fields:
 - "title": a short, engaging forum post title (under 80 characters)
 - "content": the post body in Markdown`;
 
+  if (!openai) throw new Error("OpenAI not configured");
   const response = await openai.chat.completions.create({
     model: "gpt-5-mini",
     max_completion_tokens: 2048,
@@ -286,6 +287,11 @@ async function runSpotlight(
 }
 
 export function startProductSpotlightJob(): void {
+  if (!openai) {
+    logger.warn("product-spotlight: OpenAI not configured, job disabled");
+    return;
+  }
+
   ensureWeeklySpotlight().catch((err) => {
     logger.error({ err }, "product-spotlight: initial check failed");
   });

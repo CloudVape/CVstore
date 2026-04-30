@@ -1,0 +1,30 @@
+
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# service apache2 reload
+pm2 status
+curl -s -o /dev/null -w "%{http_code}" https://app.cloudvape.store/api/products/featured
+┌────┬──────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name             │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼──────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ cloudvape-api    │ default     │ 0.0.0   │ fork    │ 1263151  │ 1s     │ 196  │ online    │ 0%       │ 214.2mb  │ root     │ disabled │
+└────┴──────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+503root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# ^C
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# pm2 logs cloudvape-api --lines 15 --nostream --err
+[TAILING] Tailing last 15 lines for [cloudvape-api] process (change the value with --lines option)
+/root/.pm2/logs/cloudvape-api-error.log last 15 lines:
+0|cloudvap |     at ../../lib/integrations-openai-ai-server/src/client.ts (file:///var/www/vhosts/app.cloudvape.store/httpdocs/lib/integrations-openai-ai-server/src/client.ts:4:9)
+0|cloudvap |     at init_client (file:///var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/dist/index.mjs:22:56)
+0|cloudvap |     at ../../lib/integrations-openai-ai-server/src/index.ts (file:///var/www/vhosts/app.cloudvape.store/httpdocs/lib/integrations-openai-ai-server/src/index.ts:1:1)
+0|cloudvap |     at __init (file:///var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/dist/index.mjs:22:56)
+0|cloudvap |     at file:///var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/src/jobs/product-spotlight.ts:11:1
+0|cloudvap |     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+0|cloudvap |     at ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+0|cloudvap | Error: AI_INTEGRATIONS_OPENAI_BASE_URL must be set. Did you forget to provision the OpenAI AI integration?
+0|cloudvap |     at ../../lib/integrations-openai-ai-server/src/client.ts (file:///var/www/vhosts/app.cloudvape.store/httpdocs/lib/integrations-openai-ai-server/src/client.ts:4:9)
+0|cloudvap |     at init_client (file:///var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/dist/index.mjs:22:56)
+0|cloudvap |     at ../../lib/integrations-openai-ai-server/src/index.ts (file:///var/www/vhosts/app.cloudvape.store/httpdocs/lib/integrations-openai-ai-server/src/index.ts:1:1)
+0|cloudvap |     at __init (file:///var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/dist/index.mjs:22:56)
+0|cloudvap |     at file:///var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/src/jobs/product-spotlight.ts:11:1
+0|cloudvap |     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+0|cloudvap |     at ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
