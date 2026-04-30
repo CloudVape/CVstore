@@ -1,0 +1,48 @@
+
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# pm2 logs cloudvape-api --lines 20 --nostream
+[TAILING] Tailing last 20 lines for [cloudvape-api] process (change the value with --lines option)
+/root/.pm2/logs/cloudvape-api-out.log last 20 lines:
+0|cloudvap | /var/www/cloudvape/artifacts/api-server:
+0|cloudvap |  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/api-server@0.0.0 dev: `export NODE_ENV=development && pnpm run build && pnpm run start`
+0|cloudvap | Exit status 1
+0|cloudvap |
+0|cloudvap | > @workspace/api-server@0.0.0 dev /var/www/cloudvape/artifacts/api-server
+0|cloudvap | > export NODE_ENV=development && pnpm run build && pnpm run start
+0|cloudvap |
+0|cloudvap |
+0|cloudvap | > @workspace/api-server@0.0.0 build /var/www/cloudvape/artifacts/api-server
+0|cloudvap | > node ./build.mjs
+0|cloudvap |
+0|cloudvap |
+0|cloudvap | > @workspace/api-server@0.0.0 start /var/www/cloudvape/artifacts/api-server
+0|cloudvap | > node --enable-source-maps ./dist/index.mjs
+0|cloudvap |
+0|cloudvap |  ELIFECYCLE  Command failed with exit code 1.
+0|cloudvap | /var/www/cloudvape/artifacts/api-server:
+0|cloudvap |  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/api-server@0.0.0 dev: `export NODE_ENV=development && pnpm run build && pnpm run start`
+0|cloudvap | Exit status 1
+0|cloudvap |
+
+/root/.pm2/logs/cloudvape-api-error.log last 20 lines:
+0|cloudvap | error: Failed to create output directory: mkdir /var/www/cloudvape/artifacts/api-server/dist: no space left on device
+0|cloudvap | error: Failed to create output directory: mkdir /var/www/cloudvape/artifacts/api-server/dist: no space left on device
+0|cloudvap | error: Failed to create output directory: mkdir /var/www/cloudvape/artifacts/api-server/dist: no space left on device
+0|cloudvap | error: Failed to create output directory: mkdir /var/www/cloudvape/artifacts/api-server/dist: no space left on device
+0|cloudvap | ...
+0|cloudvap |     at failureErrorWithLog (/var/www/cloudvape/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/lib/main.js:1467:15)
+0|cloudvap |     at /var/www/cloudvape/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/lib/main.js:926:25
+0|cloudvap |     at /var/www/cloudvape/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/lib/main.js:1345:9
+0|cloudvap |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|cloudvap |   errors: [Getter/Setter],
+0|cloudvap |   warnings: [Getter/Setter]
+0|cloudvap | }
+0|cloudvap | Error: DATABASE_URL must be set. Did you forget to provision a database?
+0|cloudvap |     at file:///var/www/vhosts/app.cloudvape.store/httpdocs/lib/db/src/index.ts:8:9
+0|cloudvap |     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+0|cloudvap |     at ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+0|cloudvap | Error: DATABASE_URL must be set. Did you forget to provision a database?
+0|cloudvap |     at file:///var/www/vhosts/app.cloudvape.store/httpdocs/lib/db/src/index.ts:8:9
+0|cloudvap |     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+0|cloudvap |     at ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
