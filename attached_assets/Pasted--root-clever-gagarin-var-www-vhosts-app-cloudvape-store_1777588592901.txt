@@ -1,0 +1,35 @@
+
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs# pm2 delete cloudvape-api
+PORT=8080 NODE_ENV=production DATABASE_URL="postgresql://neondb_owner:npg_HsrlfOk3mA4d@ep-dawn-credit-abq15x3p.eu-west-2.aws.neon.tech/neondb?sslmode=require" CLERK_SECRET_KEY="sk_test_eXUo2PngN8QZgFC7FucgVRkzAghZf8I7U5Al4pA6mB" pm2 start artifacts/api-server/dist/index.mjs --name cloudvape-api
+pm2 save
+sleep 3 && pm2 logs cloudvape-api --lines 5 --nostream
+[PM2] Applying action deleteProcessId on app [cloudvape-api](ids: [ 0 ])
+[PM2] [cloudvape-api](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2] Starting /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/dist/index.mjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬──────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name             │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼──────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ cloudvape-api    │ default     │ 0.0.0   │ fork    │ 1256472  │ 0s     │ 0    │ online    │ 0%       │ 18.0mb   │ root     │ disabled │
+└────┴──────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+[TAILING] Tailing last 5 lines for [cloudvape-api] process (change the value with --lines option)
+/root/.pm2/logs/cloudvape-api-out.log last 5 lines:
+0|cloudvap | {"level":40,"time":1777588570821,"pid":1256347,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"RESEND_API_KEY not set — emails will be logged but not sent"}
+0|cloudvap | {"level":40,"time":1777588573989,"pid":1256376,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"RESEND_API_KEY not set — emails will be logged but not sent"}
+0|cloudvap | {"level":40,"time":1777588577082,"pid":1256405,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"RESEND_API_KEY not set — emails will be logged but not sent"}
+0|cloudvap | {"level":40,"time":1777588580255,"pid":1256434,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"RESEND_API_KEY not set — emails will be logged but not sent"}
+0|cloudvap | {"level":40,"time":1777588582559,"pid":1256472,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"RESEND_API_KEY not set — emails will be logged but not sent"}
+
+/root/.pm2/logs/cloudvape-api-error.log last 5 lines:
+0|cloudvap |     at ../../lib/integrations-openai-ai-server/src/index.ts (file:///var/www/vhosts/app.cloudvape.store/httpdocs/lib/integrations-openai-ai-server/src/index.ts:1:1)
+0|cloudvap |     at __init (file:///var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/dist/index.mjs:22:56)
+0|cloudvap |     at file:///var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/api-server/src/jobs/product-spotlight.ts:11:1
+0|cloudvap |     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+0|cloudvap |     at ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+
+root@clever-gagarin:/var/www/vhosts/app.cloudvape.store/httpdocs#
