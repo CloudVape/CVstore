@@ -46,7 +46,7 @@ import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const basePath = "/";
 
 function stripBase(path: string): string {
   return basePath && path.startsWith(basePath)
