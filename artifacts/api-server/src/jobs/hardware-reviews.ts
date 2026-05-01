@@ -4,8 +4,8 @@ import { logger } from "../lib/logger";
 
 const HARDWARE_CATEGORY_SLUG = "hardware-reviews";
 const SOURCE_PREFIX = "ai-review:";
-const MIN_GAP_DAYS = 2;
-const MAX_GAP_DAYS = 3;
+const MIN_GAP_DAYS = 1;
+const MAX_GAP_DAYS = 1;
 const BACKFILL_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const CHECK_INTERVAL_MS = 60 * 60 * 1000;
