@@ -1,0 +1,33 @@
+
+root@clever-gagarin:~# tail -30 /var/log/apache2/error.log
+[Fri May 01 06:12:41.950172 2026] [ssl:warn] [pid 1285127:tid 132538750916480] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:12:41.951108 2026] [ssl:warn] [pid 1285127:tid 132538750916480] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:12:41.951277 2026] [suexec:notice] [pid 1285127:tid 132538750916480] AH01232: suEXEC mechanism enabled (wrapper: /usr/lib/apache2/suexec)
+
+[Fri May 01 06:12:42.051677 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: webmail.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:12:42.052573 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:12:42.053473 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:12:42.059055 2026] [mpm_event:notice] [pid 1285150:tid 132538750916480] AH00489: Apache/2.4.58 (Ubuntu) mod_fcgid/2.3.9 Phusion_Passenger/6.1.1 OpenSSL/3.0.13 configured -- resuming normal operations
+[Fri May 01 06:12:42.059072 2026] [core:notice] [pid 1285150:tid 132538750916480] AH00094: Command line: '/usr/sbin/apache2'
+[Fri May 01 06:13:07.311171 2026] [mpm_event:notice] [pid 1285150:tid 132538750916480] AH00493: SIGUSR1 received.  Doing graceful restart
+
+[Fri May 01 06:13:10.387240 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: webmail.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:13:10.388270 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:13:10.389169 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:13:10.389481 2026] [mpm_event:notice] [pid 1285150:tid 132538750916480] AH00489: Apache/2.4.58 (Ubuntu) mod_fcgid/2.3.9 Phusion_Passenger/6.1.1 OpenSSL/3.0.13 configured -- resuming normal operations
+[Fri May 01 06:13:10.389501 2026] [core:notice] [pid 1285150:tid 132538750916480] AH00094: Command line: '/usr/sbin/apache2'
+[Fri May 01 06:20:26.409760 2026] [mpm_event:notice] [pid 1285150:tid 132538750916480] AH00493: SIGUSR1 received.  Doing graceful restart
+
+[Fri May 01 06:20:29.489424 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: webmail.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:20:29.490342 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:20:29.491214 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:20:29.491523 2026] [mpm_event:notice] [pid 1285150:tid 132538750916480] AH00489: Apache/2.4.58 (Ubuntu) mod_fcgid/2.3.9 Phusion_Passenger/6.1.1 OpenSSL/3.0.13 configured -- resuming normal operations
+[Fri May 01 06:20:29.491551 2026] [core:notice] [pid 1285150:tid 132538750916480] AH00094: Command line: '/usr/sbin/apache2'
+[Fri May 01 06:22:00.073216 2026] [mpm_event:notice] [pid 1285150:tid 132538750916480] AH00493: SIGUSR1 received.  Doing graceful restart
+
+[Fri May 01 06:22:03.174042 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: webmail.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:22:03.176022 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: webmail.app.cloudvape.store:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:22:03.177164 2026] [ssl:warn] [pid 1285150:tid 132538750916480] AH01909: default:443:0 server certificate does NOT include an ID which matches the server name
+[Fri May 01 06:22:03.177485 2026] [mpm_event:notice] [pid 1285150:tid 132538750916480] AH00489: Apache/2.4.58 (Ubuntu) mod_fcgid/2.3.9 Phusion_Passenger/6.1.1 OpenSSL/3.0.13 configured -- resuming normal operations
+[Fri May 01 06:22:03.177500 2026] [core:notice] [pid 1285150:tid 132538750916480] AH00094: Command line: '/usr/sbin/apache2'
+root@clever-gagarin:~#
