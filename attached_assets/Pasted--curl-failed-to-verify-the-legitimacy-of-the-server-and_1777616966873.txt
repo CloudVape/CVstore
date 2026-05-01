@@ -1,0 +1,39 @@
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+root@clever-gagarin:~# ^C
+root@clever-gagarin:~# apache2ctl -S 2>&1 | grep -E "cloudvape|443"
+ls /etc/letsencrypt/live/cloudvape.store/
+curl -k -I https://cloudvape.store/
+127.0.0.1:443          plesk-service.localdomain (/etc/apache2/plesk.conf.d/server.conf:147)
+212.227.127.152:443    is a NameVirtualHost
+         port 443 namevhost default (/etc/apache2/plesk.conf.d/server.conf:98)
+         port 443 namevhost webmail.app.cloudvape.store (/etc/apache2/plesk.conf.d/webmails/app.cloudvape.store_webmail.conf:37)
+         port 443 namevhost webmail.cloudvape.store (/etc/apache2/plesk.conf.d/webmails/cloudvape.store_webmail.conf:37)
+         port 443 namevhost app.cloudvape.store (/etc/apache2/plesk.conf.d/vhosts/app.cloudvape.store.conf:10)
+                 alias www.app.cloudvape.store
+                 alias ipv4.app.cloudvape.store
+         port 80 namevhost webmail.app.cloudvape.store (/etc/apache2/plesk.conf.d/webmails/app.cloudvape.store_webmail.conf:5)
+         port 80 namevhost webmail.cloudvape.store (/etc/apache2/plesk.conf.d/webmails/cloudvape.store_webmail.conf:5)
+         port 80 namevhost app.cloudvape.store (/etc/apache2/plesk.conf.d/vhosts/app.cloudvape.store.conf:113)
+                 alias www.app.cloudvape.store
+                 alias ipv4.app.cloudvape.store
+*:80                   cloudvape.store (/etc/apache2/plesk.conf.d/vhosts/cloudvape.store.conf:1)
+*:443                  cloudvape.store (/etc/apache2/plesk.conf.d/vhosts/cloudvape.store.conf:7)
+README  cert.pem  chain.pem  fullchain.pem  privkey.pem
+HTTP/1.1 500 Internal Server Error
+Date: Fri, 01 May 2026 06:29:17 GMT
+Server: sw-cp-server
+Content-Type: text/html; charset=UTF-8
+Expires: Fri, 28 May 1999 00:00:00 GMT
+Last-Modified: Fri, 01 May 2026 06:29:17 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+P3P: CP="NON COR CURa ADMa OUR NOR UNI COM NAV STA"
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+X-Powered-By: PleskLin
+Connection: close
+
+root@clever-gagarin:~#
