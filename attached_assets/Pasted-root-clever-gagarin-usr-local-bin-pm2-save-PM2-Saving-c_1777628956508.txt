@@ -1,0 +1,50 @@
+root@clever-gagarin:~# /usr/local/bin/pm2 save
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+root@clever-gagarin:~# /usr/local/bin/pm2 logs cloudvape-api --lines 20 --nostream
+[TAILING] Tailing last 20 lines for [cloudvape-api] process (change the value with --lines option)
+/root/.pm2/logs/cloudvape-api-error.log last 20 lines:
+0|cloudvap | AI_INTEGRATIONS_OPENAI_BASE_URL or AI_INTEGRATIONS_OPENAI_API_KEY not set — AI features will be disabled.
+0|cloudvap | (node:1347758) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+0|cloudvap | In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+0|cloudvap |
+0|cloudvap | To prepare for this change:
+0|cloudvap | - If you want the current behavior, explicitly use 'sslmode=verify-full'
+0|cloudvap | - If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+0|cloudvap |
+0|cloudvap | See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+0|cloudvap | (Use `node --trace-warnings ...` to show where the warning was created)
+0|cloudvap | AI_INTEGRATIONS_OPENAI_BASE_URL or AI_INTEGRATIONS_OPENAI_API_KEY not set — AI features will be disabled.
+0|cloudvap | (node:1349506) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+0|cloudvap | In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+0|cloudvap |
+0|cloudvap | To prepare for this change:
+0|cloudvap | - If you want the current behavior, explicitly use 'sslmode=verify-full'
+0|cloudvap | - If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+0|cloudvap |
+0|cloudvap | See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+0|cloudvap | (Use `node --trace-warnings ...` to show where the warning was created)
+
+/root/.pm2/logs/cloudvape-api-out.log last 20 lines:
+0|cloudvap | {"level":30,"time":1777627496122,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":153,"method":"GET","url":"/api/products/bestsellers"},"res":{"statusCode":304},"responseTime":19,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627496122,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":154,"method":"GET","url":"/api/products/new"},"res":{"statusCode":304},"responseTime":19,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627496124,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":156,"method":"GET","url":"/api/posts/trending"},"res":{"statusCode":304},"responseTime":20,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627496158,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":157,"method":"GET","url":"/api/stats/community"},"res":{"statusCode":200},"responseTime":53,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627653577,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":159,"method":"GET","url":"/api/products/bestsellers"},"res":{"statusCode":200},"responseTime":89,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627653578,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":158,"method":"GET","url":"/api/products/featured"},"res":{"statusCode":200},"responseTime":93,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627653596,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":160,"method":"GET","url":"/api/products/new"},"res":{"statusCode":200},"responseTime":74,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627653597,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":161,"method":"GET","url":"/api/product-categories"},"res":{"statusCode":200},"responseTime":71,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627653606,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":162,"method":"GET","url":"/api/posts/trending"},"res":{"statusCode":200},"responseTime":77,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777627653635,"pid":1331268,"hostname":"clever-gagarin.212-227-127-152.plesk.page","req":{"id":163,"method":"GET","url":"/api/stats/community"},"res":{"statusCode":200},"responseTime":103,"msg":"request completed"}
+0|cloudvap | {"level":30,"time":1777628594402,"pid":1347758,"hostname":"clever-gagarin.212-227-127-152.plesk.page","port":8080,"msg":"Server listening"}
+0|cloudvap | {"level":30,"time":1777628594404,"pid":1347758,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"review-emails: job started"}
+0|cloudvap | {"level":30,"time":1777628594405,"pid":1347758,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"supplier-sync: scheduler started"}
+0|cloudvap | {"level":40,"time":1777628594527,"pid":1347758,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"Hardware reviews category not found; review job idle."}
+0|cloudvap | {"level":40,"time":1777628594543,"pid":1347758,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"product-spotlight: no AI personas found — job idle"}
+0|cloudvap | {"level":30,"time":1777628879565,"pid":1349506,"hostname":"clever-gagarin.212-227-127-152.plesk.page","port":8080,"msg":"Server listening"}
+0|cloudvap | {"level":30,"time":1777628879569,"pid":1349506,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"review-emails: job started"}
+0|cloudvap | {"level":30,"time":1777628879570,"pid":1349506,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"supplier-sync: scheduler started"}
+0|cloudvap | {"level":40,"time":1777628879704,"pid":1349506,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"Hardware reviews category not found; review job idle."}
+0|cloudvap | {"level":40,"time":1777628879712,"pid":1349506,"hostname":"clever-gagarin.212-227-127-152.plesk.page","msg":"product-spotlight: no AI personas found — job idle"}
+
+root@clever-gagarin:~#
