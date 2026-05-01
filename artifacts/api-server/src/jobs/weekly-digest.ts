@@ -1,5 +1,5 @@
-import { db, postsTable, categoriesTable, newsletterSubscribersTable } from "@workspace/db";
-import { desc, gte, sql, eq, count } from "drizzle-orm";
+import { db, postsTable, categoriesTable, newsletterSubscribersTable, emailLogTable } from "@workspace/db";
+import { desc, gte, sql, eq, count, and, lte } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendEmail } from "../lib/email";
 import { weeklyDigestTemplate } from "../lib/email-templates";
@@ -12,19 +12,39 @@ function isMonday(date: Date): boolean {
   return date.getDay() === 1;
 }
 
-function lastDigestSentKey(): string {
-  const now = new Date();
-  return `${now.getUTCFullYear()}-W${getISOWeek(now)}`;
-}
-
-function getISOWeek(date: Date): number {
+/** Returns the Monday 00:00:00 UTC for the ISO week containing `date`. */
+function isoWeekStart(date: Date): Date {
   const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() - day + 1);
+  return d;
 }
 
-let lastSentWeek = "";
+/** Returns the Sunday 23:59:59.999 UTC for the ISO week containing `date`. */
+function isoWeekEnd(date: Date): Date {
+  const start = isoWeekStart(date);
+  return new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000 - 1);
+}
+
+/**
+ * Checks the email_log table to see if a weekly-digest was already sent
+ * during the current ISO week. Avoids duplicate sends after a service restart.
+ */
+async function wasDigestSentThisWeek(): Promise<boolean> {
+  const now = new Date();
+  const [row] = await db
+    .select({ id: emailLogTable.id })
+    .from(emailLogTable)
+    .where(
+      and(
+        eq(emailLogTable.template, "weekly-digest"),
+        gte(emailLogTable.createdAt, isoWeekStart(now)),
+        lte(emailLogTable.createdAt, isoWeekEnd(now)),
+      ),
+    )
+    .limit(1);
+  return !!row;
+}
 
 async function getTopPosts(sinceDate: Date, siteUrl: string): Promise<
   Array<{ title: string; url: string; category: string; snippet: string }>
@@ -188,10 +208,11 @@ export function startWeeklyDigestJob(): void {
   async function tick() {
     try {
       const now = new Date();
-      const weekKey = lastDigestSentKey();
-      if (isMonday(now) && now.getUTCHours() >= 8 && lastSentWeek !== weekKey) {
-        lastSentWeek = weekKey;
-        await sendWeeklyDigest();
+      if (isMonday(now) && now.getUTCHours() >= 8) {
+        const alreadySent = await wasDigestSentThisWeek();
+        if (!alreadySent) {
+          await sendWeeklyDigest();
+        }
       }
     } catch (err) {
       logger.error({ err }, "weekly-digest: tick error");
