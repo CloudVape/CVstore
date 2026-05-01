@@ -298,6 +298,42 @@ router.patch("/users/me/theme", async (req, res): Promise<void> => {
   res.json({ theme: parsed.data.theme });
 });
 
+const UpdateBioBody = z.object({
+  bio: z.string().max(500).nullable(),
+});
+
+router.patch("/users/me/bio", async (req, res): Promise<void> => {
+  const { userId } = getAuth(req);
+  if (!userId) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
+  const parsed = UpdateBioBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "bio must be a string up to 500 characters or null" });
+    return;
+  }
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, userId));
+
+  if (!user) {
+    res.status(404).json({ error: "User profile not found" });
+    return;
+  }
+
+  const [updated] = await db
+    .update(usersTable)
+    .set({ bio: parsed.data.bio })
+    .where(eq(usersTable.id, user.id))
+    .returning();
+
+  res.json(formatUserPublic(updated));
+});
+
 /**
  * POST /users/legacy-login
  *

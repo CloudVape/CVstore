@@ -1,21 +1,73 @@
 import { useParams, Link } from "wouter";
+import { useState } from "react";
 import { useGetUser, useListPosts } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PostCard } from "@/components/post-card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, MessageSquare, User as UserIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar, MessageSquare, User as UserIcon, Pencil, X, Check } from "lucide-react";
 import { useSeo } from "@/lib/seo";
+import { useAuth } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
+
+const BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
 
 export default function Profile() {
   const { id } = useParams();
   const userId = parseInt(id || "0");
   useSeo({ title: "Profile", description: "CloudVape member profile.", robots: "noindex, follow" });
-  
+
+  const { user: authUser, getToken } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const isOwnProfile = !!authUser && authUser.id === userId;
+
+  const [editingBio, setEditingBio] = useState(false);
+  const [bioValue, setBioValue] = useState("");
+  const [savingBio, setSavingBio] = useState(false);
+
   const { data: user, isLoading: userLoading } = useGetUser(userId, { query: { enabled: !!userId } });
   const { data: posts, isLoading: postsLoading } = useListPosts(undefined, { query: { enabled: !!userId } });
+
+  function startEditBio() {
+    setBioValue(user?.bio ?? "");
+    setEditingBio(true);
+  }
+
+  function cancelEditBio() {
+    setEditingBio(false);
+  }
+
+  async function saveBio() {
+    setSavingBio(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(`${BASE}/users/me/bio`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ bio: bioValue.trim() || null }),
+      });
+      if (!res.ok) {
+        const err = await res.json() as { error?: string };
+        throw new Error(err.error ?? "Failed to save");
+      }
+      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      setEditingBio(false);
+      toast({ title: "Bio updated" });
+    } catch (err) {
+      toast({ title: "Error", description: err instanceof Error ? err.message : "Failed to save bio", variant: "destructive" });
+    } finally {
+      setSavingBio(false);
+    }
+  }
 
   // Filter posts client-side since API doesn't support authorId filtering
   const userPosts = posts?.filter(p => p.authorId === userId) || [];
@@ -85,10 +137,49 @@ export default function Profile() {
           <div className="mt-8 pt-6 border-t border-border/20">
             <h3 className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
               <UserIcon className="h-4 w-4" /> Bio
+              {isOwnProfile && !editingBio && (
+                <button
+                  onClick={startEditBio}
+                  className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
+                  title="Edit bio"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+              )}
             </h3>
-            <p className="text-foreground/80 leading-relaxed max-w-2xl">
-              {user.bio || "This user hasn't added a bio yet. They prefer to let their clouds do the talking."}
-            </p>
+
+            {editingBio ? (
+              <div className="max-w-2xl space-y-3">
+                <Textarea
+                  value={bioValue}
+                  onChange={(e) => setBioValue(e.target.value)}
+                  placeholder="Tell the community a little about yourself…"
+                  maxLength={500}
+                  rows={4}
+                  className="resize-none font-sans text-sm bg-background/60"
+                  autoFocus
+                />
+                <div className="flex items-center gap-2">
+                  <Button size="sm" onClick={() => void saveBio()} disabled={savingBio} className="gap-1.5">
+                    <Check className="h-3.5 w-3.5" />
+                    {savingBio ? "Saving…" : "Save"}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={cancelEditBio} disabled={savingBio} className="gap-1.5">
+                    <X className="h-3.5 w-3.5" />
+                    Cancel
+                  </Button>
+                  <span className="text-xs text-muted-foreground font-mono ml-auto">{bioValue.length}/500</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-foreground/80 leading-relaxed max-w-2xl">
+                {user.bio || (
+                  isOwnProfile
+                    ? <span className="text-muted-foreground italic">No bio yet — <button onClick={startEditBio} className="underline hover:text-foreground transition-colors">add one</button></span>
+                    : "This user hasn't added a bio yet. They prefer to let their clouds do the talking."
+                )}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
