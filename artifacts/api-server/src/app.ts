@@ -1,10 +1,25 @@
 import express, { type Express, type Request } from "express";
 import cors from "cors";
+import helmet from "helmet";
+import { rateLimit } from "express-rate-limit";
 import pinoHttp from "pino-http";
 import { clerkMiddleware } from "@clerk/express";
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from "./middlewares/clerkProxyMiddleware";
 import router from "./routes";
 import { logger } from "./lib/logger";
+
+const ALLOWED_ORIGINS = [
+  "https://cloudvape.store",
+  "https://www.cloudvape.store",
+  "https://app.cloudvape.store",
+];
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 declare module "express" {
   interface Request {
@@ -34,9 +49,18 @@ app.use(
   }),
 );
 
+app.use(helmet());
 app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
 
-app.use(cors({ credentials: true, origin: true }));
+const isDev = process.env.NODE_ENV !== "production";
+app.use(cors({
+  credentials: true,
+  origin: isDev ? true : (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) cb(null, true);
+    else cb(new Error("Not allowed by CORS"));
+  },
+}));
+app.use("/api", apiLimiter);
 app.use(
   express.json({
     limit: "10mb",
