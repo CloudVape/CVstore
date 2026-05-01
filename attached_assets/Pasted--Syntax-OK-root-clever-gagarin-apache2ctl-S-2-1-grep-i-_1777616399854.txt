@@ -1,0 +1,39 @@
+
+Syntax OK
+root@clever-gagarin:~# apache2ctl -S 2>&1 | grep -i cloudvape
+         port 443 namevhost webmail.app.cloudvape.store (/etc/apache2/plesk.conf.d/webmails/app.cloudvape.store_webmail.conf:37)
+         port 443 namevhost webmail.cloudvape.store (/etc/apache2/plesk.conf.d/webmails/cloudvape.store_webmail.conf:37)
+         port 443 namevhost app.cloudvape.store (/etc/apache2/plesk.conf.d/vhosts/app.cloudvape.store.conf:10)
+                 alias www.app.cloudvape.store
+                 alias ipv4.app.cloudvape.store
+         port 80 namevhost webmail.app.cloudvape.store (/etc/apache2/plesk.conf.d/webmails/app.cloudvape.store_webmail.conf:5)
+         port 80 namevhost webmail.cloudvape.store (/etc/apache2/plesk.conf.d/webmails/cloudvape.store_webmail.conf:5)
+         port 80 namevhost app.cloudvape.store (/etc/apache2/plesk.conf.d/vhosts/app.cloudvape.store.conf:113)
+                 alias www.app.cloudvape.store
+                 alias ipv4.app.cloudvape.store
+         default server cloudvape.store (/etc/apache2/sites-enabled/cloudvape.conf:1)
+         port 80 namevhost cloudvape.store (/etc/apache2/sites-enabled/cloudvape.conf:1)
+                 alias www.cloudvape.store
+         port 80 namevhost cloudvape.store (/etc/apache2/sites-enabled/cloudvape.store.conf:1)
+                 alias www.cloudvape.store
+*:443                  cloudvape.store (/etc/apache2/sites-enabled/cloudvape.store.conf:7)
+root@clever-gagarin:~# ^C
+root@clever-gagarin:~# apache2ctl -S 2>&1 | grep -i "default\|*:80\|*:443" | head -20
+         default server default (/etc/apache2/plesk.conf.d/server.conf:98)
+         port 443 namevhost default (/etc/apache2/plesk.conf.d/server.conf:98)
+         default server default (/etc/apache2/plesk.conf.d/server.conf:61)
+         port 80 namevhost default (/etc/apache2/plesk.conf.d/server.conf:61)
+*:80                   is a NameVirtualHost
+         default server cloudvape.store (/etc/apache2/sites-enabled/cloudvape.conf:1)
+*:443                  cloudvape.store (/etc/apache2/sites-enabled/cloudvape.store.conf:7)
+Main DocumentRoot: "/var/www/vhosts/default/htdocs"
+Mutex rewrite-map: using_defaults
+Mutex ssl-stapling-refresh: using_defaults
+Mutex fcgid-proctbl: using_defaults
+Mutex ssl-stapling: using_defaults
+Mutex proxy: using_defaults
+Mutex ssl-cache: using_defaults
+Mutex default: dir="/var/run/apache2/" mechanism=default
+Mutex fcgid-pipe: using_defaults
+Mutex watchdog-callback: using_defaults
+root@clever-gagarin:~#
