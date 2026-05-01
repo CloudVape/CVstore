@@ -484,6 +484,36 @@ export function forumReplyNotificationTemplate(opts: {
   return { subject, html, text };
 }
 
+export function threadParticipantNotificationTemplate(opts: {
+  username: string;
+  postTitle: string;
+  postUrl: string;
+  commenterUsername: string;
+  replySnippet: string;
+  notificationsUrl: string;
+  siteUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `New reply in a thread you joined: "${opts.postTitle}"`;
+  const escaped = opts.replySnippet
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const html = baseTemplate({
+    siteUrl: opts.siteUrl,
+    preheader: `${opts.commenterUsername} added a reply in "${opts.postTitle}" on CloudVape`,
+    content: `
+      ${h1("New reply in a thread you joined")}
+      ${p(`Hi ${opts.username}, <strong style="color:${TEXT};">${opts.commenterUsername}</strong> replied in <em>"${opts.postTitle}"</em>:`)}
+      <div style="background:#0f0f11;border-radius:8px;border-left:3px solid ${BRAND_COLOR};padding:16px 20px;margin:16px 0;color:${TEXT};font-size:14px;line-height:1.7;">${escaped}</div>
+      ${button(opts.postUrl, "View Thread")}
+      ${divider()}
+      ${p(`<a href="${opts.notificationsUrl}" style="color:${MUTED};font-size:12px;text-decoration:underline;">Manage notification settings</a>`, `color:${MUTED};font-size:12px;`)}
+    `,
+  });
+  const text = `Hi ${opts.username},\n\n${opts.commenterUsername} replied in the thread "${opts.postTitle}":\n\n"${opts.replySnippet}"\n\nView thread: ${opts.postUrl}\n\nCloudVape`;
+  return { subject, html, text };
+}
+
 export function mentionNotificationTemplate(opts: {
   username: string;
   mentionerUsername: string;

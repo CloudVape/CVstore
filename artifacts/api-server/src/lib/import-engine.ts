@@ -8,8 +8,7 @@ import {
   type ImportRowError,
   type SupplierColumnMapping,
 } from "@workspace/db";
-import { fireAndForget } from "./email";
-import { announceNewProduct } from "../jobs/new-arrivals";
+import { insertProduct } from "./product-service";
 
 /**
  * Importable product fields. The admin maps each of these to a column
@@ -262,7 +261,7 @@ export async function runImport({
         const slug = await ensureUniqueSlug(slugBase);
 
         const newInStock = (patch.inStock as boolean | undefined) ?? false;
-        const [inserted] = await db.insert(productsTable).values({
+        await insertProduct({
           name: patch.name as string,
           slug,
           brand: patch.brand as string,
@@ -282,12 +281,8 @@ export async function runImport({
           supplierId,
           externalSku,
           lastSyncedAt: new Date(),
-        }).returning({ id: productsTable.id });
+        });
         result.createdCount++;
-
-        if (newInStock && inserted?.id) {
-          fireAndForget(announceNewProduct(inserted.id));
-        }
       }
     } catch (err) {
       result.erroredCount++;

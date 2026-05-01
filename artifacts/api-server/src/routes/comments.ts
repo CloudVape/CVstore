@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, asc, sql } from "drizzle-orm";
+import { eq, asc, sql, ne, and } from "drizzle-orm";
 import { getAuth } from "@clerk/express";
 import { db, commentsTable, usersTable, postsTable } from "@workspace/db";
 import {
@@ -11,6 +11,7 @@ import { sendEmail, fireAndForget } from "../lib/email";
 import {
   forumReplyNotificationTemplate,
   mentionNotificationTemplate,
+  threadParticipantNotificationTemplate,
 } from "../lib/email-templates";
 import { getSiteUrl } from "../lib/config";
 import { logger } from "../lib/logger";
@@ -99,6 +100,46 @@ async function sendMentionNotifications(
     });
 
     await sendEmail({ ...tpl, to: mentioned.email, template: "mention" });
+  }
+}
+
+async function sendThreadParticipantNotifications(
+  post: typeof postsTable.$inferSelect,
+  comment: typeof commentsTable.$inferSelect,
+  commenter: typeof usersTable.$inferSelect,
+  siteUrl: string,
+): Promise<void> {
+  const commenters = await db
+    .select({ userId: commentsTable.authorId })
+    .from(commentsTable)
+    .where(
+      and(
+        eq(commentsTable.postId, post.id),
+        ne(commentsTable.id, comment.id),
+        ne(commentsTable.authorId, commenter.id),
+        ne(commentsTable.authorId, post.authorId),
+      ),
+    );
+
+  const uniqueIds = [...new Set(commenters.map((c) => c.userId))];
+  for (const participantId of uniqueIds) {
+    const [participant] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, participantId));
+    if (!participant || !participant.notificationsEnabled || participant.isAiPersona) continue;
+
+    const postUrl = `${siteUrl}/forum/${post.id}`;
+    const tpl = threadParticipantNotificationTemplate({
+      username: participant.username,
+      postTitle: post.title,
+      postUrl,
+      commenterUsername: commenter.username,
+      replySnippet: comment.content.slice(0, 200),
+      notificationsUrl: `${siteUrl}/settings`,
+      siteUrl,
+    });
+    await sendEmail({ ...tpl, to: participant.email, template: "forum-reply" });
   }
 }
 
@@ -197,6 +238,9 @@ router.post("/posts/:postId/comments", async (req, res): Promise<void> => {
           sessionUser.id,
           siteUrl,
         ).catch((err) => logger.error({ err }, "mention-notification: failed"));
+        await sendThreadParticipantNotifications(post, comment, sessionUser, siteUrl).catch((err) =>
+          logger.error({ err }, "thread-participant-notification: failed"),
+        );
       }),
     );
   }

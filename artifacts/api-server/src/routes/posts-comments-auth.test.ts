@@ -8,31 +8,45 @@ import request from "supertest";
 const mockGetAuth = vi.fn();
 const mockFireAndForget = vi.fn();
 const mockSendEmail = vi.fn();
-const mockDbSelect = vi.fn();
-const mockDbInsert = vi.fn();
-const mockDbUpdate = vi.fn();
+
+let capturedInsertValues: Record<string, unknown> = {};
+
+const selectChain = {
+  from: vi.fn().mockReturnThis(),
+  where: vi.fn().mockReturnThis(),
+  leftJoin: vi.fn().mockReturnThis(),
+  orderBy: vi.fn().mockReturnThis(),
+  limit: vi.fn().mockReturnThis(),
+  offset: vi.fn().mockReturnThis(),
+  then: vi.fn().mockReturnThis(),
+};
+
+const mockDbSelectResolve = vi.fn();
 
 vi.mock("@clerk/express", () => ({
   getAuth: mockGetAuth,
   clerkMiddleware: () => (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
 
-const selectChain = {
-  from: vi.fn().mockReturnThis(),
-  where: vi.fn().mockImplementation(() => mockDbSelect()),
-  leftJoin: vi.fn().mockReturnThis(),
-  orderBy: vi.fn().mockReturnThis(),
-  limit: vi.fn().mockReturnThis(),
-  offset: vi.fn().mockReturnThis(),
-};
-
 vi.mock("@workspace/db", () => ({
   db: {
-    select: vi.fn(() => selectChain),
+    select: vi.fn(() => ({
+      ...selectChain,
+      where: vi.fn().mockImplementation(() => mockDbSelectResolve()),
+    })),
     insert: vi.fn(() => ({
-      values: vi.fn(() => ({
-        returning: vi.fn().mockImplementation(() => mockDbInsert()),
-      })),
+      values: vi.fn((data: Record<string, unknown>) => {
+        capturedInsertValues = data;
+        return {
+          returning: vi.fn().mockResolvedValue([{
+            id: 1,
+            ...data,
+            commentCount: 0,
+            likes: 0,
+            createdAt: new Date(),
+          }]),
+        };
+      }),
     })),
     update: vi.fn(() => ({
       set: vi.fn(() => ({
@@ -45,6 +59,8 @@ vi.mock("@workspace/db", () => ({
   usersTable: { id: "id", clerkId: "clerk_id", username: "username", postCount: "post_count" },
   categoriesTable: { id: "id", postCount: "post_count" },
   eq: vi.fn(),
+  ne: vi.fn(),
+  and: vi.fn(),
   asc: vi.fn(),
   desc: vi.fn(),
   sql: vi.fn(),
@@ -58,15 +74,23 @@ vi.mock("../lib/email", () => ({
 vi.mock("../lib/email-templates", () => ({
   mentionNotificationTemplate: vi.fn().mockReturnValue({ subject: "x", html: "x", text: "x" }),
   forumReplyNotificationTemplate: vi.fn().mockReturnValue({ subject: "x", html: "x", text: "x" }),
+  threadParticipantNotificationTemplate: vi.fn().mockReturnValue({ subject: "x", html: "x", text: "x" }),
 }));
 
 vi.mock("../lib/config", () => ({
   getSiteUrl: vi.fn().mockResolvedValue("https://cloudvape.store"),
 }));
 
-/* ──────────────────────────────────────────────
-   App factory
-   ────────────────────────────────────────────── */
+const sessionUser = {
+  id: 42,
+  clerkId: "clerk_real",
+  username: "realuser",
+  email: "real@example.com",
+  avatarUrl: null,
+  notificationsEnabled: true,
+  isAiPersona: false,
+};
+
 async function buildApp() {
   const [{ default: postsRouter }, { default: commentsRouter }] = await Promise.all([
     import("./posts"),
@@ -79,17 +103,8 @@ async function buildApp() {
   return app;
 }
 
-const validPostBody = {
-  title: "Test Post",
-  content: "Hello world",
-  categoryId: 1,
-  authorId: 99,
-};
-
-const validCommentBody = {
-  content: "Great post",
-  authorId: 99,
-};
+const validPostBody = { title: "Test Post", content: "Hello world", categoryId: 1, authorId: 999 };
+const validCommentBody = { content: "Great post @alice", authorId: 999 };
 
 /* ──────────────────────────────────────────────
    POST /posts — authentication enforcement
@@ -97,62 +112,56 @@ const validCommentBody = {
 describe("POST /posts — authentication", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetAuth.mockReturnValue({ userId: null });
+    capturedInsertValues = {};
   });
 
-  it("returns 401 and does not trigger emails when unauthenticated", async () => {
+  it("returns 401 when no Clerk session exists and does not queue email notifications", async () => {
+    mockGetAuth.mockReturnValue({ userId: null });
     const app = await buildApp();
+
     const res = await request(app).post("/posts").send(validPostBody);
+
     expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({ error: expect.stringContaining("Authentication") });
     expect(mockFireAndForget).not.toHaveBeenCalled();
     expect(mockSendEmail).not.toHaveBeenCalled();
   });
 
-  it("returns 403 when Clerk ID has no matching DB profile", async () => {
+  it("returns 403 when authenticated Clerk user has no DB profile and does not queue email notifications", async () => {
     mockGetAuth.mockReturnValue({ userId: "clerk_ghost" });
-    mockDbSelect.mockResolvedValue([]);
+    mockDbSelectResolve.mockResolvedValue([]);
     const app = await buildApp();
+
     const res = await request(app).post("/posts").send(validPostBody);
+
     expect(res.status).toBe(403);
     expect(mockFireAndForget).not.toHaveBeenCalled();
+    expect(mockSendEmail).not.toHaveBeenCalled();
   });
 
-  it("uses session user ID (not body authorId) when authenticated", async () => {
-    const sessionUser = {
-      id: 42,
-      clerkId: "clerk_real",
-      username: "realuser",
-      email: "real@example.com",
-      avatarUrl: null,
-      notificationsEnabled: true,
-      isAiPersona: false,
-    };
+  it("uses the authenticated session user's ID as authorId — ignores body authorId", async () => {
     mockGetAuth.mockReturnValue({ userId: "clerk_real" });
-    mockDbSelect.mockResolvedValue([sessionUser]);
-    mockDbInsert.mockResolvedValue([{
-      id: 1,
-      title: "Test Post",
-      content: "Hello world",
-      authorId: 42,
-      categoryId: 1,
-      commentCount: 0,
-      likes: 0,
-      tags: [],
-      sourceUrl: null,
-      isAiGenerated: false,
-      createdAt: new Date(),
-    }]);
-
+    mockDbSelectResolve.mockResolvedValue([sessionUser]);
     const app = await buildApp();
+
     const res = await request(app)
       .post("/posts")
       .send({ ...validPostBody, authorId: 999 });
 
     expect(res.status).toBe(201);
-    const insertCall = vi.mocked(
-      (await import("@workspace/db")).db.insert
-    ).mock.calls[0];
-    expect(insertCall).toBeDefined();
+    expect(capturedInsertValues.authorId).toBe(sessionUser.id);
+    expect(capturedInsertValues.authorId).not.toBe(999);
+  });
+
+  it("queues forum notification after successful authenticated post creation", async () => {
+    mockGetAuth.mockReturnValue({ userId: "clerk_real" });
+    mockDbSelectResolve.mockResolvedValue([sessionUser]);
+    mockFireAndForget.mockImplementation(() => undefined);
+    const app = await buildApp();
+
+    await request(app).post("/posts").send(validPostBody);
+
+    expect(mockFireAndForget).toHaveBeenCalledOnce();
   });
 });
 
@@ -162,67 +171,60 @@ describe("POST /posts — authentication", () => {
 describe("POST /posts/:postId/comments — authentication", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetAuth.mockReturnValue({ userId: null });
+    capturedInsertValues = {};
   });
 
-  it("returns 401 and does not trigger emails when unauthenticated", async () => {
+  it("returns 401 when no Clerk session exists and does not queue email notifications", async () => {
+    mockGetAuth.mockReturnValue({ userId: null });
     const app = await buildApp();
-    const res = await request(app)
-      .post("/posts/1/comments")
-      .send(validCommentBody);
+
+    const res = await request(app).post("/posts/1/comments").send(validCommentBody);
+
     expect(res.status).toBe(401);
     expect(mockFireAndForget).not.toHaveBeenCalled();
     expect(mockSendEmail).not.toHaveBeenCalled();
   });
 
-  it("returns 403 when Clerk ID has no matching DB profile", async () => {
+  it("returns 403 when authenticated Clerk user has no DB profile and does not queue email notifications", async () => {
     mockGetAuth.mockReturnValue({ userId: "clerk_ghost" });
-    mockDbSelect.mockResolvedValue([]);
+    mockDbSelectResolve.mockResolvedValue([]);
     const app = await buildApp();
+
+    const res = await request(app).post("/posts/1/comments").send(validCommentBody);
+
+    expect(res.status).toBe(403);
+    expect(mockFireAndForget).not.toHaveBeenCalled();
+    expect(mockSendEmail).not.toHaveBeenCalled();
+  });
+
+  it("uses the session user's ID as authorId — ignores body authorId", async () => {
+    mockGetAuth.mockReturnValue({ userId: "clerk_real" });
+    mockDbSelectResolve
+      .mockResolvedValueOnce([sessionUser])
+      .mockResolvedValue([]);
+    const app = await buildApp();
+
+    const res = await request(app)
+      .post("/posts/1/comments")
+      .send({ ...validCommentBody, authorId: 999 });
+
+    expect(res.status).toBe(201);
+    expect(capturedInsertValues.authorId).toBe(sessionUser.id);
+    expect(capturedInsertValues.authorId).not.toBe(999);
+  });
+
+  it("response body uses session username, not a numeric authorId from client", async () => {
+    mockGetAuth.mockReturnValue({ userId: "clerk_real" });
+    mockDbSelectResolve
+      .mockResolvedValueOnce([sessionUser])
+      .mockResolvedValue([]);
+    const app = await buildApp();
+
     const res = await request(app)
       .post("/posts/1/comments")
       .send(validCommentBody);
-    expect(res.status).toBe(403);
-    expect(mockFireAndForget).not.toHaveBeenCalled();
-  });
-});
 
-/* ──────────────────────────────────────────────
-   Mention cap (max 5 unique handles)
-   ────────────────────────────────────────────── */
-describe("extractMentions — mention cap", () => {
-  it("caps unique mention handles at 5", () => {
-    const MENTION_RE = /@([a-zA-Z0-9_]+)/g;
-    const MAX = 5;
-    function extractMentions(text: string): string[] {
-      const matches: string[] = [];
-      let m: RegExpExecArray | null;
-      const re = new RegExp(MENTION_RE.source, MENTION_RE.flags);
-      while ((m = re.exec(text)) !== null) {
-        if (m[1]) matches.push(m[1].toLowerCase());
-      }
-      return [...new Set(matches)].slice(0, MAX);
-    }
-    const content = "@a @b @c @d @e @f @g @h @i @j";
-    const result = extractMentions(content);
-    expect(result).toHaveLength(5);
-    expect(result).toEqual(["a", "b", "c", "d", "e"]);
-  });
-
-  it("deduplicates repeated mentions before capping", () => {
-    const MENTION_RE = /@([a-zA-Z0-9_]+)/g;
-    const MAX = 5;
-    function extractMentions(text: string): string[] {
-      const matches: string[] = [];
-      let m: RegExpExecArray | null;
-      const re = new RegExp(MENTION_RE.source, MENTION_RE.flags);
-      while ((m = re.exec(text)) !== null) {
-        if (m[1]) matches.push(m[1].toLowerCase());
-      }
-      return [...new Set(matches)].slice(0, MAX);
-    }
-    const content = "@alice @alice @alice @bob @charlie";
-    const result = extractMentions(content);
-    expect(result).toHaveLength(3);
+    expect(res.status).toBe(201);
+    expect(res.body.authorName).toBe(sessionUser.username);
   });
 });
