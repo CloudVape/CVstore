@@ -6,8 +6,98 @@ import {
   CreateCommentParams,
   CreateCommentBody,
 } from "@workspace/api-zod";
+import { sendEmail, fireAndForget } from "../lib/email";
+import {
+  forumReplyNotificationTemplate,
+  mentionNotificationTemplate,
+} from "../lib/email-templates";
+import { getSiteUrl } from "../lib/config";
+import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
+
+const MENTION_RE = /@([a-zA-Z0-9_]+)/g;
+
+function extractMentions(text: string): string[] {
+  const matches: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = MENTION_RE.exec(text)) !== null) {
+    if (m[1]) matches.push(m[1].toLowerCase());
+  }
+  return [...new Set(matches)];
+}
+
+async function sendReplyNotification(
+  post: typeof postsTable.$inferSelect,
+  comment: typeof commentsTable.$inferSelect,
+  commenter: typeof usersTable.$inferSelect,
+  siteUrl: string,
+): Promise<void> {
+  if (post.authorId === comment.authorId) return;
+
+  const [postAuthor] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, post.authorId));
+
+  if (!postAuthor || !postAuthor.notificationsEnabled || postAuthor.isAiPersona) return;
+
+  const postUrl = `${siteUrl}/forum/post/${post.id}`;
+  const notificationsUrl = `${siteUrl}/settings`;
+  const snippet = comment.content.slice(0, 200);
+
+  const tpl = forumReplyNotificationTemplate({
+    username: postAuthor.username,
+    postTitle: post.title,
+    postUrl,
+    replierUsername: commenter.username,
+    replySnippet: snippet,
+    notificationsUrl,
+    siteUrl,
+  });
+
+  await sendEmail({ ...tpl, to: postAuthor.email, template: "forum-reply" });
+}
+
+async function sendMentionNotifications(
+  content: string,
+  contextUrl: string,
+  mentionerUsername: string,
+  mentionerUserId: number,
+  siteUrl: string,
+): Promise<void> {
+  const handles = extractMentions(content);
+  if (handles.length === 0) return;
+
+  for (const handle of handles) {
+    const [mentioned] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.username, handle));
+
+    if (
+      !mentioned ||
+      mentioned.id === mentionerUserId ||
+      !mentioned.notificationsEnabled ||
+      mentioned.isAiPersona
+    ) {
+      continue;
+    }
+
+    const notificationsUrl = `${siteUrl}/settings`;
+    const snippet = content.slice(0, 300);
+    const tpl = mentionNotificationTemplate({
+      username: mentioned.username,
+      mentionerUsername,
+      context: snippet,
+      contextUrl,
+      notificationsUrl,
+      siteUrl,
+    });
+
+    await sendEmail({ ...tpl, to: mentioned.email, template: "mention" });
+  }
+}
 
 router.get("/posts/:postId/comments", async (req, res): Promise<void> => {
   const params = ListCommentsParams.safeParse({ postId: req.params.postId });
@@ -67,11 +157,34 @@ router.post("/posts/:postId/comments", async (req, res): Promise<void> => {
     .from(usersTable)
     .where(eq(usersTable.id, comment.authorId));
 
+  const [post] = await db
+    .select()
+    .from(postsTable)
+    .where(eq(postsTable.id, comment.postId));
+
   res.status(201).json({
     ...comment,
     authorName: user?.username ?? "Unknown",
     authorAvatarUrl: user?.avatarUrl ?? null,
   });
+
+  if (post && user) {
+    fireAndForget(
+      getSiteUrl().then(async (siteUrl) => {
+        const postUrl = `${siteUrl}/forum/post/${post.id}`;
+        await sendReplyNotification(post, comment, user, siteUrl).catch((err) =>
+          logger.error({ err }, "reply-notification: failed"),
+        );
+        await sendMentionNotifications(
+          comment.content,
+          postUrl,
+          user.username,
+          user.id,
+          siteUrl,
+        ).catch((err) => logger.error({ err }, "mention-notification: failed"));
+      }),
+    );
+  }
 });
 
 export default router;

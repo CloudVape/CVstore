@@ -453,3 +453,231 @@ export function marketingBroadcastTemplate(opts: {
   const text = `${opts.subject}\n\n${opts.bodyText}\n\nVisit the shop: ${opts.siteUrl}\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
   return { subject: opts.subject, html, text };
 }
+
+export function forumReplyNotificationTemplate(opts: {
+  username: string;
+  postTitle: string;
+  postUrl: string;
+  replierUsername: string;
+  replySnippet: string;
+  notificationsUrl: string;
+  siteUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `${opts.replierUsername} replied to your post`;
+  const escaped = opts.replySnippet
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const html = baseTemplate({
+    siteUrl: opts.siteUrl,
+    preheader: `${opts.replierUsername} replied to "${opts.postTitle}" on CloudVape`,
+    content: `
+      ${h1("Someone replied to your post")}
+      ${p(`Hi ${opts.username}, <strong style="color:${TEXT};">${opts.replierUsername}</strong> replied to your post <em>"${opts.postTitle}"</em>:`)}
+      <div style="background:#0f0f11;border-radius:8px;border-left:3px solid ${BRAND_COLOR};padding:16px 20px;margin:16px 0;color:${TEXT};font-size:14px;line-height:1.7;">${escaped}</div>
+      ${button(opts.postUrl, "View Reply")}
+      ${divider()}
+      ${p(`<a href="${opts.notificationsUrl}" style="color:${MUTED};font-size:12px;text-decoration:underline;">Manage notification settings</a>`, `color:${MUTED};font-size:12px;`)}
+    `,
+  });
+  const text = `Hi ${opts.username},\n\n${opts.replierUsername} replied to your post "${opts.postTitle}":\n\n"${opts.replySnippet}"\n\nRead the reply: ${opts.postUrl}\n\nCloudVape`;
+  return { subject, html, text };
+}
+
+export function mentionNotificationTemplate(opts: {
+  username: string;
+  mentionerUsername: string;
+  context: string;
+  contextUrl: string;
+  notificationsUrl: string;
+  siteUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `${opts.mentionerUsername} mentioned you on CloudVape`;
+  const escaped = opts.context
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const html = baseTemplate({
+    siteUrl: opts.siteUrl,
+    preheader: `${opts.mentionerUsername} mentioned you in a post or comment on CloudVape`,
+    content: `
+      ${h1("You were mentioned")}
+      ${p(`Hi ${opts.username}, <strong style="color:${TEXT};">${opts.mentionerUsername}</strong> mentioned you:`)}
+      <div style="background:#0f0f11;border-radius:8px;border-left:3px solid ${BRAND_COLOR};padding:16px 20px;margin:16px 0;color:${TEXT};font-size:14px;line-height:1.7;">${escaped}</div>
+      ${button(opts.contextUrl, "View Post")}
+      ${divider()}
+      ${p(`<a href="${opts.notificationsUrl}" style="color:${MUTED};font-size:12px;text-decoration:underline;">Manage notification settings</a>`, `color:${MUTED};font-size:12px;`)}
+    `,
+  });
+  const text = `Hi ${opts.username},\n\n${opts.mentionerUsername} mentioned you:\n\n"${opts.context}"\n\nView it: ${opts.contextUrl}\n\nCloudVape`;
+  return { subject, html, text };
+}
+
+export function backInStockTemplate(opts: {
+  username: string;
+  productName: string;
+  productUrl: string;
+  siteUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `Back in stock: ${opts.productName}`;
+  const html = baseTemplate({
+    siteUrl: opts.siteUrl,
+    preheader: `Good news — ${opts.productName} is back in stock at CloudVape.`,
+    content: `
+      ${h1("Back In Stock")}
+      ${p(`Hi ${opts.username}, you saved <strong style="color:${TEXT};">${opts.productName}</strong> to your wishlist. It's back in stock — grab it before it sells out again.`)}
+      ${button(opts.productUrl, "Shop Now")}
+      ${divider()}
+      ${p("Stock can move fast, especially on popular items.", `color:${MUTED};font-size:13px;`)}
+    `,
+  });
+  const text = `Back in stock: ${opts.productName}\n\nHi ${opts.username}, ${opts.productName} is back in stock.\n\nShop now: ${opts.productUrl}\n\nCloudVape`;
+  return { subject, html, text };
+}
+
+export function priceDropTemplate(opts: {
+  username: string;
+  productName: string;
+  oldPriceCents: number;
+  newPriceCents: number;
+  productUrl: string;
+  siteUrl: string;
+}): { subject: string; html: string; text: string } {
+  const savings = opts.oldPriceCents - opts.newPriceCents;
+  const savingsStr = `£${(savings / 100).toFixed(2)}`;
+  const subject = `Price drop: ${opts.productName} — save ${savingsStr}`;
+  const html = baseTemplate({
+    siteUrl: opts.siteUrl,
+    preheader: `${opts.productName} just dropped in price — save ${savingsStr} at CloudVape.`,
+    content: `
+      ${h1("Price Drop")}
+      ${p(`Hi ${opts.username}, the price on <strong style="color:${TEXT};">${opts.productName}</strong> in your wishlist just dropped.`)}
+      <table cellpadding="0" cellspacing="0" border="0" style="margin:16px 0;">
+        <tr>
+          <td style="padding-right:24px;">
+            <p style="margin:0;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Was</p>
+            <p style="margin:4px 0 0;color:${MUTED};font-size:20px;font-weight:700;text-decoration:line-through;">£${(opts.oldPriceCents / 100).toFixed(2)}</p>
+          </td>
+          <td>
+            <p style="margin:0;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Now</p>
+            <p style="margin:4px 0 0;color:${BRAND_COLOR};font-size:24px;font-weight:800;font-family:monospace;">£${(opts.newPriceCents / 100).toFixed(2)}</p>
+          </td>
+        </tr>
+      </table>
+      ${button(opts.productUrl, `Save ${savingsStr}`)}
+      ${divider()}
+      ${p("Prices can change at any time.", `color:${MUTED};font-size:13px;`)}
+    `,
+  });
+  const text = `Price drop on ${opts.productName}\n\nHi ${opts.username}, ${opts.productName} dropped from £${(opts.oldPriceCents / 100).toFixed(2)} to £${(opts.newPriceCents / 100).toFixed(2)} — saving you ${savingsStr}.\n\nShop now: ${opts.productUrl}\n\nCloudVape`;
+  return { subject, html, text };
+}
+
+export function newArrivalTemplate(opts: {
+  productName: string;
+  brand: string;
+  aiBodyHtml: string;
+  aiBodyText: string;
+  priceCents: number;
+  productUrl: string;
+  unsubscribeUrl: string;
+  siteUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `New arrival: ${opts.productName} by ${opts.brand}`;
+  const html = baseTemplate({
+    siteUrl: opts.siteUrl,
+    preheader: `${opts.productName} is now in the CloudVape shop — £${(opts.priceCents / 100).toFixed(2)}`,
+    unsubscribeUrl: opts.unsubscribeUrl,
+    content: `
+      <p style="margin:0 0 8px;color:${MUTED};font-size:11px;font-family:monospace;text-transform:uppercase;letter-spacing:0.1em;">New Arrival</p>
+      ${h1(opts.productName)}
+      <p style="margin:0 0 24px;color:${MUTED};font-size:13px;font-family:monospace;">${opts.brand} &mdash; £${(opts.priceCents / 100).toFixed(2)}</p>
+      <div style="color:${TEXT};font-size:15px;line-height:1.7;">${opts.aiBodyHtml}</div>
+      ${divider()}
+      ${button(opts.productUrl, "Shop Now")}
+    `,
+  });
+  const text = `New arrival: ${opts.productName} by ${opts.brand}\n\n£${(opts.priceCents / 100).toFixed(2)}\n\n${opts.aiBodyText}\n\nShop now: ${opts.productUrl}\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
+  return { subject, html, text };
+}
+
+export function weeklyDigestTemplate(opts: {
+  posts: Array<{ title: string; url: string; category: string; snippet: string }>;
+  aiIntroHtml: string;
+  aiIntroText: string;
+  unsubscribeUrl: string;
+  siteUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = "Your CloudVape Weekly Digest";
+  const postRows = opts.posts
+    .slice(0, 5)
+    .map(
+      (post) => `
+      <tr>
+        <td style="padding:16px 0;border-bottom:1px solid #27272a;">
+          <p style="margin:0 0 4px;color:${MUTED};font-size:11px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">${post.category}</p>
+          <a href="${post.url}" style="color:${TEXT};font-size:15px;font-weight:700;text-decoration:none;">${post.title}</a>
+          <p style="margin:6px 0 0;color:${MUTED};font-size:13px;line-height:1.5;">${post.snippet}</p>
+        </td>
+      </tr>`
+    )
+    .join("");
+  const html = baseTemplate({
+    siteUrl: opts.siteUrl,
+    preheader: "Top posts, reviews and discussions from the CloudVape community this week.",
+    unsubscribeUrl: opts.unsubscribeUrl,
+    content: `
+      <p style="margin:0 0 8px;color:${MUTED};font-size:11px;font-family:monospace;text-transform:uppercase;letter-spacing:0.1em;">Weekly Digest</p>
+      ${h1("This Week on CloudVape")}
+      <div style="color:${TEXT};font-size:15px;line-height:1.7;margin-bottom:24px;">${opts.aiIntroHtml}</div>
+      ${divider()}
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">${postRows}</table>
+      ${divider()}
+      ${button(`${opts.siteUrl}/forum`, "Join the Conversation")}
+    `,
+  });
+  const textPosts = opts.posts
+    .slice(0, 5)
+    .map((p, i) => `${i + 1}. ${p.title}\n   ${p.url}\n   ${p.snippet}`)
+    .join("\n\n");
+  const text = `CloudVape Weekly Digest\n\n${opts.aiIntroText}\n\n${textPosts}\n\nJoin the forum: ${opts.siteUrl}/forum\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
+  return { subject, html, text };
+}
+
+export function winBackTemplate(opts: {
+  username: string;
+  aiBodyHtml: string;
+  aiBodyText: string;
+  recentPosts: Array<{ title: string; url: string }>;
+  siteUrl: string;
+  unsubscribeUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `We miss you, ${opts.username} — here's what's been happening`;
+  const postLinks = opts.recentPosts
+    .slice(0, 3)
+    .map(
+      (p) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #27272a;"><a href="${p.url}" style="color:${BRAND_COLOR};font-size:14px;text-decoration:none;">${p.title}</a></td></tr>`
+    )
+    .join("");
+  const html = baseTemplate({
+    siteUrl: opts.siteUrl,
+    preheader: `Hi ${opts.username}, it's been a while. Here's what the CloudVape community has been up to.`,
+    unsubscribeUrl: opts.unsubscribeUrl,
+    content: `
+      ${h1(`Welcome back, ${opts.username}`)}
+      <div style="color:${TEXT};font-size:15px;line-height:1.7;margin-bottom:24px;">${opts.aiBodyHtml}</div>
+      ${divider()}
+      <p style="margin:0 0 12px;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Hot right now</p>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">${postLinks}</table>
+      ${divider()}
+      ${button(`${opts.siteUrl}/forum`, "Back to the Community")}
+    `,
+  });
+  const textPosts = opts.recentPosts
+    .slice(0, 3)
+    .map((p) => `- ${p.title}: ${p.url}`)
+    .join("\n");
+  const text = `Hi ${opts.username},\n\n${opts.aiBodyText}\n\nHot right now:\n${textPosts}\n\nVisit: ${opts.siteUrl}/forum\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
+  return { subject, html, text };
+}

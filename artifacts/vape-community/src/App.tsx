@@ -44,6 +44,7 @@ import Help from "@/pages/help";
 import HelpArticle from "@/pages/help-article";
 import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
+import UserSettings from "@/pages/settings";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
 const basePath = "/";
@@ -264,6 +265,7 @@ function Router() {
         <Route path="/forum/:id" component={PostDetail} />
         <Route path="/categories" component={Categories} />
         <Route path="/profile/:id" component={Profile} />
+        <Route path="/settings" component={UserSettings} />
         <Route path="/sign-in/*?" component={SignInPage} />
         <Route path="/sign-up/*?" component={SignUpPage} />
         <Route path="/login" component={() => { window.location.replace(`${basePath}/sign-in`); return null; }} />

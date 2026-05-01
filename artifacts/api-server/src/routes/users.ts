@@ -34,6 +34,7 @@ function formatUserPrivate(u: typeof usersTable.$inferSelect) {
     ...formatUserPublic(u),
     isAdmin: u.isAdmin,
     themePreference: u.themePreference,
+    notificationsEnabled: u.notificationsEnabled,
   };
 }
 
@@ -214,11 +215,50 @@ router.get("/users/me", async (req, res): Promise<void> => {
       }
     }
 
+    fireAndForget(
+      db.update(usersTable).set({ lastVisitedAt: new Date() }).where(eq(usersTable.id, user.id)).then(() => {}),
+    );
+
     res.json(formatUserPrivate(user));
   } catch (err) {
     req.log?.error?.({ err }, "GET /users/me failed");
     res.status(500).json({ error: "Failed to load user profile" });
   }
+});
+
+const NotificationsBody = z.object({
+  enabled: z.boolean(),
+});
+
+router.patch("/users/me/notifications", async (req, res): Promise<void> => {
+  const { userId } = getAuth(req);
+  if (!userId) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
+  const parsed = NotificationsBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "enabled must be a boolean" });
+    return;
+  }
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, userId));
+
+  if (!user) {
+    res.status(404).json({ error: "User profile not found" });
+    return;
+  }
+
+  await db
+    .update(usersTable)
+    .set({ notificationsEnabled: parsed.data.enabled })
+    .where(eq(usersTable.id, user.id));
+
+  res.json({ notificationsEnabled: parsed.data.enabled });
 });
 
 const ThemePreferenceBody = z.object({

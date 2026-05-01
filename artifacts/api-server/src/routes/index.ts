@@ -15,6 +15,7 @@ import helpRouter from "./help";
 import supportRouter from "./support";
 import adminRouter from "./admin";
 import sampleFeedsRouter from "./sample-feeds";
+import wishlistRouter from "./wishlist";
 
 const router: IRouter = Router();
 
@@ -34,5 +35,6 @@ router.use(helpRouter);
 router.use(supportRouter);
 router.use(adminRouter);
 router.use(sampleFeedsRouter);
+router.use(wishlistRouter);
 
 export default router;

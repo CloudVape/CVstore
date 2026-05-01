@@ -15,6 +15,8 @@ import {
 } from "../../lib/email-templates";
 import { getSiteUrl } from "../../lib/config";
 import { z } from "zod";
+import { sendWeeklyDigest } from "../../jobs/weekly-digest";
+import { announceNewProduct } from "../../jobs/new-arrivals";
 
 const router: IRouter = Router();
 
@@ -175,6 +177,31 @@ router.get("/admin/orders", async (_req, res): Promise<void> => {
     .orderBy(desc(ordersTable.createdAt))
     .limit(200);
   res.json(rows);
+});
+
+router.post("/admin/email/send-weekly-digest", async (_req, res): Promise<void> => {
+  try {
+    const result = await sendWeeklyDigest();
+    res.json({ message: `Weekly digest sent to ${result.sent} subscriber(s)`, sent: result.sent });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Failed to send digest" });
+  }
+});
+
+const AnnounceProductBody = z.object({ productId: z.number().int().positive() });
+
+router.post("/admin/email/announce-product", async (req, res): Promise<void> => {
+  const parsed = AnnounceProductBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "productId is required" });
+    return;
+  }
+  try {
+    await announceNewProduct(parsed.data.productId);
+    res.json({ message: "New arrival announcement queued" });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Failed to announce product" });
+  }
 });
 
 export default router;

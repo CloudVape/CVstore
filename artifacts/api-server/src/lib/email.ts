@@ -32,7 +32,14 @@ export type EmailTemplate =
   | "newsletter-confirm"
   | "support-ticket-confirmation"
   | "support-reply"
-  | "supplier-sync-failure";
+  | "supplier-sync-failure"
+  | "forum-reply"
+  | "mention"
+  | "back-in-stock"
+  | "price-drop"
+  | "new-arrival"
+  | "weekly-digest"
+  | "win-back";
 
 export interface SendEmailOptions {
   to: string;

@@ -27,6 +27,7 @@ export type AppUser = {
   joinedAt: string;
   emailVerified: boolean;
   themePreference: string | null;
+  notificationsEnabled: boolean;
 };
 
 interface AuthContextType {

@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid, Shield, Send } from "lucide-react";
+import { Cloud, LogOut, User, ShoppingCart, Store, MessageSquare, Grid, Shield, Send, Settings } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -146,6 +146,11 @@ export function Layout({ children }: { children: ReactNode }) {
                   <Button variant="ghost" size="sm" className="hidden sm:flex gap-2 px-3">
                     <User className="h-4 w-4" />
                     <span className="font-mono text-xs">{user.username}</span>
+                  </Button>
+                </Link>
+                <Link href="/settings">
+                  <Button variant="ghost" size="sm" className="gap-2 font-mono text-xs uppercase tracking-wider px-2 sm:px-3" aria-label="Settings" title="Settings">
+                    <Settings className="h-4 w-4" />
                   </Button>
                 </Link>
                 <Button variant="ghost" size="sm" onClick={() => void logout()} className="gap-2 font-mono text-xs uppercase tracking-wider px-2 sm:px-3" aria-label="Logout">

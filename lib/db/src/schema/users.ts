@@ -26,6 +26,9 @@ export const usersTable = pgTable("users", {
   passwordResetToken: text("password_reset_token"),
   passwordResetExpiry: timestamp("password_reset_expiry", { withTimezone: true }),
   themePreference: text("theme_preference"),
+  notificationsEnabled: boolean("notifications_enabled").notNull().default(true),
+  lastVisitedAt: timestamp("last_visited_at", { withTimezone: true }),
+  winBackSentAt: timestamp("win_back_sent_at", { withTimezone: true }),
 });
 
 export const insertUserSchema = createInsertSchema(usersTable).omit({ id: true, joinedAt: true });

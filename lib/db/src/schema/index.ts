@@ -12,3 +12,4 @@ export * from "./newsletter";
 export * from "./help-center";
 export * from "./support";
 export * from "./settings";
+export * from "./wishlists";
