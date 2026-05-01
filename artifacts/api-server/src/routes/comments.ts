@@ -73,7 +73,7 @@ async function sendMentionNotifications(
     const [mentioned] = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.username, handle));
+      .where(sql`LOWER(${usersTable.username}) = ${handle}`);
 
     if (
       !mentioned ||

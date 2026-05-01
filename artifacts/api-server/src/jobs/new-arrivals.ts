@@ -1,13 +1,10 @@
-import { db, newsletterSubscribersTable, productsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { db, newsletterSubscribersTable, productsTable, emailLogTable } from "@workspace/db";
+import { and, eq, gte } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendEmail } from "../lib/email";
 import { newArrivalTemplate } from "../lib/email-templates";
 import { getSiteUrl } from "../lib/config";
 import { openai } from "@workspace/integrations-openai-ai-server";
-
-const announced = new Map<number, number>();
-const ANNOUNCE_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 async function generateArrivalCopy(product: {
   name: string;
@@ -56,9 +53,17 @@ Return JSON with:
 }
 
 export async function announceNewProduct(productId: number): Promise<void> {
-  const last = announced.get(productId);
-  if (last !== undefined && Date.now() - last < ANNOUNCE_COOLDOWN_MS) {
-    logger.info({ productId }, "new-arrivals: cooldown active, skipping");
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const [existingToday] = await db
+    .select({ id: emailLogTable.id })
+    .from(emailLogTable)
+    .where(and(eq(emailLogTable.template, "new-arrival"), gte(emailLogTable.createdAt, todayStart)))
+    .limit(1);
+
+  if (existingToday) {
+    logger.info({ productId }, "new-arrivals: global daily cap reached, skipping");
     return;
   }
 
@@ -80,8 +85,6 @@ export async function announceNewProduct(productId: number): Promise<void> {
     logger.info({ productId }, "new-arrivals: no subscribers, skipping");
     return;
   }
-
-  announced.set(productId, Date.now());
 
   const siteUrl = await getSiteUrl();
   const productUrl = `${siteUrl}/shop/p/${product.slug}`;

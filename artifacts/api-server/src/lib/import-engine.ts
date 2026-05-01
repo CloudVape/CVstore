@@ -8,6 +8,8 @@ import {
   type ImportRowError,
   type SupplierColumnMapping,
 } from "@workspace/db";
+import { fireAndForget } from "./email";
+import { announceNewProduct } from "../jobs/new-arrivals";
 
 /**
  * Importable product fields. The admin maps each of these to a column
@@ -259,7 +261,8 @@ export async function runImport({
         const slugBase = slugify(`${patch.brand}-${patch.name}-${externalSku}`);
         const slug = await ensureUniqueSlug(slugBase);
 
-        await db.insert(productsTable).values({
+        const newInStock = (patch.inStock as boolean | undefined) ?? false;
+        const [inserted] = await db.insert(productsTable).values({
           name: patch.name as string,
           slug,
           brand: patch.brand as string,
@@ -270,7 +273,7 @@ export async function runImport({
           categoryId: patch.categoryId as number,
           imageUrl: patch.imageUrl as string,
           stockCount: (patch.stockCount as number | undefined) ?? 0,
-          inStock: (patch.inStock as boolean | undefined) ?? false,
+          inStock: newInStock,
           flavor: (patch.flavor as string | undefined) ?? null,
           nicotineStrength: (patch.nicotineStrength as string | undefined) ?? null,
           vgPgRatio: (patch.vgPgRatio as string | undefined) ?? null,
@@ -279,8 +282,12 @@ export async function runImport({
           supplierId,
           externalSku,
           lastSyncedAt: new Date(),
-        });
+        }).returning({ id: productsTable.id });
         result.createdCount++;
+
+        if (newInStock && inserted?.id) {
+          fireAndForget(announceNewProduct(inserted.id));
+        }
       }
     } catch (err) {
       result.erroredCount++;

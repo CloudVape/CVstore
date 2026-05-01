@@ -3,9 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 import { adminApi, type EmailLogEntry } from "@/lib/admin-api";
 import { AdminShell } from "./admin-shell";
-import { Mail, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
+import { Mail, CheckCircle2, XCircle, Clock, AlertCircle, Send } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+
+const BASE = `${import.meta.env.BASE_URL}api`.replace(/\/+$/, "");
 
 const TEMPLATES = [
   "welcome",
@@ -38,9 +41,29 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function AdminEmailLog() {
   const { user, getToken } = useAuth();
+  const { toast } = useToast();
   const [templateFilter, setTemplateFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [fromFilter, setFromFilter] = useState("all");
+  const [sendingDigest, setSendingDigest] = useState(false);
+
+  async function triggerWeeklyDigest() {
+    setSendingDigest(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(`${BASE}/admin/email/send-weekly-digest`, {
+        method: "POST",
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      });
+      const data = await res.json() as { message?: string; error?: string; sent?: number };
+      if (!res.ok) throw new Error(data.error ?? "Failed");
+      toast({ title: "Digest sent", description: data.message ?? `Sent to ${data.sent ?? 0} subscriber(s)` });
+    } catch (err) {
+      toast({ title: "Error", description: err instanceof Error ? err.message : "Failed to send digest", variant: "destructive" });
+    } finally {
+      setSendingDigest(false);
+    }
+  }
 
   const { data: fromAddresses = [] } = useQuery({
     queryKey: ["admin-email-log-from-addresses"],
@@ -103,9 +126,21 @@ export default function AdminEmailLog() {
               </SelectContent>
             </Select>
           </div>
-          <Button size="sm" variant="outline" onClick={() => refetch()} className="h-8 font-mono text-xs">
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => void triggerWeeklyDigest()}
+              disabled={sendingDigest}
+              className="h-8 font-mono text-xs gap-1.5"
+            >
+              <Send className="h-3 w-3" />
+              {sendingDigest ? "Sending…" : "Send Weekly Digest"}
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => refetch()} className="h-8 font-mono text-xs">
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (

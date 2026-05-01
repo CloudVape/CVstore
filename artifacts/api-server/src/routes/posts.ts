@@ -40,7 +40,7 @@ async function sendPostMentionNotifications(
     const [mentioned] = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.username, handle));
+      .where(sql`LOWER(${usersTable.username}) = ${handle}`);
     if (
       !mentioned ||
       mentioned.id === mentionerUserId ||
