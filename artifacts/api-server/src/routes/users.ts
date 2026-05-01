@@ -216,7 +216,9 @@ router.get("/users/me", async (req, res): Promise<void> => {
     }
 
     fireAndForget(
-      db.update(usersTable).set({ lastVisitedAt: new Date() }).where(eq(usersTable.id, user.id)).then(() => {}),
+      (async () => {
+        await db.update(usersTable).set({ lastVisitedAt: new Date() }).where(eq(usersTable.id, user!.id));
+      })(),
     );
 
     res.json(formatUserPrivate(user));

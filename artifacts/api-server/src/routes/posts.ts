@@ -35,7 +35,7 @@ async function sendPostMentionNotifications(
 ): Promise<void> {
   const handles = extractMentions(content);
   if (handles.length === 0) return;
-  const postUrl = `${siteUrl}/forum/post/${postId}`;
+  const postUrl = `${siteUrl}/forum/${postId}`;
   for (const handle of handles) {
     const [mentioned] = await db
       .select()

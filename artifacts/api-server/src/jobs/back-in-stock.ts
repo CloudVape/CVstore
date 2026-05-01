@@ -1,5 +1,5 @@
-import { db, wishlistTable, productsTable, usersTable, productCategoriesTable } from "@workspace/db";
-import { and, eq } from "drizzle-orm";
+import { db, wishlistTable, productsTable, usersTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendEmail } from "../lib/email";
 import { backInStockTemplate, priceDropTemplate } from "../lib/email-templates";
@@ -16,17 +16,14 @@ async function runCheck(): Promise<void> {
       wishlist: wishlistTable,
       product: productsTable,
       user: usersTable,
-      categorySlug: productCategoriesTable.slug,
     })
     .from(wishlistTable)
     .innerJoin(productsTable, eq(wishlistTable.productId, productsTable.id))
-    .innerJoin(usersTable, eq(wishlistTable.userId, usersTable.id))
-    .leftJoin(productCategoriesTable, eq(productsTable.categoryId, productCategoriesTable.id))
-    .where(eq(usersTable.notificationsEnabled, true));
+    .innerJoin(usersTable, eq(wishlistTable.userId, usersTable.id));
 
   for (const row of rows) {
-    const { wishlist, product, user, categorySlug } = row;
-    const productUrl = `${siteUrl}/shop/p/${categorySlug ?? product.slug}`;
+    const { wishlist, product, user } = row;
+    const productUrl = `${siteUrl}/shop/p/${product.slug}`;
 
     try {
       if (product.inStock && !wishlist.notifiedBackInStock) {

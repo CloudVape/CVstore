@@ -42,7 +42,7 @@ async function sendReplyNotification(
 
   if (!postAuthor || !postAuthor.notificationsEnabled || postAuthor.isAiPersona) return;
 
-  const postUrl = `${siteUrl}/forum/post/${post.id}`;
+  const postUrl = `${siteUrl}/forum/${post.id}`;
   const notificationsUrl = `${siteUrl}/settings`;
   const snippet = comment.content.slice(0, 200);
 
@@ -171,7 +171,7 @@ router.post("/posts/:postId/comments", async (req, res): Promise<void> => {
   if (post && user) {
     fireAndForget(
       getSiteUrl().then(async (siteUrl) => {
-        const postUrl = `${siteUrl}/forum/post/${post.id}`;
+        const postUrl = `${siteUrl}/forum/${post.id}`;
         await sendReplyNotification(post, comment, user, siteUrl).catch((err) =>
           logger.error({ err }, "reply-notification: failed"),
         );

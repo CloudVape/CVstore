@@ -1,5 +1,5 @@
-import { db, postsTable, categoriesTable, newsletterSubscribersTable, usersTable } from "@workspace/db";
-import { desc, gte, sql, eq } from "drizzle-orm";
+import { db, postsTable, categoriesTable, newsletterSubscribersTable } from "@workspace/db";
+import { desc, gte, sql, eq, count } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendEmail } from "../lib/email";
 import { weeklyDigestTemplate } from "../lib/email-templates";
@@ -26,7 +26,7 @@ function getISOWeek(date: Date): number {
 
 let lastSentWeek = "";
 
-async function getTopPosts(sinceDate: Date): Promise<
+async function getTopPosts(sinceDate: Date, siteUrl: string): Promise<
   Array<{ title: string; url: string; category: string; snippet: string }>
 > {
   const rows = await db
@@ -42,9 +42,32 @@ async function getTopPosts(sinceDate: Date): Promise<
 
   return rows.map(({ post, categoryName }) => ({
     title: post.title,
-    url: `POST_URL_PLACEHOLDER/${post.id}`,
+    url: `${siteUrl}/forum/${post.id}`,
     category: categoryName ?? "General",
     snippet: post.content.slice(0, 120) + (post.content.length > 120 ? "…" : ""),
+  }));
+}
+
+async function getTrendingCategories(sinceDate: Date, siteUrl: string): Promise<
+  Array<{ name: string; url: string; postCount: number }>
+> {
+  const rows = await db
+    .select({
+      categoryId: postsTable.categoryId,
+      categoryName: categoriesTable.name,
+      postCount: count(postsTable.id),
+    })
+    .from(postsTable)
+    .innerJoin(categoriesTable, eq(postsTable.categoryId, categoriesTable.id))
+    .where(gte(postsTable.createdAt, sinceDate))
+    .groupBy(postsTable.categoryId, categoriesTable.name)
+    .orderBy(desc(count(postsTable.id)))
+    .limit(3);
+
+  return rows.map((r) => ({
+    name: r.categoryName ?? "General",
+    url: `${siteUrl}/categories`,
+    postCount: r.postCount,
   }));
 }
 
@@ -83,10 +106,10 @@ async function generateDigestIntro(topPosts: Array<{ title: string; category: st
 export async function sendWeeklyDigest(): Promise<{ sent: number }> {
   const sinceDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const siteUrl = await getSiteUrl();
-  const topPosts = (await getTopPosts(sinceDate)).map((p) => ({
-    ...p,
-    url: p.url.replace("POST_URL_PLACEHOLDER", `${siteUrl}/forum/post`),
-  }));
+  const [topPosts, trendingCategories] = await Promise.all([
+    getTopPosts(sinceDate, siteUrl),
+    getTrendingCategories(sinceDate, siteUrl),
+  ]);
 
   if (topPosts.length === 0) {
     logger.info("weekly-digest: no posts this week, skipping");
@@ -109,7 +132,7 @@ export async function sendWeeklyDigest(): Promise<{ sent: number }> {
   for (const sub of subscribers) {
     try {
       const unsubscribeUrl = `${siteUrl}/newsletter/unsubscribe?token=${sub.token}`;
-      const tpl = weeklyDigestTemplate({ posts: topPosts, aiIntroHtml, aiIntroText, unsubscribeUrl, siteUrl });
+      const tpl = weeklyDigestTemplate({ posts: topPosts, trendingCategories, aiIntroHtml, aiIntroText, unsubscribeUrl, siteUrl });
       await sendEmail({ ...tpl, to: sub.email, template: "weekly-digest", marketing: true });
       sent++;
     } catch (err) {

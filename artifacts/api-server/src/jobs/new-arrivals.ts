@@ -1,12 +1,13 @@
-import { db, newsletterSubscribersTable, productsTable, productCategoriesTable } from "@workspace/db";
-import { eq, and, isNull } from "drizzle-orm";
+import { db, newsletterSubscribersTable, productsTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendEmail } from "../lib/email";
 import { newArrivalTemplate } from "../lib/email-templates";
 import { getSiteUrl } from "../lib/config";
 import { openai } from "@workspace/integrations-openai-ai-server";
 
-const NEW_ARRIVAL_FLAG_PREFIX = "ai-new-arrival:";
+const announced = new Map<number, number>();
+const ANNOUNCE_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 async function generateArrivalCopy(product: {
   name: string;
@@ -55,17 +56,19 @@ Return JSON with:
 }
 
 export async function announceNewProduct(productId: number): Promise<void> {
+  const last = announced.get(productId);
+  if (last !== undefined && Date.now() - last < ANNOUNCE_COOLDOWN_MS) {
+    logger.info({ productId }, "new-arrivals: cooldown active, skipping");
+    return;
+  }
+
   const rows = await db
-    .select({
-      product: productsTable,
-      categorySlug: productCategoriesTable.slug,
-    })
+    .select({ product: productsTable })
     .from(productsTable)
-    .leftJoin(productCategoriesTable, eq(productsTable.categoryId, productCategoriesTable.id))
     .where(eq(productsTable.id, productId));
 
   if (!rows[0]) return;
-  const { product, categorySlug } = rows[0];
+  const { product } = rows[0];
   if (!product.inStock) return;
 
   const subscribers = await db
@@ -78,8 +81,10 @@ export async function announceNewProduct(productId: number): Promise<void> {
     return;
   }
 
+  announced.set(productId, Date.now());
+
   const siteUrl = await getSiteUrl();
-  const productUrl = `${siteUrl}/shop/p/${categorySlug ?? product.slug}`;
+  const productUrl = `${siteUrl}/shop/p/${product.slug}`;
 
   const { bodyHtml, bodyText } = await generateArrivalCopy({
     name: product.name,
@@ -87,7 +92,7 @@ export async function announceNewProduct(productId: number): Promise<void> {
     shortDescription: product.shortDescription ?? "",
     description: product.description ?? "",
     priceCents: product.priceCents,
-    categorySlug: categorySlug ?? "",
+    categorySlug: "",
   });
 
   let sent = 0;

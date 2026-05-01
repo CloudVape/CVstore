@@ -603,6 +603,7 @@ export function newArrivalTemplate(opts: {
 
 export function weeklyDigestTemplate(opts: {
   posts: Array<{ title: string; url: string; category: string; snippet: string }>;
+  trendingCategories?: Array<{ name: string; url: string; postCount: number }>;
   aiIntroHtml: string;
   aiIntroText: string;
   unsubscribeUrl: string;
@@ -622,9 +623,26 @@ export function weeklyDigestTemplate(opts: {
       </tr>`
     )
     .join("");
+
+  const cats = opts.trendingCategories ?? [];
+  const categorySection =
+    cats.length > 0
+      ? `${divider()}
+         <p style="margin:0 0 12px;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Trending Topics</p>
+         <table width="100%" cellpadding="0" cellspacing="0" border="0">${cats
+           .map(
+             (c) =>
+               `<tr><td style="padding:8px 0;border-bottom:1px solid #27272a;">
+                  <a href="${c.url}" style="color:${BRAND_COLOR};font-size:14px;font-weight:600;text-decoration:none;">${c.name}</a>
+                  <span style="color:${MUTED};font-size:12px;margin-left:8px;">${c.postCount} post${c.postCount !== 1 ? "s" : ""} this week</span>
+                </td></tr>`
+           )
+           .join("")}</table>`
+      : "";
+
   const html = baseTemplate({
     siteUrl: opts.siteUrl,
-    preheader: "Top posts, reviews and discussions from the CloudVape community this week.",
+    preheader: "Top posts and trending discussions from the CloudVape community this week.",
     unsubscribeUrl: opts.unsubscribeUrl,
     content: `
       <p style="margin:0 0 8px;color:${MUTED};font-size:11px;font-family:monospace;text-transform:uppercase;letter-spacing:0.1em;">Weekly Digest</p>
@@ -632,6 +650,7 @@ export function weeklyDigestTemplate(opts: {
       <div style="color:${TEXT};font-size:15px;line-height:1.7;margin-bottom:24px;">${opts.aiIntroHtml}</div>
       ${divider()}
       <table width="100%" cellpadding="0" cellspacing="0" border="0">${postRows}</table>
+      ${categorySection}
       ${divider()}
       ${button(`${opts.siteUrl}/forum`, "Join the Conversation")}
     `,
@@ -640,7 +659,11 @@ export function weeklyDigestTemplate(opts: {
     .slice(0, 5)
     .map((p, i) => `${i + 1}. ${p.title}\n   ${p.url}\n   ${p.snippet}`)
     .join("\n\n");
-  const text = `CloudVape Weekly Digest\n\n${opts.aiIntroText}\n\n${textPosts}\n\nJoin the forum: ${opts.siteUrl}/forum\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
+  const textCats =
+    cats.length > 0
+      ? `\n\nTrending Topics:\n${cats.map((c) => `- ${c.name} (${c.postCount} posts): ${c.url}`).join("\n")}`
+      : "";
+  const text = `CloudVape Weekly Digest\n\n${opts.aiIntroText}\n\n${textPosts}${textCats}\n\nJoin the forum: ${opts.siteUrl}/forum\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
   return { subject, html, text };
 }
 

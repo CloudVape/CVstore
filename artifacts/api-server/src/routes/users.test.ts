@@ -123,7 +123,9 @@ describe("GET /users/me", () => {
       const res = await request(app).get("/users/me");
 
       expect(res.status).toBe(200);
-      expect(mockFireAndForget).not.toHaveBeenCalled();
+      // fireAndForget is called once for the background lastVisitedAt update
+      expect(mockFireAndForget).toHaveBeenCalledTimes(1);
+      // but no welcome/transactional sendEmail should have been triggered
       expect(mockSendEmail).not.toHaveBeenCalled();
     });
   });
@@ -162,10 +164,10 @@ describe("GET /users/me", () => {
       const res = await request(app).get("/users/me");
 
       expect(res.status).toBe(200);
-      expect(mockFireAndForget).toHaveBeenCalledOnce();
+      // Two fireAndForget calls: welcome email + background lastVisitedAt update
+      expect(mockFireAndForget).toHaveBeenCalledTimes(2);
 
-      // Resolve the promise that was handed to fireAndForget so we can
-      // inspect what sendEmail would be called with.
+      // The first call is always the welcome email promise
       const emailPromise = mockFireAndForget.mock.calls[0][0] as Promise<unknown>;
       await emailPromise;
 

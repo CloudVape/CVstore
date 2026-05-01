@@ -18,7 +18,7 @@ async function getTopRecentPosts(siteUrl: string): Promise<Array<{ title: string
     .where(gte(postsTable.createdAt, sinceDate))
     .orderBy(desc(sql`${postsTable.likes} + ${postsTable.commentCount} * 2`))
     .limit(3);
-  return rows.map((r) => ({ title: r.title, url: `${siteUrl}/forum/post/${r.id}` }));
+  return rows.map((r) => ({ title: r.title, url: `${siteUrl}/forum/${r.id}` }));
 }
 
 async function generateWinBackCopy(opts: {
@@ -68,7 +68,6 @@ async function runWinBack(): Promise<void> {
     .where(
       and(
         eq(usersTable.isAiPersona, false),
-        eq(usersTable.notificationsEnabled, true),
         lte(usersTable.lastVisitedAt, lapsedCutoff),
         isNotNull(usersTable.lastVisitedAt),
         or(isNull(usersTable.winBackSentAt), lte(usersTable.winBackSentAt, cooldownCutoff)),
