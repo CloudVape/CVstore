@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, asc, sql } from "drizzle-orm";
+import { getAuth } from "@clerk/express";
 import { db, commentsTable, usersTable, postsTable } from "@workspace/db";
 import {
   ListCommentsParams,
@@ -14,6 +15,8 @@ import {
 import { getSiteUrl } from "../lib/config";
 import { logger } from "../lib/logger";
 
+const MAX_MENTIONS_PER_CONTENT = 5;
+
 const router: IRouter = Router();
 
 const MENTION_RE = /@([a-zA-Z0-9_]+)/g;
@@ -24,7 +27,7 @@ function extractMentions(text: string): string[] {
   while ((m = MENTION_RE.exec(text)) !== null) {
     if (m[1]) matches.push(m[1].toLowerCase());
   }
-  return [...new Set(matches)];
+  return [...new Set(matches)].slice(0, MAX_MENTIONS_PER_CONTENT);
 }
 
 async function sendReplyNotification(
@@ -126,6 +129,12 @@ router.get("/posts/:postId/comments", async (req, res): Promise<void> => {
 });
 
 router.post("/posts/:postId/comments", async (req, res): Promise<void> => {
+  const { userId: clerkId } = getAuth(req);
+  if (!clerkId) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
   const pathParams = CreateCommentParams.safeParse({ postId: req.params.postId });
   if (!pathParams.success) {
     res.status(400).json({ error: pathParams.error.message });
@@ -137,11 +146,22 @@ router.post("/posts/:postId/comments", async (req, res): Promise<void> => {
     return;
   }
 
+  const [sessionUser] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, clerkId));
+  if (!sessionUser) {
+    res.status(403).json({ error: "User profile not found" });
+    return;
+  }
+
+  const authorId = sessionUser.id;
+
   const [comment] = await db
     .insert(commentsTable)
     .values({
       postId: pathParams.data.postId,
-      authorId: parsed.data.authorId,
+      authorId,
       content: parsed.data.content,
       isAiGenerated: false,
     })
@@ -152,11 +172,6 @@ router.post("/posts/:postId/comments", async (req, res): Promise<void> => {
     .set({ commentCount: sql`${postsTable.commentCount} + 1` })
     .where(eq(postsTable.id, pathParams.data.postId));
 
-  const [user] = await db
-    .select()
-    .from(usersTable)
-    .where(eq(usersTable.id, comment.authorId));
-
   const [post] = await db
     .select()
     .from(postsTable)
@@ -164,22 +179,22 @@ router.post("/posts/:postId/comments", async (req, res): Promise<void> => {
 
   res.status(201).json({
     ...comment,
-    authorName: user?.username ?? "Unknown",
-    authorAvatarUrl: user?.avatarUrl ?? null,
+    authorName: sessionUser.username,
+    authorAvatarUrl: sessionUser.avatarUrl ?? null,
   });
 
-  if (post && user) {
+  if (post) {
     fireAndForget(
       getSiteUrl().then(async (siteUrl) => {
         const postUrl = `${siteUrl}/forum/${post.id}`;
-        await sendReplyNotification(post, comment, user, siteUrl).catch((err) =>
+        await sendReplyNotification(post, comment, sessionUser, siteUrl).catch((err) =>
           logger.error({ err }, "reply-notification: failed"),
         );
         await sendMentionNotifications(
           comment.content,
           postUrl,
-          user.username,
-          user.id,
+          sessionUser.username,
+          sessionUser.id,
           siteUrl,
         ).catch((err) => logger.error({ err }, "mention-notification: failed"));
       }),

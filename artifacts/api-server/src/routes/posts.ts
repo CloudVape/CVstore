@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, desc, sql } from "drizzle-orm";
+import { getAuth } from "@clerk/express";
 import { db, postsTable, usersTable, categoriesTable } from "@workspace/db";
 import {
   CreatePostBody,
@@ -15,6 +16,8 @@ import { mentionNotificationTemplate } from "../lib/email-templates";
 import { getSiteUrl } from "../lib/config";
 import { logger } from "../lib/logger";
 
+const MAX_MENTIONS_PER_CONTENT = 5;
+
 const MENTION_RE = /@([a-zA-Z0-9_]+)/g;
 
 function extractMentions(text: string): string[] {
@@ -23,7 +26,7 @@ function extractMentions(text: string): string[] {
   while ((m = MENTION_RE.exec(text)) !== null) {
     if (m[1]) matches.push(m[1].toLowerCase());
   }
-  return [...new Set(matches)];
+  return [...new Set(matches)].slice(0, MAX_MENTIONS_PER_CONTENT);
 }
 
 async function sendPostMentionNotifications(
@@ -162,15 +165,34 @@ router.get("/posts/:id", async (req, res): Promise<void> => {
 });
 
 router.post("/posts", async (req, res): Promise<void> => {
+  const { userId: clerkId } = getAuth(req);
+  if (!clerkId) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
   const parsed = CreatePostBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+
+  const [sessionUser] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, clerkId));
+  if (!sessionUser) {
+    res.status(403).json({ error: "User profile not found" });
+    return;
+  }
+
+  const authorId = sessionUser.id;
+
   const [post] = await db
     .insert(postsTable)
     .values({
       ...parsed.data,
+      authorId,
       tags: parsed.data.tags ?? [],
       sourceUrl: parsed.data.sourceUrl ?? null,
       isAiGenerated: false,
@@ -185,30 +207,22 @@ router.post("/posts", async (req, res): Promise<void> => {
   await db
     .update(usersTable)
     .set({ postCount: sql`${usersTable.postCount} + 1` })
-    .where(eq(usersTable.id, parsed.data.authorId));
+    .where(eq(usersTable.id, authorId));
 
   const enriched = await getEnrichedPost(post.id);
   res.status(201).json(enriched);
 
-  if (parsed.data.authorId) {
-    const [author] = await db
-      .select({ username: usersTable.username })
-      .from(usersTable)
-      .where(eq(usersTable.id, parsed.data.authorId));
-    if (author) {
-      fireAndForget(
-        getSiteUrl().then((siteUrl) =>
-          sendPostMentionNotifications(
-            post.id,
-            (parsed.data.content ?? "") + " " + (parsed.data.title ?? ""),
-            author.username,
-            parsed.data.authorId,
-            siteUrl,
-          ).catch((err) => logger.error({ err }, "post-mention: failed")),
-        ),
-      );
-    }
-  }
+  fireAndForget(
+    getSiteUrl().then((siteUrl) =>
+      sendPostMentionNotifications(
+        post.id,
+        (parsed.data.content ?? "") + " " + (parsed.data.title ?? ""),
+        sessionUser.username,
+        authorId,
+        siteUrl,
+      ).catch((err) => logger.error({ err }, "post-mention: failed")),
+    ),
+  );
 });
 
 router.patch("/posts/:id", async (req, res): Promise<void> => {
