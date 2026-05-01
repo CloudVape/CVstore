@@ -604,11 +604,14 @@ export function newArrivalTemplate(opts: {
 export function weeklyDigestTemplate(opts: {
   posts: Array<{ title: string; url: string; category: string; snippet: string }>;
   trendingCategories?: Array<{ name: string; url: string; postCount: number }>;
+  newReviews?: Array<{ title: string; url: string; snippet: string }>;
   aiIntroHtml: string;
   aiIntroText: string;
+  subscriberName?: string;
   unsubscribeUrl: string;
   siteUrl: string;
 }): { subject: string; html: string; text: string } {
+  const greeting = opts.subscriberName ? `Hi ${opts.subscriberName},` : "Hi there,";
   const subject = "Your CloudVape Weekly Digest";
   const postRows = opts.posts
     .slice(0, 5)
@@ -640,16 +643,36 @@ export function weeklyDigestTemplate(opts: {
            .join("")}</table>`
       : "";
 
+  const reviews = opts.newReviews ?? [];
+  const reviewsSection =
+    reviews.length > 0
+      ? `${divider()}
+         <p style="margin:0 0 12px;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">New Reviews This Week</p>
+         <table width="100%" cellpadding="0" cellspacing="0" border="0">${reviews
+           .slice(0, 3)
+           .map(
+             (r) =>
+               `<tr><td style="padding:12px 0;border-bottom:1px solid #27272a;">
+                  <a href="${r.url}" style="color:${TEXT};font-size:14px;font-weight:700;text-decoration:none;">${r.title}</a>
+                  <p style="margin:4px 0 0;color:${MUTED};font-size:12px;line-height:1.5;">${r.snippet}</p>
+                </td></tr>`
+           )
+           .join("")}</table>`
+      : "";
+
   const html = baseTemplate({
     siteUrl: opts.siteUrl,
-    preheader: "Top posts and trending discussions from the CloudVape community this week.",
+    preheader: `${greeting} Here's what the CloudVape community has been talking about this week.`,
     unsubscribeUrl: opts.unsubscribeUrl,
     content: `
       <p style="margin:0 0 8px;color:${MUTED};font-size:11px;font-family:monospace;text-transform:uppercase;letter-spacing:0.1em;">Weekly Digest</p>
       ${h1("This Week on CloudVape")}
+      <p style="margin:0 0 16px;color:${TEXT};font-size:15px;">${greeting}</p>
       <div style="color:${TEXT};font-size:15px;line-height:1.7;margin-bottom:24px;">${opts.aiIntroHtml}</div>
       ${divider()}
+      <p style="margin:0 0 12px;color:${MUTED};font-size:12px;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;">Top Posts</p>
       <table width="100%" cellpadding="0" cellspacing="0" border="0">${postRows}</table>
+      ${reviewsSection}
       ${categorySection}
       ${divider()}
       ${button(`${opts.siteUrl}/forum`, "Join the Conversation")}
@@ -663,7 +686,11 @@ export function weeklyDigestTemplate(opts: {
     cats.length > 0
       ? `\n\nTrending Topics:\n${cats.map((c) => `- ${c.name} (${c.postCount} posts): ${c.url}`).join("\n")}`
       : "";
-  const text = `CloudVape Weekly Digest\n\n${opts.aiIntroText}\n\n${textPosts}${textCats}\n\nJoin the forum: ${opts.siteUrl}/forum\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
+  const textReviews =
+    reviews.length > 0
+      ? `\n\nNew Reviews:\n${reviews.map((r) => `- ${r.title}: ${r.url}`).join("\n")}`
+      : "";
+  const text = `CloudVape Weekly Digest\n\n${greeting}\n\n${opts.aiIntroText}\n\n${textPosts}${textReviews}${textCats}\n\nJoin the forum: ${opts.siteUrl}/forum\n\nUnsubscribe: ${opts.unsubscribeUrl}\n\nCloudVape`;
   return { subject, html, text };
 }
 

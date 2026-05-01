@@ -48,6 +48,28 @@ async function getTopPosts(sinceDate: Date, siteUrl: string): Promise<
   }));
 }
 
+async function getNewReviews(sinceDate: Date, siteUrl: string): Promise<
+  Array<{ title: string; url: string; snippet: string }>
+> {
+  const rows = await db
+    .select({
+      post: postsTable,
+    })
+    .from(postsTable)
+    .innerJoin(categoriesTable, eq(postsTable.categoryId, categoriesTable.id))
+    .where(
+      sql`${postsTable.createdAt} >= ${sinceDate} AND LOWER(${categoriesTable.name}) LIKE '%review%'`,
+    )
+    .orderBy(desc(sql`${postsTable.likes} + ${postsTable.commentCount} * 2`))
+    .limit(3);
+
+  return rows.map(({ post }) => ({
+    title: post.title,
+    url: `${siteUrl}/forum/${post.id}`,
+    snippet: post.content.slice(0, 100) + (post.content.length > 100 ? "…" : ""),
+  }));
+}
+
 async function getTrendingCategories(sinceDate: Date, siteUrl: string): Promise<
   Array<{ name: string; url: string; postCount: number }>
 > {
@@ -103,12 +125,18 @@ async function generateDigestIntro(topPosts: Array<{ title: string; category: st
   }
 }
 
+function nameFromEmail(email: string): string {
+  const local = email.split("@")[0] ?? "";
+  return local.replace(/[._-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()).trim() || "there";
+}
+
 export async function sendWeeklyDigest(): Promise<{ sent: number }> {
   const sinceDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const siteUrl = await getSiteUrl();
-  const [topPosts, trendingCategories] = await Promise.all([
+  const [topPosts, trendingCategories, newReviews] = await Promise.all([
     getTopPosts(sinceDate, siteUrl),
     getTrendingCategories(sinceDate, siteUrl),
+    getNewReviews(sinceDate, siteUrl),
   ]);
 
   if (topPosts.length === 0) {
@@ -132,7 +160,17 @@ export async function sendWeeklyDigest(): Promise<{ sent: number }> {
   for (const sub of subscribers) {
     try {
       const unsubscribeUrl = `${siteUrl}/newsletter/unsubscribe?token=${sub.token}`;
-      const tpl = weeklyDigestTemplate({ posts: topPosts, trendingCategories, aiIntroHtml, aiIntroText, unsubscribeUrl, siteUrl });
+      const subscriberName = nameFromEmail(sub.email);
+      const tpl = weeklyDigestTemplate({
+        posts: topPosts,
+        trendingCategories,
+        newReviews,
+        aiIntroHtml,
+        aiIntroText,
+        subscriberName,
+        unsubscribeUrl,
+        siteUrl,
+      });
       await sendEmail({ ...tpl, to: sub.email, template: "weekly-digest", marketing: true });
       sent++;
     } catch (err) {

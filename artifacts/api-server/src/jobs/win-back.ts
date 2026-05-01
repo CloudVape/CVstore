@@ -107,7 +107,7 @@ async function runWinBack(): Promise<void> {
         recentPostTitles,
       });
 
-      const unsubscribeUrl = `${siteUrl}/newsletter/unsubscribe?token=${user.id}`;
+      const unsubscribeUrl = `${siteUrl}/settings`;
       const tpl = winBackTemplate({
         username: user.username,
         aiBodyHtml: html,
