@@ -1,0 +1,55 @@
+Last login: Fri May  1 06:05:20 2026 from 90.202.75.0
+/usr/bin/xauth:  unable to write authority file /root/.Xauthority-n
+
+This server is powered by Plesk.
+
+Run the 'plesk login' command and log in by browsing either of the links received in the output.
+Use the 'plesk' command to manage the server. Run 'plesk help' for more info.
+
+root@clever-gagarin:~# cat > /etc/apache2/plesk.conf.d/vhosts/cloudvape.store.conf << 'EOF'
+<VirtualHost 212.227.127.152:80>
+    ServerName cloudvape.store
+    ServerAlias www.cloudvape.store
+    Redirect permanent / https://cloudvape.store/
+</VirtualHost>
+
+<VirtualHost 212.227.127.152:443>
+    ServerName cloudvape.store
+    ServerAlias www.cloudvape.store
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/cloudvape.store/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/cloudvape.store/privkey.pem
+    DocumentRoot /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community/dist/public
+    <Directory /var/www/vhosts/app.cloudvape.store/httpdocs/artifacts/vape-community/dist/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride None
+        Require all granted
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^ /index.html [L]
+    </Directory>
+    ProxyPreserveHost On
+    ProxyPass /api http://127.0.0.1:8080/api
+    ProxyPassReverse /api http://127.0.0.1:8080/api
+</VirtualHost>
+EOF
+apache2ctl configtest && systemctl reload apache2
+curl -k -I https://cloudvape.store/
+cat: write error: No space left on device
+Syntax OK
+HTTP/1.1 500 Internal Server Error
+Date: Fri, 01 May 2026 07:46:25 GMT
+Server: sw-cp-server
+Content-Type: text/html; charset=UTF-8
+Expires: Fri, 28 May 1999 00:00:00 GMT
+Last-Modified: Fri, 01 May 2026 07:46:25 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+P3P: CP="NON COR CURa ADMa OUR NOR UNI COM NAV STA"
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+X-Powered-By: PleskLin
+Connection: close
+
+root@clever-gagarin:~#
